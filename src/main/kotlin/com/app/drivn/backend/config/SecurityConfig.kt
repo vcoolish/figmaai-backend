@@ -1,5 +1,6 @@
 package com.app.drivn.backend.config
 
+import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.config.properties.CorsProperties
 import com.app.drivn.backend.config.properties.WebSecurityProperties
 import org.springframework.boot.autoconfigure.web.ServerProperties
@@ -13,11 +14,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer.*
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.firewall.HttpFirewall
 import org.springframework.security.web.firewall.StrictHttpFirewall
 import org.springframework.stereotype.Service
@@ -27,12 +28,14 @@ import java.security.SecureRandom
 import java.util.function.Predicate
 import java.util.regex.Pattern
 
+
 @Service
-@EnableConfigurationProperties(WebSecurityProperties::class, CorsProperties::class)
+@EnableConfigurationProperties(WebSecurityProperties::class, CorsProperties::class, AppProperties::class)
 class SecurityConfig(
     protected val webSecurityProps: WebSecurityProperties,
     protected val corsProperties: CorsProperties,
-    private val properties: ServerProperties
+    private val properties: ServerProperties,
+    private val appProperties: AppProperties,
 ) : WebSecurityConfigurerAdapter() {
     @Bean
     fun httpFirewall(): HttpFirewall {
@@ -85,7 +88,8 @@ class SecurityConfig(
             .sessionManagement { c: SessionManagementConfigurer<HttpSecurity?> ->
                 c.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
-        //            .addFilterAt(sessionAccessTokenFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAt(SigFilter(appProperties), UsernamePasswordAuthenticationFilter::class.java)
+
         val urlRegistry = http.authorizeRequests()
 
         // set error path open for all by default

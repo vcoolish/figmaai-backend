@@ -3,10 +3,17 @@ spring:
     change-log: classpath:db/changelog.xml
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/public
+    continue-on-error: true
+    url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: postgres
 
 web-security:
-  unauthorized-paths:
-    - /greeting
+  role-access-restriction-paths:
+    - methods: GET, POST, DELETE, PATCH
+      roles: ROLE_ADMIN
+      paths:
+        - /
+
+application:
+  sig-key: poop

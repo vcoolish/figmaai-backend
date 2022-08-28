@@ -3,10 +3,10 @@ spring:
     change-log: classpath:db/changelog.xml
   datasource:
     driver-class-name: org.postgresql.Driver
-    password: c90b9a81c706cf6863e18af05e84ca2a79d0f23a9e22cea201a7c5306e5d76a4
-    url: jdbc:postgresql://ec2-99-81-137-11.eu-west-1.compute.amazonaws.com:5432/d5eat5dp903aoq?sslmode=require
-    username: ggzohqfxidoiru
     continue-on-error: true
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
 
 web-security:
   role-access-restriction-paths:

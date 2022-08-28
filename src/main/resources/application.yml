@@ -1,4 +1,12 @@
 spring:
   liquibase:
     change-log: classpath:db/changelog.xml
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/public
+    username: postgres
+    password: postgres
 
+web-security:
+  unauthorized-paths:
+    - /greeting

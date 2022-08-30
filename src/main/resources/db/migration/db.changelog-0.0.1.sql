@@ -16,3 +16,17 @@ CREATE TABLE IF NOT EXISTS nfts
     PRIMARY KEY(id, collection_id)
 );
 --rollback DROP TABLE users;
+CREATE TABLE IF NOT EXISTS nftmetadata
+(
+    name VARCHAR,
+    description VARCHAR,
+    image VARCHAR,
+    external_url VARCHAR,
+    attributes List,
+    collection Collection
+);
+CREATE TABLE IF NOT EXISTS attributes
+(
+    trait_type  VARCHAR
+    value   VARCHAR
+);

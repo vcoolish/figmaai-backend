@@ -11,7 +11,6 @@ import org.springframework.security.access.hierarchicalroles.NullRoleHierarchy
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer
@@ -19,14 +18,10 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.web.firewall.HttpFirewall
-import org.springframework.security.web.firewall.StrictHttpFirewall
 import org.springframework.stereotype.Service
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import java.security.SecureRandom
-import java.util.function.Predicate
-import java.util.regex.Pattern
 
 
 @Service
@@ -60,18 +55,6 @@ class SecurityConfig(
     val roleHierarchy = RoleHierarchyImpl()
     roleHierarchy.setHierarchy(java.lang.String.join("\n", *webSecurityProps.roleHierarchy))
     return roleHierarchy
-  }
-
-  override fun configure(web: WebSecurity) {
-    web
-      .ignoring()
-      .antMatchers(
-        "/v2/api-docs",
-        "/v3/api-docs",
-        "/configuration/",
-        "/swagger*/**",
-        "/webjars/**"
-      )
   }
 
   @Throws(Exception::class)

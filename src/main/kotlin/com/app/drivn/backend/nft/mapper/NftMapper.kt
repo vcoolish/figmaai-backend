@@ -30,6 +30,8 @@ object NftMapper {
     carNft.durability = (1..100).random().toFloat()
     carNft.minSpeed = (1..49).random()
     carNft.maxSpeed = (50..100).random()
+    carNft.mint = (0..3).random()
+
     return carNft
   }
 
@@ -61,6 +63,7 @@ object NftMapper {
     dto.economy = carNft.economy
     dto.durability = carNft.durability
     dto.maxDurability = carNft.maxDurability
+    dto.mint = carNft.mint
 
     return dto
   }
@@ -91,7 +94,7 @@ object NftMapper {
       ),
       NftExternalDto.Attribute(
         trait_type = "Car-minting Count",
-        value = "0",
+        value = carNft.mint.toString(),
       ),
       NftExternalDto.Attribute(
         trait_type = "Car type",

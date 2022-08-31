@@ -9,7 +9,7 @@ import javax.persistence.Table
 @Table(name = "car_nfts")
 class CarNft : Nft() {
 
-  var level: Int = 0
+  var level: Int = 1
   @Enumerated(EnumType.STRING)
   lateinit var quality: Quality
   @Enumerated(EnumType.STRING)
@@ -26,4 +26,9 @@ class CarNft : Nft() {
   var economy: Short = 0
   var durability: Float = 0F
   var maxDurability: Float = 100F
+
+  /**
+   * What is car's number in the tree of creation. I.e. how many parents do it has.
+   */
+  var mint: Int = 0
 }

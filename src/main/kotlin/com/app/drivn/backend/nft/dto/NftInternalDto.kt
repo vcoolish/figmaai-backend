@@ -17,4 +17,5 @@ class NftInternalDto : NftBaseDto() {
   var economy: Short = 0
   var durability: Float = 0F
   var maxDurability: Float = 100F
+  var mint: Int = 0
 }

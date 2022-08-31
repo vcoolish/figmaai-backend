@@ -28,10 +28,10 @@ server:
 
 web-security:
   role-access-restriction-paths:
-    - methods: GET, POST, DELETE, PATCH
+    - methods: PUT
       roles: ${application.base-role}
       paths:
-        - /
+        - /address/*
 
 application:
   base-role: ROLE_USER

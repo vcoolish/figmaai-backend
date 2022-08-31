@@ -1,3 +1,5 @@
+package com.app.drivn.backend.config.properties
+
 import java.security.MessageDigest
 
 fun sha256(data: String): String {

@@ -41,12 +41,6 @@ class SecurityConfig(
   private val properties: ServerProperties,
   private val appProperties: AppProperties,
 ) : WebSecurityConfigurerAdapter() {
-  @Bean
-  fun httpFirewall(): HttpFirewall {
-    val firewall = StrictHttpFirewall()
-    firewall.setAllowedHeaderValues(ASSIGNED_AND_NOT_ISO_CONTROL_PREDICATE)
-    return firewall
-  }
 
   @Bean
   fun passwordEncoder(): PasswordEncoder {
@@ -130,12 +124,12 @@ class SecurityConfig(
     urlRegistry: ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry
   ) {
     val paths = webSecurityProps.roleAccessRestrictionPaths
-    if (paths == null || paths.isEmpty()) {
+    if (paths.isNullOrEmpty()) {
       return
     }
     for (roleRestriction in paths) {
       val methods = roleRestriction.methods
-      if (methods.size == 0) {
+      if (methods.isEmpty()) {
         urlRegistry
           .antMatchers(*roleRestriction.paths)
           .hasAnyAuthority(*roleRestriction.roles)
@@ -157,13 +151,5 @@ class SecurityConfig(
       }
     }
     return source
-  }
-
-  companion object {
-    @Suppress("RegExpSimplifiable")
-    private val ASSIGNED_AND_NOT_ISO_CONTROL_PATTERN =
-      Pattern.compile("[\\p{IsAssigned}&&[^\\p{IsControl}]]*")
-    private val ASSIGNED_AND_NOT_ISO_CONTROL_PREDICATE =
-      Predicate { s: String? -> ASSIGNED_AND_NOT_ISO_CONTROL_PATTERN.matcher(s).matches() }
   }
 }

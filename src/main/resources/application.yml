@@ -3,17 +3,36 @@ spring:
     change-log: classpath:db/changelog.xml
   datasource:
     driver-class-name: org.postgresql.Driver
-    continue-on-error: true
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: postgres
+  sql:
+    init:
+      continue-on-error: true
+
+server:
+  cors:
+    enabled: true
+    configurations:
+      - path: /**
+        configuration:
+          # When allowCredentials is true, allowedOrigins cannot contain the special value "*"
+          # since that cannot be set on the "Access-Control-Allow-Origin" response header.
+          # To allow credentials to a set of origins, list them explicitly or consider
+          # using "allowedOriginPatterns" instead.
+          allow-credentials: false
+          allowed-headers: Content-Type,X-Requested-With,accept,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Authorization
+          allowed-methods: POST,PUT,GET,DELETE,PATCH,OPTIONS,HEAD
+          allowed-origins: "*"
+          exposed-headers: Location,Access-Control-Allow-Origin,Access-Control-Allow-Credentials
 
 web-security:
   role-access-restriction-paths:
     - methods: GET, POST, DELETE, PATCH
-      roles: ROLE_ADMIN
+      roles: ${application.base-role}
       paths:
         - /
 
 application:
+  base-role: ROLE_USER
   sig-key: poop

@@ -11,30 +11,32 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 class SigFilter(
-    private val properties: AppProperties,
+  private val properties: AppProperties,
 ) : OncePerRequestFilter() {
 
-    override fun doFilterInternal(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        filterChain: FilterChain
-    ) {
-        val sig = request.getParameter("signature")
-        val message = buildString {
-            append(properties.sigKey)
-            request.parameterMap.forEach { (key, value) ->
-                if (key != "signature") {
-                    append(value)
-                }
-            }
+  override fun doFilterInternal(
+    request: HttpServletRequest,
+    response: HttpServletResponse,
+    filterChain: FilterChain
+  ) {
+    val sig = request.getParameter("signature")
+    val message = buildString {
+      append(properties.sigKey)
+      request.parameterMap.forEach { (key, value) ->
+        if (key != "signature") {
+          append(value)
         }
-        if (sha256(message) == sig) {
-            SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken.authenticated(/* principal = */
-                "", /* credentials = */
-                "", /* authorities = */
-                listOf(GrantedAuthority { "ROLE_ADMIN" }),
-            )
-        }
-        filterChain.doFilter(request, response)
+      }
     }
+    if (sha256(message) == sig) {
+      SecurityContextHolder.getContext().authentication =
+        UsernamePasswordAuthenticationToken.authenticated(
+          /* principal = */
+          "", /* credentials = */
+          "", /* authorities = */
+          listOf(GrantedAuthority { properties.baseRole }),
+        )
+    }
+    filterChain.doFilter(request, response)
+  }
 }

@@ -26,7 +26,9 @@
 	<properties>
 		<java.version>17</java.version>
 		<kotlin.version>1.6.21</kotlin.version>
-	</properties>
+
+    <hibernate-types.version>2.16.2</hibernate-types.version>
+  </properties>
 
 	<dependencies>
 		<dependency>
@@ -66,7 +68,12 @@
 			<artifactId>kotlin-stdlib-jdk8</artifactId>
 		</dependency>
 
-		<dependency>
+    <dependency>
+      <groupId>com.vladmihalcea</groupId>
+      <artifactId>hibernate-types-55</artifactId>
+      <version>${hibernate-types.version}</version>
+    </dependency>
+    <dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
@@ -130,7 +137,28 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-		</plugins>
+
+      <!-- For Development only! -->
+      <plugin>
+        <groupId>org.liquibase</groupId>
+        <artifactId>liquibase-maven-plugin</artifactId>
+        <version>4.9.1</version>
+        <configuration>
+          <changeLogFile>./db/changelog.xml</changeLogFile>
+          <url>jdbc:postgresql://localhost:5432/postgres</url>
+          <username>postgres</username>
+          <password>postgres</password>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.3.2</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
+    </plugins>
 	</build>
 
 </project>

@@ -59,7 +59,7 @@ ALTER TABLE car_nfts
 -- yes, there's no rollback
 --rollback
 
---changeset yemets:20220831161927
+--changeset yemets:20220831203122
 ALTER TABLE car_nfts
   ADD mint INTEGER NOT NULL DEFAULT 0;
 

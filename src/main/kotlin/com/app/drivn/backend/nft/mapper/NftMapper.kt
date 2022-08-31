@@ -24,9 +24,9 @@ object NftMapper {
     carNft.level = (1..100).random()
     carNft.body = CarBody.values().random()
     carNft.quality = Quality.values().random()
-    carNft.efficiency = (1..100).random().toFloat()
-    carNft.luck = (1..100).random().toFloat()
-    carNft.comfortability = (1..100).random().toFloat()
+    carNft.efficiency = (1..100).random().toShort()
+    carNft.luck = (1..100).random().toShort()
+    carNft.comfortability = (1..100).random().toShort()
     carNft.durability = (1..100).random().toFloat()
     carNft.minSpeed = (1..49).random()
     carNft.maxSpeed = (50..100).random()
@@ -58,7 +58,7 @@ object NftMapper {
     dto.efficiency = carNft.efficiency
     dto.luck = carNft.luck
     dto.comfortability = carNft.comfortability
-    dto.resilience = carNft.resilience
+    dto.economy = carNft.economy
     dto.durability = carNft.durability
     dto.maxDurability = carNft.maxDurability
 

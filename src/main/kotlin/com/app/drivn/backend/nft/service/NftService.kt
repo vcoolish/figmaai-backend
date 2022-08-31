@@ -15,4 +15,12 @@ class NftService(
     return carNftRepository.findById(NftId(id, collectionId))
       .orElseGet { carNftRepository.save(NftMapper.generateRandomCar(id, collectionId)) }
   }
+
+  fun get(id: Long, collectionId: Long): CarNft {
+    return carNftRepository.findById(NftId(id, collectionId)).orElseThrow()
+  }
+
+  fun save(carNft: CarNft) {
+    carNftRepository.save(carNft)
+  }
 }

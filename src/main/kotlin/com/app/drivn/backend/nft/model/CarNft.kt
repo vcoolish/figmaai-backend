@@ -20,10 +20,10 @@ class CarNft : Nft() {
 
   var odometer: Float = 0F
 
-  var efficiency: Float = 0F
-  var luck: Float = 0F
-  var comfortability: Float = 0F
-  var resilience: Float = 0F
+  var efficiency: Short = 0
+  var luck: Short = 0
+  var comfortability: Short = 0
+  var economy: Short = 0
   var durability: Float = 0F
   var maxDurability: Float = 100F
 }

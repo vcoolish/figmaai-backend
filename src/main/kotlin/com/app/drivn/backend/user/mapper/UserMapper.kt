@@ -10,6 +10,7 @@ object UserMapper {
     user.distance,
     user.energy,
     user.tokensToClaim,
+    user.maxEnergy,
     nfts
   )
 }

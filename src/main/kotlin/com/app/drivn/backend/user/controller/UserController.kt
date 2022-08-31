@@ -14,7 +14,7 @@ class UserController(
 ) {
 
   @GetMapping("/address/{address}")
-  fun index(@PathVariable address: String): UserInfoDto {
+  fun getUser(@PathVariable address: String): UserInfoDto {
 //        val nfts = bounceClient.getNfts(address)
     val user = userService.getOrCreate(address)
     return UserMapper.toDto(

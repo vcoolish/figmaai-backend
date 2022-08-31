@@ -14,4 +14,12 @@ class UserService(
       .orElseGet { repository.save(User(address)) }
   }
 
+  fun get(address: String): User {
+    return repository.findById(address).orElseThrow()
+  }
+
+  fun save(user: User) {
+    repository.save(user)
+  }
+
 }

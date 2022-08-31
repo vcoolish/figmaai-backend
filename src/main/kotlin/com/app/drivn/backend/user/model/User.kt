@@ -12,9 +12,10 @@ class User() {
 
   @Id
   lateinit var address: String
-  var distance: Long = 0
-  var energy: Long = 0
+  var distance: Float = 0F
+  var energy: Float = 0F
   var tokensToClaim: BigDecimal = BigDecimal.ZERO
+  var maxEnergy: Float = 30F
 
   constructor(address: String) : this() {
     this.address = address

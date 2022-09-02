@@ -27,8 +27,7 @@ import java.security.SecureRandom
 @Service
 @EnableConfigurationProperties(
   WebSecurityProperties::class,
-  CorsProperties::class,
-  AppProperties::class
+  CorsProperties::class
 )
 class SecurityConfig(
   protected val webSecurityProps: WebSecurityProperties,

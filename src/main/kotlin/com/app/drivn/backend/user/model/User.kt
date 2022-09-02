@@ -14,11 +14,17 @@ class User() {
   lateinit var address: String
   var distance: Float = 0F
   var tokensToClaim: BigDecimal = BigDecimal.ZERO
+    private set
   var maxEnergy: Float = 30F
   var energy: Float = this.maxEnergy
 
   constructor(address: String) : this() {
     this.address = address
+  }
+
+  fun addTokens(value: BigDecimal): BigDecimal {
+    tokensToClaim = tokensToClaim.add(value)
+    return tokensToClaim
   }
 
   override fun equals(other: Any?): Boolean {

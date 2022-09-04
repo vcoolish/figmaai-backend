@@ -19,10 +19,13 @@ open class Nft {
   var collectionId: Long? = null
 
   lateinit var name: String
+
   @Column(length = 512)
   lateinit var description: String
+
   @Column(length = 2048)
   lateinit var image: String
+
   @Column(length = 2048)
   lateinit var externalUrl: String
   lateinit var creatorAddress: String
@@ -36,5 +39,5 @@ open class Nft {
         && collectionId == other.collectionId
   }
 
-  override fun hashCode(): Int = Objects.hash(id, collectionId);
+  override fun hashCode(): Int = Objects.hash(id, collectionId)
 }

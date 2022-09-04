@@ -1,72 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.3</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.7.3</version>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
 
-	<groupId>com.app.drivn</groupId>
-	<artifactId>backend</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+  <groupId>com.app.drivn</groupId>
+  <artifactId>backend</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
 
-	<name>Drivn Backend</name>
-	<description>The Spring Boot application as backend for the Drivn.</description>
+  <name>Drivn Backend</name>
+  <description>The Spring Boot application as backend for the Drivn.</description>
 
-	<scm>
-		<url>https://github.com/drivnapp/backend/</url>
-		<connection>scm:git:git@github.com:drivnapp/backend.git</connection>
-		<developerConnection>scm:git:git@github.com:drivnapp/backend.git</developerConnection>
-		<tag>HEAD</tag>
-	</scm>
+  <scm>
+    <url>https://github.com/drivnapp/backend/</url>
+    <connection>scm:git:git@github.com:drivnapp/backend.git</connection>
+    <developerConnection>scm:git:git@github.com:drivnapp/backend.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
 
-	<properties>
-		<java.version>17</java.version>
-		<kotlin.version>1.6.21</kotlin.version>
+  <properties>
+    <java.version>17</java.version>
+    <kotlin.version>1.6.21</kotlin.version>
+    <kotlin.code.style>official</kotlin.code.style>
 
     <hibernate-types.version>2.16.2</hibernate-types.version>
   </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-batch</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-validation</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.module</groupId>
-			<artifactId>jackson-module-kotlin</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jetbrains.kotlin</groupId>
-			<artifactId>kotlin-reflect</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jetbrains.kotlin</groupId>
-			<artifactId>kotlin-stdlib-jdk8</artifactId>
-		</dependency>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-batch</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-kotlin</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-reflect</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib-jdk8</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>com.vladmihalcea</groupId>
@@ -74,70 +76,70 @@
       <version>${hibernate-types.version}</version>
     </dependency>
     <dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
       <version>42.5.0</version>
       <scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.batch</groupId>
-			<artifactId>spring-batch-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    </dependency>
+    <dependency>
+      <groupId>org.liquibase</groupId>
+      <artifactId>liquibase-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.batch</groupId>
+      <artifactId>spring-batch-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
-	<build>
-		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.jetbrains.kotlin</groupId>
-				<artifactId>kotlin-maven-plugin</artifactId>
-				<configuration>
-					<args>
-						<arg>-Xjsr305=strict</arg>
-					</args>
-					<compilerPlugins>
-						<plugin>spring</plugin>
-						<plugin>jpa</plugin>
-					</compilerPlugins>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.jetbrains.kotlin</groupId>
-						<artifactId>kotlin-maven-allopen</artifactId>
-						<version>${kotlin.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.jetbrains.kotlin</groupId>
-						<artifactId>kotlin-maven-noarg</artifactId>
-						<version>${kotlin.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
+  <build>
+    <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+    <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-maven-plugin</artifactId>
+        <configuration>
+          <args>
+            <arg>-Xjsr305=strict</arg>
+          </args>
+          <compilerPlugins>
+            <plugin>spring</plugin>
+            <plugin>jpa</plugin>
+          </compilerPlugins>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-maven-allopen</artifactId>
+            <version>${kotlin.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-maven-noarg</artifactId>
+            <version>${kotlin.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
 
       <!-- For Development only! -->
       <plugin>
@@ -160,6 +162,6 @@
       </plugin>
 
     </plugins>
-	</build>
+  </build>
 
 </project>

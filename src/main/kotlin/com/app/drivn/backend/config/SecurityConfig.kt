@@ -119,7 +119,7 @@ class SecurityConfig(
       }
       for (method in methods) {
         urlRegistry
-          .antMatchers(HttpMethod.resolve(method), *roleRestriction.paths)
+          .antMatchers(method, *roleRestriction.paths)
           .hasAnyAuthority(*roleRestriction.roles)
       }
     }

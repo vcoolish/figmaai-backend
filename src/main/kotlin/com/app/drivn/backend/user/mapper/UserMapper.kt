@@ -9,8 +9,9 @@ object UserMapper {
   fun toDto(user: User, nfts: List<NftInfoDto>): UserInfoDto = UserInfoDto(
     user.distance,
     user.energy,
-    user.tokensToClaim,
     user.maxEnergy,
+    user.tokensToClaim,
+    user.tokensLimitPerDay,
     nfts
   )
 }

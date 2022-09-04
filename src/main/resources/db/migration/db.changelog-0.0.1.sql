@@ -64,3 +64,18 @@ ALTER TABLE car_nfts
   ADD mint INTEGER NOT NULL DEFAULT 0;
 
 --rollback ALTER TABLE car_nfts DROP mint;
+
+
+--changeset yemets:20220904163107
+ALTER TABLE users
+  ADD tokens_limit_per_day DECIMAL NOT NULL DEFAULT 10;
+
+CREATE TABLE IF NOT EXISTS user_earned_token_records
+(
+  address      VARCHAR(255)             NOT NULL,
+  created_at   TIMESTAMP with time zone NOT NULL,
+  token_amount DECIMAL                  NOT NULL DEFAULT 0,
+  CONSTRAINT pk_user_earned_token_records PRIMARY KEY (address, created_at)
+);
+--rollback ALTER TABLE users DROP tokens_limit_per_day;
+--rollback DROP TABLE user_earned_token_records;

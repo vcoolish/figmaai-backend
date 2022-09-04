@@ -2,6 +2,7 @@ package com.app.drivn.backend.user.model
 
 import com.app.drivn.backend.common.model.AbstractJpaPersistable
 import java.math.BigDecimal
+import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
@@ -16,9 +17,11 @@ class User() : AbstractJpaPersistable<String>() {
 
   var distance: Float = 0F
 
+  @Column(nullable = false)
   var tokensLimitPerDay: BigDecimal = BigDecimal.valueOf(10)
+
+  @Column(nullable = false)
   var tokensToClaim: BigDecimal = BigDecimal.ZERO
-    private set
 
   var maxEnergy: Float = 30F
   var energy: Float = this.maxEnergy
@@ -27,10 +30,5 @@ class User() : AbstractJpaPersistable<String>() {
     this.address = address
     this.tokensLimitPerDay = tokensLimitPerDay
     this.maxEnergy = maxEnergy
-  }
-
-  fun addTokens(value: BigDecimal): BigDecimal {
-    tokensToClaim = tokensToClaim.add(value)
-    return tokensToClaim
   }
 }

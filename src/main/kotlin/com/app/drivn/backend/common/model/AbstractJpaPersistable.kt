@@ -8,10 +8,10 @@ import javax.persistence.MappedSuperclass
 import javax.persistence.Transient
 
 @MappedSuperclass
-abstract class AbstractJpaPersistable<PK : Serializable> : Persistable<PK> {
+abstract class AbstractJpaPersistable<PK : Serializable> : Persistable<PK>, Serializable {
 
   companion object {
-    private val serialVersionUID = -5554308939380869754L
+    private const val serialVersionUID = -5554308939380869754L
   }
 
   @Transient

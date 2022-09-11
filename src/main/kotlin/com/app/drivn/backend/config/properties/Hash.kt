@@ -3,12 +3,12 @@ package com.app.drivn.backend.config.properties
 import java.security.MessageDigest
 
 fun sha256(data: String): String {
-    return hashString(data, "SHA-256")
+  return hashString(data, "SHA-256")
 }
 
 private fun hashString(input: String, algorithm: String): String {
-    return MessageDigest
-        .getInstance(algorithm)
-        .digest(input.toByteArray())
-        .fold("") { str, it -> str + "%02x".format(it) }
+  return MessageDigest
+    .getInstance(algorithm)
+    .digest(input.toByteArray())
+    .fold("") { str, it -> str + "%02x".format(it) }
 }

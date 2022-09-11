@@ -10,8 +10,10 @@ import javax.persistence.Table
 class CarNft : Nft() {
 
   var level: Int = 1
+
   @Enumerated(EnumType.STRING)
   lateinit var quality: Quality
+
   @Enumerated(EnumType.STRING)
   lateinit var body: CarBody
 

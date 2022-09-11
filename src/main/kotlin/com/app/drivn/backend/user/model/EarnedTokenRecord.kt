@@ -1,7 +1,6 @@
 package com.app.drivn.backend.user.model
 
 import org.hibernate.Hibernate
-import org.hibernate.annotations.CreationTimestamp
 import org.springframework.data.annotation.CreatedDate
 import java.math.BigDecimal
 import java.time.ZonedDateTime
@@ -22,7 +21,6 @@ class EarnedTokenRecord() : Comparable<EarnedTokenRecord> {
 
   @Id
   @CreatedDate
-  @CreationTimestamp
   lateinit var createdAt: ZonedDateTime
 
   @Column(nullable = false)

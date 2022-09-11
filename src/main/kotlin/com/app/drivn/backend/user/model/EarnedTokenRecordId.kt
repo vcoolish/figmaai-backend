@@ -1,13 +1,17 @@
 package com.app.drivn.backend.user.model
 
 import org.hibernate.Hibernate
+import org.hibernate.annotations.CreationTimestamp
 import java.io.Serializable
 import java.time.ZonedDateTime
 import java.util.*
 
 
 class EarnedTokenRecordId() : Serializable {
+
   lateinit var address: String
+
+  @CreationTimestamp
   lateinit var createdAt: ZonedDateTime
 
   constructor(

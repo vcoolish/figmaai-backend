@@ -5,6 +5,7 @@ import java.math.BigDecimal
 data class DriveInfoDto(
   val distance: Float,
   val energy: Float,
-  val tokenClaimable: BigDecimal,
   val maxEnergy: Float,
+  val tokenClaimable: BigDecimal,
+  val tokensLimitPerDay: BigDecimal
 )

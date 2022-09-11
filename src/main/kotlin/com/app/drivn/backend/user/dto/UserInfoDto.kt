@@ -6,7 +6,8 @@ import java.math.BigDecimal
 data class UserInfoDto(
   val distance: Float,
   val energy: Float,
-  val tokenClaimable: BigDecimal,
   val maxEnergy: Float,
+  val tokenClaimable: BigDecimal,
+  val tokensLimitPerDay: BigDecimal,
   val nfts: List<NftInfoDto>
 )

@@ -10,19 +10,19 @@ import javax.validation.constraints.NotNull
 @Validated
 @ConfigurationProperties(prefix = "server.cors")
 class CorsProperties {
-    var isEnabled = true
+  var isEnabled = true
 
-    @Valid
-    var configurations: MutableList<CorsConfigurationMapping>? = null
+  @Valid
+  var configurations: MutableList<CorsConfigurationMapping>? = null
 
-    /**
-     * The type Cors configuration mapping.
-     */
-    class CorsConfigurationMapping {
-        @NotBlank
-        var path: String? = null
+  /**
+   * The type Cors configuration mapping.
+   */
+  class CorsConfigurationMapping {
+    @NotBlank
+    var path: String? = null
 
-        @NotNull
-        var configuration: CorsConfiguration? = null
-    }
+    @NotNull
+    var configuration: CorsConfiguration? = null
+  }
 }

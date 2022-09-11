@@ -36,3 +36,5 @@ web-security:
 application:
   base-role: ROLE_USER
   sig-key: poop
+  default-user-energy-limit: 30
+  default-user-tokens-limit-per-day: 10

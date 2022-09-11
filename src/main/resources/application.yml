@@ -9,6 +9,13 @@ spring:
   sql:
     init:
       continue-on-error: true
+  task:
+    scheduling:
+      pool:
+        size: 5
+      shutdown:
+        await-termination: true
+        await-termination-period: PT5M
 
 server:
   cors:
@@ -38,3 +45,4 @@ application:
   sig-key: poop
   default-user-energy-limit: 30
   default-user-tokens-limit-per-day: 10
+  energy-renew-rate: PT6H

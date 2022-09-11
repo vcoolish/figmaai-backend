@@ -21,3 +21,7 @@ ij_editorconfig_space_after_comma = true
 ij_editorconfig_space_before_colon = false
 ij_editorconfig_space_before_comma = false
 ij_editorconfig_spaces_around_assignment_operators = true
+
+[*.kt]
+ij_kotlin_blank_lines_after_class_header = 1
+ij_any_blank_lines_around_class = 1

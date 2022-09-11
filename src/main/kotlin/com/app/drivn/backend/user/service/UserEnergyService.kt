@@ -30,7 +30,7 @@ class UserEnergyService(
       val nextEnergyRenew = user.nextEnergyRenew
 
       if (remainsToMax > 0 && (nextEnergyRenew == null || nextEnergyRenew <= now)) {
-        user.energy += min(user.maxEnergy * 0.25F, remainsToMax)
+        user.energy += min(user.maxEnergy * appProperties.energyRenewPercent, remainsToMax)
 
         if (user.maxEnergy > user.energy) {
           user.nextEnergyRenew = now.plus(appProperties.energyRenewRate)

@@ -26,4 +26,7 @@ class AppProperties {
 
   @NotNull
   lateinit var energyRenewRate: Duration
+
+  @Positive
+  var energyRenewPercent: Float = 0.25F
 }

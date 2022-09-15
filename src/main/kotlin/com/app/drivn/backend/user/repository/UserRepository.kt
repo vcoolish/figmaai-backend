@@ -10,4 +10,7 @@ interface UserRepository : JpaRepository<User, String> {
 
   @Query("select u.nextEnergyRenew from User u order by u.nextEnergyRenew nulls last ")
   fun getNextRenewTime(): Optional<ZonedDateTime>
+
+  fun findByNextEnergyRenewLessThanEqualOrderByNextEnergyRenewAsc(nextEnergyRenew: ZonedDateTime): List<User>
+
 }

@@ -5,9 +5,9 @@ enum class CarBody(
   val fuelEfficiency: Float,
   val earnEfficiency: Float
 ) {
-  WORKER(0.8F, 1.1F, 1.3F),
-  BASIC(1F, 1F, 1F),
-  RACING(1.3F, 0.8F, 0.8F),
-  SUPERSPORT(1.2F, 0.85F, 0.85F);
+  WORKER(0.8F, 0.1F, 1.3F),
+  BASIC(1F, 0F, 1F),
+  RACING(1.3F, -0.2F, 0.8F),
+  SUPERSPORT(1.2F, -0.15F, 0.85F);
 
 }

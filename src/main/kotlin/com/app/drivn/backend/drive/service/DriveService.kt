@@ -81,7 +81,7 @@ class DriveService(
     }
 
     val finalConsumedEnergy = realConsumedEnergy
-      .let { it - (it * car.body.fuelEfficiency) }
+      .let { it + (it * car.body.fuelEfficiency) }
       .let { it - (it * (car.economy / 200)) }
 
     userEnergyService.spendEnergy(user, finalConsumedEnergy)

@@ -1,7 +1,7 @@
 package com.app.drivn.backend.config
 
 import com.app.drivn.backend.config.properties.AppProperties
-import com.app.drivn.backend.config.properties.sha256
+import com.app.drivn.backend.common.util.sha256
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder

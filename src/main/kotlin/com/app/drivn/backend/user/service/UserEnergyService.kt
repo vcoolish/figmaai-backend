@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.*
+import kotlin.math.max
 import kotlin.math.min
 
 @Service
@@ -60,7 +61,7 @@ class UserEnergyService(
   fun spendEnergy(user: User, energy: Float) {
     sync.execute(user.address) {
       if (user.energy > 0 && energy > 0) {
-        user.energy -= energy
+        user.energy = max(user.energy - energy, 0F)
       }
 
       if (user.nextEnergyRenew == null) {

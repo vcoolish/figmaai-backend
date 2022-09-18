@@ -15,6 +15,7 @@ import java.math.MathContext
 import java.math.RoundingMode
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.max
+import kotlin.math.min
 
 @Service
 class DriveService(
@@ -52,7 +53,7 @@ class DriveService(
     val realConsumedEnergy: Float
     val realReward: BigDecimal
 
-    val consumedEnergy: Float = max(distance * 5, 0F)
+    val consumedEnergy: Float = min(max(distance * 5, 0F), user.energy)
 
     val reward = BigDecimal.valueOf(consumedEnergy.toDouble())
       .divide(BigDecimal.TEN, MathContext.DECIMAL128)

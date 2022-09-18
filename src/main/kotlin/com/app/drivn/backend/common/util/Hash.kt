@@ -1,4 +1,4 @@
-package com.app.drivn.backend.config.properties
+package com.app.drivn.backend.common.util
 
 import java.security.MessageDigest
 

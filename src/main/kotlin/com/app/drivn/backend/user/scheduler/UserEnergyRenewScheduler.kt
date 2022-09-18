@@ -1,5 +1,6 @@
 package com.app.drivn.backend.user.scheduler
 
+import com.app.drivn.backend.common.util.logger
 import com.app.drivn.backend.user.data.UserSpendEnergyEvent
 import com.app.drivn.backend.user.service.UserEnergyService
 import org.springframework.boot.context.event.ApplicationStartedEvent
@@ -16,6 +17,8 @@ class UserEnergyRenewScheduler(
   private val userEnergyService: UserEnergyService,
   private val executor: TaskScheduler
 ) : Trigger, Runnable {
+
+  private final val logger = logger()
 
   private var currentNextExecutionTime: Date? = null
 
@@ -37,12 +40,12 @@ class UserEnergyRenewScheduler(
 
   override fun nextExecutionTime(triggerContext: TriggerContext): Date? =
     userEnergyService.getNextEnergyRenewTime()
-      .map(ZonedDateTime::toInstant)
       .map(Date::from)
       .orElse(null)
       .also { currentNextExecutionTime = it }
 
   override fun run() {
+    logger.debug("Started user energy renew scheduler!")
     userEnergyService.getUsersByNextEnergyRenew(ZonedDateTime.now())
       .forEach { userEnergyService.tryToRenew(it) }
   }

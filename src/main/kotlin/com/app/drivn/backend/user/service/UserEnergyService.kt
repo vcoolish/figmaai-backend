@@ -8,6 +8,7 @@ import com.app.drivn.backend.user.model.User
 import com.app.drivn.backend.user.repository.UserRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
+import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.*
 import kotlin.math.min
@@ -22,7 +23,7 @@ class UserEnergyService(
   private val log = logger()
   private val sync: SyncTemplate<String> = SyncTemplate()
 
-  fun getNextEnergyRenewTime(): Optional<ZonedDateTime> = userRepository.getNextRenewTime()
+  fun getNextEnergyRenewTime(): Optional<Instant> = userRepository.getNextRenewTime()
 
   fun getUsersByNextEnergyRenew(nextEnergyRenew: ZonedDateTime): List<User> =
     userRepository.findByNextEnergyRenewLessThanEqualOrderByNextEnergyRenewAsc(nextEnergyRenew)

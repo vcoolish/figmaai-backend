@@ -9,7 +9,7 @@ import java.time.ZonedDateTime
 
 interface EarnedTokenRecordRepository : JpaRepository<EarnedTokenRecord, EarnedTokenRecordId> {
 
-  @Query("select sum(e.tokenAmount) from EarnedTokenRecord e where e.address = ?1 and e.createdAt >= ?2")
+  @Query("select coalesce(sum(e.tokenAmount), 0) from EarnedTokenRecord e where e.address = ?1 and e.createdAt >= ?2")
   fun sumAmountByAddressAndCreatedAtGreaterThanEqual(
     address: String,
     createdAt: ZonedDateTime

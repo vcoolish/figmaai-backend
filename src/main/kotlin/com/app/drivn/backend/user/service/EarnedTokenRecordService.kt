@@ -17,5 +17,5 @@ class EarnedTokenRecordService(
   }
 
   fun recordEarnedTokens(address: String, earnedAmount: BigDecimal) : EarnedTokenRecord =
-    earnedTokenRecordRepository.save(EarnedTokenRecord(address, earnedAmount))
+    earnedTokenRecordRepository.save(EarnedTokenRecord(address, earnedAmount, ZonedDateTime.now()))
 }

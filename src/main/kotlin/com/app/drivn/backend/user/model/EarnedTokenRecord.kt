@@ -31,6 +31,13 @@ class EarnedTokenRecord() : Comparable<EarnedTokenRecord> {
     this.tokenAmount = tokenAmount
   }
 
+  constructor(address: String, earnedAmount: BigDecimal, at: ZonedDateTime) : this(
+    address,
+    earnedAmount
+  ) {
+    this.createdAt = at
+  }
+
   override fun compareTo(other: EarnedTokenRecord): Int {
     val addressCompare = address.compareTo(other.address)
 

@@ -12,6 +12,7 @@ object UserMapper {
     user.maxEnergy,
     user.tokensToClaim,
     user.tokensLimitPerDay,
+    user.nextEnergyRenew,
     nfts
   )
 }

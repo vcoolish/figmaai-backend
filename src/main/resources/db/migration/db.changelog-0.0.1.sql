@@ -79,3 +79,13 @@ CREATE TABLE IF NOT EXISTS user_earned_token_records
 );
 --rollback ALTER TABLE users DROP tokens_limit_per_day;
 --rollback DROP TABLE user_earned_token_records;
+
+
+--changeset yemets:20220911164814
+ALTER TABLE users
+  ADD next_energy_renew TIMESTAMP with time zone;
+
+UPDATE users
+SET next_energy_renew = now() AT TIME ZONE 'UTC'
+WHERE energy <> max_energy;
+--rollback ALTER TABLE users DROP next_energy_renew;

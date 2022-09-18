@@ -6,6 +6,7 @@ import com.app.drivn.backend.drive.mapper.DriveMapper
 import com.app.drivn.backend.nft.model.CarNft
 import com.app.drivn.backend.nft.service.NftService
 import com.app.drivn.backend.user.service.EarnedTokenRecordService
+import com.app.drivn.backend.user.service.UserEnergyService
 import com.app.drivn.backend.user.service.UserService
 import org.slf4j.Logger
 import org.springframework.stereotype.Service
@@ -19,7 +20,8 @@ import kotlin.math.max
 class DriveService(
   private val nftService: NftService,
   private val userService: UserService,
-  private val tokenRecordService: EarnedTokenRecordService
+  private val tokenRecordService: EarnedTokenRecordService,
+  private val userEnergyService: UserEnergyService
 ) {
 
   val log: Logger = logger()
@@ -68,6 +70,8 @@ class DriveService(
         reward
       }
     } else {
+      // if user can't receive the whole reward
+      // then we give only available and minus according to that value
       val available = availableToEarn.max(BigDecimal.ZERO)
       val diffPercent = ((reward - available) / reward).toFloat()
 
@@ -76,9 +80,11 @@ class DriveService(
       realReward = available
     }
 
-    user.energy -= realConsumedEnergy
+    val finalConsumedEnergy = realConsumedEnergy
       .let { it - (it * car.body.fuelEfficiency) }
       .let { it - (it * (car.economy / 200)) }
+
+    userEnergyService.spendEnergy(user, finalConsumedEnergy)
 
     user.distance += realDistance
     car.odometer += realDistance

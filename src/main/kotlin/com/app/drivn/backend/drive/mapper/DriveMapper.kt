@@ -9,6 +9,7 @@ object DriveMapper {
     user.energy,
     user.maxEnergy,
     user.tokensToClaim,
-    user.tokensLimitPerDay
+    user.tokensLimitPerDay,
+    user.nextEnergyRenew
   )
 }

@@ -8,7 +8,10 @@ import java.util.*
 
 interface UserRepository : JpaRepository<User, String> {
 
-  @Query("select u.nextEnergyRenew from User u order by u.nextEnergyRenew nulls last ")
+  @Query(
+    "select u.next_energy_renew from users u order by u.next_energy_renew nulls last limit 1",
+    nativeQuery = true
+  )
   fun getNextRenewTime(): Optional<ZonedDateTime>
 
   fun findByNextEnergyRenewLessThanEqualOrderByNextEnergyRenewAsc(nextEnergyRenew: ZonedDateTime): List<User>

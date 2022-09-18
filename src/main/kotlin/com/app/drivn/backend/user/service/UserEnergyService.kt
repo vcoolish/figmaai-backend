@@ -31,6 +31,8 @@ class UserEnergyService(
     userRepository.findById(address).map(this::tryToRenew)
 
   fun tryToRenew(user: User): User {
+    log.debug("Try to renewed energy for ${user.address}")
+
     sync.execute(user.address) {
       val now = ZonedDateTime.now()
 

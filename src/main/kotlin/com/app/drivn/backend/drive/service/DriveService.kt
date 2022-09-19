@@ -12,10 +12,7 @@ import org.slf4j.Logger
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.MathContext
-import java.math.RoundingMode
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.math.max
-import kotlin.math.min
 
 @Service
 class DriveService(
@@ -25,11 +22,16 @@ class DriveService(
   private val userEnergyService: UserEnergyService
 ) {
 
+  companion object {
+
+    val FIVE: BigDecimal = BigDecimal.valueOf(5)
+  }
+
   val log: Logger = logger()
 
-  fun drive(address: String, carId: Long, collectionId: Long, distance: Float): DriveInfoDto {
+  fun drive(address: String, carId: Long, collectionId: Long, distance: BigDecimal): DriveInfoDto {
     val user = userService.get(address)
-    if (user.energy <= 0) {
+    if (user.energy <= BigDecimal.ZERO) {
       log.warn("User $address has no fuel!")
       return DriveMapper.toDto(user)
     }
@@ -49,24 +51,24 @@ class DriveService(
 
     log.debug("User $address with car $collectionId-$carId drove through $distance")
 
-    val realDistance: Float
-    val realConsumedEnergy: Float
+    val realDistance: BigDecimal
+    val realConsumedEnergy: BigDecimal
     val realReward: BigDecimal
 
-    val consumedEnergy: Float = min(max(distance * 5, 0F), user.energy)
+    val consumedEnergy: BigDecimal = BigDecimal.ZERO.max(distance * FIVE).min(user.energy)
 
-    val reward = BigDecimal.valueOf(consumedEnergy.toDouble())
+    val reward = consumedEnergy
       .divide(BigDecimal.TEN, MathContext.DECIMAL128)
-      .multiply(BigDecimal.valueOf(car.body.earnEfficiency.toDouble()))
+      .multiply(car.body.earnEfficiency)
       .multiply(BigDecimal.valueOf(car.quality.efficiency.toDouble()))
-      .multiply(BigDecimal.valueOf((car.efficiency.toDouble() / 200) + 1))
+      .multiply(BigDecimal.valueOf((car.efficiency / 200.0) + 1))
 
     if (reward <= availableToEarn) {
       realDistance = distance
       realConsumedEnergy = consumedEnergy
       realReward = if (ThreadLocalRandom.current().nextDouble(100.0) <= car.luck) {
         log.info("User $address with car $collectionId-$carId are lucky!")
-        reward + BigDecimal.valueOf(0.1)
+        reward + BigDecimal("0.1")
       } else {
         reward
       }
@@ -74,7 +76,7 @@ class DriveService(
       // if user can't receive the whole reward
       // then we give only available and minus according to that value
       val available = availableToEarn.max(BigDecimal.ZERO)
-      val diffPercent = ((reward - available) / reward).toFloat()
+      val diffPercent = ((reward - available) / reward)
 
       realDistance = distance * diffPercent
       realConsumedEnergy = consumedEnergy * diffPercent
@@ -83,18 +85,22 @@ class DriveService(
 
     val finalConsumedEnergy = realConsumedEnergy
       .let { it + (it * car.body.fuelEfficiency) }
-      .let { it - (it * (car.economy / 200)) }
+      .let { it - (it * BigDecimal.valueOf(car.economy / 200.0)) }
 
     userEnergyService.spendEnergy(user, finalConsumedEnergy)
 
     user.distance += realDistance
-    car.odometer += realDistance
+    car.odometer += realDistance.toFloat()
 
-    car.durability = (max(car.durability - (distance / 5), 0F) * car.body.durabilityCoefficient)
-      .let { it * car.comfortability / 200 }
+    val newDurability = BigDecimal.valueOf(car.durability.toDouble())
+      .subtract(distance / FIVE)
+      .max(BigDecimal.ZERO)
 
-    // HALF_EVEN?
-    user.tokensToClaim = (user.tokensToClaim + realReward).setScale(1, RoundingMode.HALF_EVEN)
+    car.durability = (
+        (newDurability * car.body.durabilityCoefficient) * BigDecimal.valueOf(car.comfortability / 200.0)
+        ).toFloat()
+
+    user.tokensToClaim += realReward
 
     tokenRecordService.recordEarnedTokens(address, realReward)
     nftService.save(car)

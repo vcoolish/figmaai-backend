@@ -26,8 +26,8 @@ class CarNft : Nft() {
   var luck: Short = 0
   var comfortability: Short = 0
   var economy: Short = 0
-  var durability: Float = 0F
   var maxDurability: Float = 100F
+  var durability: Float = maxDurability
 
   /**
    * What is car's number in the tree of creation. I.e. how many parents do it has.

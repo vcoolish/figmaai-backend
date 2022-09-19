@@ -1,13 +1,16 @@
 package com.app.drivn.backend.nft.model
 
+import java.math.BigDecimal
+import java.math.BigDecimal.*
+
 enum class CarBody(
-  val durabilityCoefficient: Float,
-  val fuelEfficiency: Float,
-  val earnEfficiency: Float
+  val durabilityCoefficient: BigDecimal,
+  val fuelEfficiency: BigDecimal,
+  val earnEfficiency: BigDecimal
 ) {
-  WORKER(0.8F, 0.1F, 1.3F),
-  BASIC(1F, 0F, 1F),
-  RACING(1.3F, -0.2F, 0.8F),
-  SUPERSPORT(1.2F, -0.15F, 0.85F);
+  WORKER(valueOf(0.8), valueOf(0.1), valueOf(1.3)),
+  BASIC(ONE, ZERO, ONE),
+  RACING(valueOf(1.3), valueOf(-0.2), valueOf(0.8)),
+  SUPERSPORT(valueOf(1.2), valueOf(-0.15), valueOf(0.85));
 
 }

@@ -89,3 +89,19 @@ UPDATE users
 SET next_energy_renew = now() AT TIME ZONE 'UTC'
 WHERE energy <> max_energy;
 --rollback ALTER TABLE users DROP next_energy_renew;
+
+
+--changeset yemets:20220919213522
+ALTER TABLE user_earned_token_records
+  ALTER token_amount TYPE DECIMAL(30, 18);
+
+ALTER TABLE users
+  ALTER COLUMN distance TYPE DECIMAL(12, 2) USING (distance::DECIMAL(12, 2)),
+  ALTER COLUMN tokens_limit_per_day TYPE DECIMAL(30, 18) USING (tokens_limit_per_day::DECIMAL(30, 18)),
+  ALTER COLUMN tokens_to_claim TYPE DECIMAL(30, 18) USING (tokens_to_claim::DECIMAL(30, 18)),
+  ALTER COLUMN max_energy TYPE DECIMAL(12, 2) USING (max_energy::DECIMAL(12, 2)),
+  ALTER COLUMN energy TYPE DECIMAL(12, 2) USING (energy::DECIMAL(12, 2));
+
+ALTER TABLE users
+  ALTER COLUMN distance SET DEFAULT 0;
+--rollback

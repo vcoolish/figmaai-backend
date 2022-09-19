@@ -19,7 +19,7 @@ class AppProperties {
   lateinit var sigKey: String
 
   @Positive
-  var defaultUserEnergyLimit: Float = 30F
+  var defaultUserEnergyLimit: BigDecimal = BigDecimal.valueOf(30)
 
   @Positive
   lateinit var defaultUserTokensLimitPerDay: BigDecimal
@@ -28,5 +28,5 @@ class AppProperties {
   lateinit var energyRenewRate: Duration
 
   @Positive
-  var energyRenewPercent: Float = 0.25F
+  var energyRenewPercent: BigDecimal = BigDecimal.valueOf(0.25)
 }

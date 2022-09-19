@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.math.BigDecimal
 
 @RestController
 class DriveController(
@@ -17,7 +18,7 @@ class DriveController(
     @PathVariable address: String,
     @RequestParam carId: Long,
     @RequestParam collectionId: Long,
-    @RequestParam distance: Float,
+    @RequestParam distance: BigDecimal,
     @RequestParam timestamp: Long,
     @RequestParam signature: String,
   ): DriveInfoDto {

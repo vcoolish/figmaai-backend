@@ -23,7 +23,7 @@ class EarnedTokenRecord() : Comparable<EarnedTokenRecord> {
   @CreatedDate
   lateinit var createdAt: ZonedDateTime
 
-  @Column(nullable = false)
+  @Column(nullable = false, precision = 30, scale = 18)
   lateinit var tokenAmount: BigDecimal
 
   constructor(address: String, tokenAmount: BigDecimal) : this() {

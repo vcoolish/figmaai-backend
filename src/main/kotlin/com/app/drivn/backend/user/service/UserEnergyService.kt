@@ -8,11 +8,10 @@ import com.app.drivn.backend.user.model.User
 import com.app.drivn.backend.user.repository.UserRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.*
-import kotlin.math.max
-import kotlin.math.min
 
 @Service
 class UserEnergyService(
@@ -41,8 +40,8 @@ class UserEnergyService(
       val remainsToMax = user.maxEnergy - user.energy
       val nextEnergyRenew = user.nextEnergyRenew
 
-      if (remainsToMax > 0 && (nextEnergyRenew == null || nextEnergyRenew <= now)) {
-        user.energy += min(user.maxEnergy * appProperties.energyRenewPercent, remainsToMax)
+      if (remainsToMax > BigDecimal.ZERO && (nextEnergyRenew == null || nextEnergyRenew <= now)) {
+        user.energy += remainsToMax.min(user.maxEnergy * appProperties.energyRenewPercent)
 
         if (user.maxEnergy > user.energy) {
           user.nextEnergyRenew = now.plus(appProperties.energyRenewRate)
@@ -58,10 +57,10 @@ class UserEnergyService(
     return user
   }
 
-  fun spendEnergy(user: User, energy: Float) {
+  fun spendEnergy(user: User, energy: BigDecimal) {
     sync.execute(user.address) {
-      if (user.energy > 0 && energy > 0) {
-        user.energy = max(user.energy - energy, 0F)
+      if (user.energy > BigDecimal.ZERO && energy > BigDecimal.ZERO) {
+        user.energy = BigDecimal.ZERO.max(user.energy - energy)
       }
 
       if (user.nextEnergyRenew == null) {

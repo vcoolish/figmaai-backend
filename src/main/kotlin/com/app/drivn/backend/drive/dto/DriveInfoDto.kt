@@ -4,9 +4,9 @@ import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 data class DriveInfoDto(
-  val distance: Float,
-  val energy: Float,
-  val maxEnergy: Float,
+  val distance: BigDecimal,
+  val energy: BigDecimal,
+  val maxEnergy: BigDecimal,
   val tokenClaimable: BigDecimal,
   val tokensLimitPerDay: BigDecimal,
   val nextEnergyRenew: ZonedDateTime?

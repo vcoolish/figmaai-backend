@@ -29,4 +29,10 @@ class NftService(
   fun save(carNft: CarNft) {
     carNftRepository.save(carNft)
   }
+
+  fun repair(id: Long, collectionId: Long, repairAmount: Float) {
+    val nft = get(id, collectionId)
+
+    TODO("Not yet implemented")
+  }
 }

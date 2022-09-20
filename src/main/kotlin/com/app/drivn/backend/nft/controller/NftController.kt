@@ -1,5 +1,6 @@
 package com.app.drivn.backend.nft.controller
 
+import com.app.drivn.backend.nft.data.CarRepairInfo
 import com.app.drivn.backend.nft.dto.NftExternalDto
 import com.app.drivn.backend.nft.dto.NftInternalDto
 import com.app.drivn.backend.nft.mapper.NftMapper
@@ -11,9 +12,9 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Positive
 
 @Validated
@@ -31,21 +32,28 @@ class NftController(
   ): Page<NftInternalDto> = nftService.getAll(pageable)
 
   @GetMapping("/nft/{collectionId}/{id}")
-  fun getNftExternalInfo(@PathVariable collectionId: Long, @PathVariable id: Long): NftExternalDto {
-    return NftMapper.toExternalDto(nftService.getOrCreate(id, collectionId))
-  }
+  fun getNftExternalInfo(@PathVariable collectionId: Long, @PathVariable id: Long): NftExternalDto =
+    NftMapper.toExternalDto(nftService.getOrCreate(id, collectionId))
 
   @GetMapping("/nft/{collectionId}/{id}/internals")
-  fun getNftInternalInfo(@PathVariable collectionId: Long, @PathVariable id: Long): NftInternalDto {
-    return NftMapper.toInternalDto(nftService.getOrCreate(id, collectionId))
-  }
+  fun getNftInternalInfo(@PathVariable collectionId: Long, @PathVariable id: Long): NftInternalDto =
+    NftMapper.toInternalDto(nftService.getOrCreate(id, collectionId))
+
+  @GetMapping("/nft/{collectionId}/{id}/repair")
+  fun getRepairableCost(
+    @PathVariable collectionId: Long,
+    @PathVariable id: Long,
+    @Positive @RequestParam repairAmount: Float
+  ): CarRepairInfo =
+    nftService.getRepairableCost(nftService.get(id, collectionId), repairAmount)
 
   @PatchMapping("/nft/{collectionId}/{id}/repair")
   fun repairCar(
     @PathVariable collectionId: Long,
     @PathVariable id: Long,
+    @NotBlank @RequestParam address: String,
     @Positive @RequestParam repairAmount: Float
-  ) {
-    nftService.repair(id, collectionId, repairAmount)
-  }
+  ): NftInternalDto = NftMapper.toInternalDto(
+    nftService.repair(id, collectionId, address, repairAmount)
+  )
 }

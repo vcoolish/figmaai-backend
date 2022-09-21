@@ -29,4 +29,7 @@ class AppProperties {
 
   @Positive
   var energyRenewPercent: BigDecimal = BigDecimal.valueOf(0.25)
+
+  @Positive
+  var durabilityRepairCost: Double = 0.625
 }

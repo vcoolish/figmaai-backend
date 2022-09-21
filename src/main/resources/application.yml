@@ -32,6 +32,10 @@ server:
           allowed-methods: POST,PUT,GET,DELETE,PATCH,OPTIONS,HEAD
           allowed-origins: "*"
           exposed-headers: Location,Access-Control-Allow-Origin,Access-Control-Allow-Credentials
+  error:
+    include-exception: true
+    include-message: always
+    include-binding-errors: always
 
 web-security:
   role-access-restriction-paths:
@@ -39,6 +43,10 @@ web-security:
       roles: ${application.base-role}
       paths:
         - /address/*
+    - methods: PATCH
+      roles: ${application.base-role}
+      paths:
+        - /nft/*
 
 application:
   base-role: ROLE_USER
@@ -46,6 +54,7 @@ application:
   default-user-energy-limit: 30
   default-user-tokens-limit-per-day: 10
   energy-renew-rate: PT6H
+  durability-repair-cost: 0.625
 
 logging:
   level:

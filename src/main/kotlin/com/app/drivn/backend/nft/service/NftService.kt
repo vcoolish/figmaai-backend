@@ -39,11 +39,13 @@ class NftService(
     carNftRepository.save(carNft)
   }
 
-  fun getRepairableCost(car: CarNft, repairAmount: Float): CarRepairInfo {
-    if (car.durability <= car.maxDurability) {
-      val durabilityDiff = car.maxDurability - car.durability
+  fun getRepairableCost(car: CarNft, newDurability: Float): CarRepairInfo {
+    if (newDurability < car.durability) {
+      throw BadRequestException("New durability can't be less than current durability!")
+    }
 
-      val repairableAmount = min(repairAmount, durabilityDiff)
+    if (car.durability < car.maxDurability) {
+      val repairableAmount = min(newDurability, car.maxDurability) - car.durability
 
       return CarRepairInfo(
         repairableAmount,
@@ -53,10 +55,10 @@ class NftService(
     return CarRepairInfo()
   }
 
-  fun repair(id: Long, collectionId: Long, address: String, repairAmount: Float): CarNft {
+  fun repair(id: Long, collectionId: Long, address: String, newDurability: Float): CarNft {
     val car = get(id, collectionId)
 
-    val (repairableAmount, repairableCost) = getRepairableCost(car, repairAmount)
+    val (repairableAmount, repairableCost) = getRepairableCost(car, newDurability)
     if (repairableCost > BigDecimal.ZERO) {
       val user = userService.get(address)
 

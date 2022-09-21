@@ -43,17 +43,17 @@ class NftController(
   fun getRepairableCost(
     @PathVariable collectionId: Long,
     @PathVariable id: Long,
-    @Positive @RequestParam repairAmount: Float
+    @Positive @RequestParam newDurability: Float
   ): CarRepairInfo =
-    nftService.getRepairableCost(nftService.get(id, collectionId), repairAmount)
+    nftService.getRepairableCost(nftService.get(id, collectionId), newDurability)
 
   @PatchMapping("/nft/{collectionId}/{id}/repair")
   fun repairCar(
     @PathVariable collectionId: Long,
     @PathVariable id: Long,
     @NotBlank @RequestParam address: String,
-    @Positive @RequestParam repairAmount: Float
+    @Positive @RequestParam newDurability: Float
   ): NftInternalDto = NftMapper.toInternalDto(
-    nftService.repair(id, collectionId, address, repairAmount)
+    nftService.repair(id, collectionId, address, newDurability)
   )
 }

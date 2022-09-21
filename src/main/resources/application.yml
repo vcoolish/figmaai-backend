@@ -39,6 +39,10 @@ web-security:
       roles: ${application.base-role}
       paths:
         - /address/*
+    - methods: PATCH
+      roles: ${application.base-role}
+      paths:
+        - /nft/*
 
 application:
   base-role: ROLE_USER

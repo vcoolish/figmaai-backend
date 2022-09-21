@@ -32,6 +32,10 @@ server:
           allowed-methods: POST,PUT,GET,DELETE,PATCH,OPTIONS,HEAD
           allowed-origins: "*"
           exposed-headers: Location,Access-Control-Allow-Origin,Access-Control-Allow-Credentials
+  error:
+    include-exception: true
+    include-message: always
+    include-binding-errors: always
 
 web-security:
   role-access-restriction-paths:

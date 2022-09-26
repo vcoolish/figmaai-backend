@@ -2,7 +2,6 @@ package com.app.drivn.backend.nft.controller
 
 import com.app.drivn.backend.nft.data.CarRepairInfo
 import com.app.drivn.backend.nft.dto.CarLevelUpCostResponse
-import com.app.drivn.backend.nft.dto.LevelUpCarRequest
 import com.app.drivn.backend.nft.dto.NftExternalDto
 import com.app.drivn.backend.nft.dto.NftInternalDto
 import com.app.drivn.backend.nft.mapper.NftMapper
@@ -14,7 +13,6 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import javax.validation.constraints.NotBlank
@@ -54,10 +52,10 @@ class NftController(
   fun repairCar(
     @PathVariable collectionId: Long,
     @PathVariable id: Long,
-    @NotBlank @RequestParam address: String,
+    @NotBlank @RequestParam initiatorAddress: String,
     @Positive @RequestParam newDurability: Float
   ): NftInternalDto = NftMapper.toInternalDto(
-    nftService.repair(id, collectionId, address, newDurability)
+    nftService.repair(id, collectionId, initiatorAddress, newDurability)
   )
 
   @GetMapping("/nft/{collectionId}/{id}/level-up")
@@ -71,8 +69,8 @@ class NftController(
   fun levelUpCar(
     @PathVariable collectionId: Long,
     @PathVariable id: Long,
-    @RequestBody request: LevelUpCarRequest
+    @NotBlank @RequestParam initiatorAddress: String
   ): NftInternalDto = NftMapper.toInternalDto(
-    nftService.levelUp(id, collectionId, request.initiatorAddress)
+    nftService.levelUp(id, collectionId, initiatorAddress)
   )
 }

@@ -55,6 +55,7 @@ application:
   default-user-tokens-limit-per-day: 10
   energy-renew-rate: PT6H
   durability-repair-cost: 0.625
+  level-up-car-cost: 100
 
 logging:
   level:

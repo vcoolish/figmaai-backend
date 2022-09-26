@@ -60,7 +60,7 @@ class DriveService(
     val reward = consumedEnergy
       .divide(BigDecimal.TEN, MathContext.DECIMAL128)
       .multiply(car.body.earnEfficiency)
-      .multiply(BigDecimal.valueOf(car.quality.efficiency.toDouble()))
+      .multiply(car.quality.efficiency.toBigDecimal())
       .multiply(BigDecimal.valueOf((car.efficiency / 200.0) + 1))
 
     if (reward <= availableToEarn) {
@@ -92,13 +92,13 @@ class DriveService(
     user.distance += realDistance
     car.odometer += realDistance.toFloat()
 
-    val newDurability = BigDecimal.valueOf(car.durability.toDouble())
+    val newDurability = car.durability.toBigDecimal()
       .subtract(distance / FIVE)
       .max(BigDecimal.ZERO)
 
-    car.durability = (
-        (newDurability * car.body.durabilityCoefficient) * BigDecimal.valueOf(car.comfortability / 200.0)
-        ).toFloat()
+    val modifiedNewDurability =
+      newDurability * car.body.durabilityCoefficient * (car.comfortability / 200.0).toBigDecimal()
+    car.durability = modifiedNewDurability.toFloat()
 
     user.tokensToClaim += realReward
 

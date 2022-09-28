@@ -53,6 +53,7 @@ web-security:
       roles: ${application.base-role}
       paths:
         - /nft/*
+        - /address/*
 
 application:
   base-role: ROLE_USER

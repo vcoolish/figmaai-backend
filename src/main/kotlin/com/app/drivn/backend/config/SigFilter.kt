@@ -1,11 +1,15 @@
 package com.app.drivn.backend.config
 
-import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.common.util.sha256
+import com.app.drivn.backend.config.properties.AppProperties
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.util.StreamUtils
 import org.springframework.web.filter.OncePerRequestFilter
+import java.util.stream.Collectors
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -20,7 +24,7 @@ class SigFilter(
     filterChain: FilterChain
   ) {
     val sig = request.getParameter("signature")
-    val message = buildString {
+    var message = buildString {
       append(properties.sigKey)
       request.parameterMap.forEach { (key, value) ->
         if (key != "signature") {
@@ -28,14 +32,21 @@ class SigFilter(
         }
       }
     }
+
+    // request body
+    val inputStreamBytes: ByteArray = StreamUtils.copyToByteArray(request.inputStream)
+    if (inputStreamBytes.isNotEmpty()) {
+      val jsonRequest: MutableMap<String, String> = ObjectMapper().readValue(inputStreamBytes)
+      message += jsonRequest.values.stream().collect(Collectors.joining())
+    }
+
     if (sha256(message) == sig) {
-      SecurityContextHolder.getContext().authentication =
-        UsernamePasswordAuthenticationToken.authenticated(
-          /* principal = */
-          "", /* credentials = */
-          "", /* authorities = */
-          listOf(GrantedAuthority { properties.baseRole }),
-        )
+      SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(
+        /* principal = */
+        "", /* credentials = */
+        "", /* authorities = */
+        listOf(GrantedAuthority { properties.baseRole }),
+      )
     }
     filterChain.doFilter(request, response)
   }

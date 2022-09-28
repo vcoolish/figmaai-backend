@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: Drivn Backend
   liquibase:
     change-log: classpath:db/changelog.xml
   datasource:
@@ -16,6 +18,9 @@ spring:
       shutdown:
         await-termination: true
         await-termination-period: PT5M
+  mvc:
+    throw-exception-if-no-handler-found: true
+    static-path-pattern: /static/**
 
 server:
   cors:
@@ -36,6 +41,7 @@ server:
     include-exception: true
     include-message: always
     include-binding-errors: always
+    include-stacktrace: on_param
 
 web-security:
   role-access-restriction-paths:

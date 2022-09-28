@@ -4,5 +4,6 @@ import java.math.BigDecimal
 
 data class CarLevelUpCostResponse(
   val cost: BigDecimal,
-  val newLevel: Int
+  val newLevel: Short,
+  val requiredDistance: Int
 )

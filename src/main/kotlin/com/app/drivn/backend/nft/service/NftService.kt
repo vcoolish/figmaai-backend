@@ -80,11 +80,15 @@ class NftService(
   }
 
   fun getLevelUpCost(car: CarNft): CarLevelUpCostResponse {
-    val newLevel: Int = car.level + 1
+    val newLevel: Short = car.level.inc()
+
+    val requiredDistance: Int = appProperties.carLevelDistanceRequirement[newLevel]
+      ?: throw BadRequestException("Maximum level reached.")
 
     return CarLevelUpCostResponse(
-      appProperties.levelUpCarCost * newLevel.toBigDecimal(),
-      newLevel
+      appProperties.levelUpCarCost * newLevel.toInt().toBigDecimal(),
+      newLevel,
+      requiredDistance
     )
   }
 
@@ -92,7 +96,11 @@ class NftService(
   fun levelUp(id: Long, collectionId: Long, initiatorAddress: String): CarNft {
     val car = get(id, collectionId)
 
-    val (cost, newLevel) = getLevelUpCost(car)
+    val (cost, newLevel, requiredDistance) = getLevelUpCost(car)
+
+    if (car.odometer < requiredDistance) {
+      throw BadRequestException("The car did not drive the required $requiredDistance kilometers.")
+    }
 
     val user = userService.get(initiatorAddress)
 

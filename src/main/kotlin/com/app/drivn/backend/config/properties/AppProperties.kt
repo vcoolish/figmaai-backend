@@ -35,4 +35,6 @@ class AppProperties {
 
   @Positive
   var levelUpCarCost: BigDecimal = BigDecimal.valueOf(100)
+
+  var carLevelDistanceRequirement: Map<@Positive Short, @Positive Int> = emptyMap()
 }

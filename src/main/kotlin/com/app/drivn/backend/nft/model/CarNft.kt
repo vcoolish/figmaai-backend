@@ -9,7 +9,7 @@ import javax.persistence.Table
 @Table(name = "car_nfts")
 class CarNft : Nft() {
 
-  var level: Int = 1
+  var level: Short = 1
 
   @Enumerated(EnumType.STRING)
   lateinit var quality: Quality

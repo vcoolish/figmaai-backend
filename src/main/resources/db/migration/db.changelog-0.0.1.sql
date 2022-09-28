@@ -105,3 +105,8 @@ ALTER TABLE users
 ALTER TABLE users
   ALTER COLUMN distance SET DEFAULT 0;
 --rollback
+
+--changeset yemets:20220919213522
+ALTER TABLE car_nfts
+  ALTER level TYPE SMALLINT;
+--rollback ALTER TABLE car_nfts ALTER level TYPE INT;

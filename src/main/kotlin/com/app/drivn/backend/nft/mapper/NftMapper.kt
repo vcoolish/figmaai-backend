@@ -21,7 +21,7 @@ object NftMapper {
     carNft.externalUrl = "https://opensea.io/"
     carNft.creatorAddress = "0xF36f148D6FdEaCD6c765F8f59D4074109E311f0c"
 
-    carNft.level = (1..100).random()
+    carNft.level = (1..100).random().toShort()
     carNft.body = CarBody.values().random()
     carNft.quality = Quality.values().random()
     carNft.efficiency = (1..100).random().toShort()

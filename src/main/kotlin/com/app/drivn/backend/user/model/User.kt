@@ -35,7 +35,7 @@ class User() : AbstractJpaPersistable<String>() {
   /**
    * Donation percent. From 0 to 50.
    */
-  var donation: Int = 5
+  var donation: Short = 5
 
   constructor(address: String, tokensLimitPerDay: BigDecimal, maxEnergy: BigDecimal) : this() {
     this.address = address

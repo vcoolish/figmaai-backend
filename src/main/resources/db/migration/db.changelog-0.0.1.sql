@@ -105,3 +105,8 @@ ALTER TABLE users
 ALTER TABLE users
   ALTER COLUMN distance SET DEFAULT 0;
 --rollback
+
+--changeset yemets:20220919213522
+ALTER TABLE users
+  ADD COLUMN donation SMALLINT NOT NULL DEFAULT 5;
+--rollback ALTER TABLE users DROP COLUMN donation;

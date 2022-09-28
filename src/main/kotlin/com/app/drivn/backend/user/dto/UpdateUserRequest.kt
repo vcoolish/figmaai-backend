@@ -6,5 +6,5 @@ import javax.validation.constraints.Min
 class UpdateUserRequest(
   @Min(0)
   @Max(50)
-  val donation: Int?
+  val donation: Short?
 )

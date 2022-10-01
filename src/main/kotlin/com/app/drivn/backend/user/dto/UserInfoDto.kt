@@ -1,15 +1,16 @@
 package com.app.drivn.backend.user.dto
 
-import com.app.drivn.backend.nft.dto.NftInfoDto
 import java.math.BigDecimal
 import java.time.ZonedDateTime
+import kotlin.properties.Delegates
 
-data class UserInfoDto(
-  val distance: BigDecimal,
-  val energy: BigDecimal,
-  val maxEnergy: BigDecimal,
-  val tokenClaimable: BigDecimal,
-  val tokensLimitPerDay: BigDecimal,
-  val nextEnergyRenew: ZonedDateTime?,
-  val nfts: List<NftInfoDto>
-)
+open class UserInfoDto {
+
+  lateinit var distance: BigDecimal
+  lateinit var energy: BigDecimal
+  lateinit var maxEnergy: BigDecimal
+  lateinit var tokenClaimable: BigDecimal
+  lateinit var tokensLimitPerDay: BigDecimal
+  var nextEnergyRenew: ZonedDateTime? = null
+  var donation by Delegates.notNull<Short>()
+}

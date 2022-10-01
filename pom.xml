@@ -30,6 +30,7 @@
     <kotlin.code.style>official</kotlin.code.style>
 
     <hibernate-types.version>2.19.2</hibernate-types.version>
+    <springdoc.version>1.6.11</springdoc.version>
   </properties>
 
   <dependencies>
@@ -96,6 +97,19 @@
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
+
+    <!-- Doc -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-ui</artifactId>
+      <version>${springdoc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-data-rest</artifactId>
+      <version>${springdoc.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>

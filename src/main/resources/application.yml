@@ -22,6 +22,17 @@ spring:
     throw-exception-if-no-handler-found: true
     static-path-pattern: /static/**
 
+springdoc:
+  api-docs:
+    resolve-schema-properties: true
+  swagger-ui:
+    doc-expansion: none
+    display-operation-id: true
+    display-request-duration: true
+    show-extensions: true
+    show-common-extensions: true
+  writer-with-order-by-keys: true
+
 server:
   cors:
     enabled: true

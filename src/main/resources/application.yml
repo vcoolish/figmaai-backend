@@ -74,6 +74,16 @@ application:
   energy-renew-rate: PT6H
   durability-repair-cost: 0.625
 
+probability:
+  car:
+    quality:
+      proportions:
+        common: 0.5
+        uncommon: 0.25
+        rare: 0.15
+        epic: 0.06
+        legendary: 0.04
+
 logging:
   level:
     com.app.drivn: debug

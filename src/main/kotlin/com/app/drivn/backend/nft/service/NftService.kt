@@ -19,7 +19,8 @@ import kotlin.math.min
 class NftService(
   private val carNftRepository: CarNftRepository,
   private val userService: UserService,
-  private val appProperties: AppProperties
+  private val appProperties: AppProperties,
+  private val carCreationService: CarCreationService
 ) {
 
   fun getAll(pageable: Pageable): Page<NftInternalDto> {
@@ -28,7 +29,7 @@ class NftService(
 
   fun getOrCreate(id: Long, collectionId: Long): CarNft {
     return carNftRepository.findById(NftId(id, collectionId))
-      .orElseGet { carNftRepository.save(NftMapper.generateRandomCar(id, collectionId)) }
+      .orElseGet { carNftRepository.save(carCreationService.create(id, collectionId)) }
   }
 
   fun get(id: Long, collectionId: Long): CarNft {

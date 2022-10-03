@@ -19,7 +19,7 @@ interface ProbabilityProperties<T : Comparable<T>> {
       for (entry in sortedProportions) {
         val start = if (result.isEmpty()) 0.0 else result.lastKey().endInclusive
 
-        val probability: Double = sum / entry.value
+        val probability: Double = entry.value / sum
         result.merge(start.rangeTo(start + probability), setOf(entry.key), Set<T>::plus)
       }
 

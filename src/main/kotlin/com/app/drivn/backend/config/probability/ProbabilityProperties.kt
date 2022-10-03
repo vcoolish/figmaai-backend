@@ -3,7 +3,7 @@ package com.app.drivn.backend.config.probability
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 
-interface ProbabilityProperties<T : Comparable<T>> {
+abstract class ProbabilityProperties<T : Comparable<T>> {
 
   companion object {
 
@@ -27,14 +27,16 @@ interface ProbabilityProperties<T : Comparable<T>> {
     }
   }
 
-  val proportions: Map<T, Double>
+  abstract val proportions: Map<T, Double>
 
-  fun getProbabilities(): SortedMap<ClosedRange<Double>, Set<T>>
+  private val probabilities: SortedMap<ClosedRange<Double>, Set<T>> by lazy {
+    getProbabilities(proportions)
+  }
 
   fun getNextRandom(): T {
     val chance = ThreadLocalRandom.current().nextDouble()
 
-    for (probability in getProbabilities()) {
+    for (probability in probabilities) {
       if (probability.key.contains(chance)) {
         return probability.value.random()
       }

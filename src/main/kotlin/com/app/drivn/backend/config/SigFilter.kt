@@ -23,21 +23,23 @@ class SigFilter(
     response: HttpServletResponse,
     filterChain: FilterChain
   ) {
-    val sig = request.getParameter("signature")
-    var message = buildString {
+    val cachedRequest = CopyingRequestWrapper(request)
+
+    val sig = cachedRequest.getParameter("signature")
+    val message = buildString {
       append(properties.sigKey)
-      request.parameterMap.forEach { (key, value) ->
+      cachedRequest.parameterMap.forEach { (key, value) ->
         if (key != "signature") {
           append(value.fold("") { acc, str -> acc + str })
         }
       }
-    }
 
-    // request body
-    val inputStreamBytes: ByteArray = StreamUtils.copyToByteArray(request.inputStream)
-    if (inputStreamBytes.isNotEmpty()) {
-      val jsonRequest: MutableMap<String, String> = ObjectMapper().readValue(inputStreamBytes)
-      message += jsonRequest.values.stream().collect(Collectors.joining())
+      // request body
+      val inputStreamBytes: ByteArray = StreamUtils.copyToByteArray(cachedRequest.inputStream)
+      if (inputStreamBytes.isNotEmpty()) {
+        val jsonRequest: MutableMap<String, String> = ObjectMapper().readValue(inputStreamBytes)
+        append(jsonRequest.values.stream().collect(Collectors.joining()))
+      }
     }
 
     if (sha256(message) == sig) {
@@ -48,6 +50,6 @@ class SigFilter(
         listOf(GrantedAuthority { properties.baseRole }),
       )
     }
-    filterChain.doFilter(request, response)
+    filterChain.doFilter(cachedRequest, response)
   }
 }

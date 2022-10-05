@@ -6,17 +6,16 @@ import com.app.drivn.backend.config.properties.WebSecurityProperties
 import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
-import org.springframework.http.HttpMethod
 import org.springframework.security.access.hierarchicalroles.NullRoleHierarchy
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.stereotype.Service
 import org.springframework.web.cors.CorsConfigurationSource
@@ -34,7 +33,7 @@ class SecurityConfig(
   protected val corsProperties: CorsProperties,
   private val properties: ServerProperties,
   private val appProperties: AppProperties,
-) : WebSecurityConfigurerAdapter() {
+) {
 
   @Bean
   fun passwordEncoder(): PasswordEncoder {
@@ -57,7 +56,8 @@ class SecurityConfig(
   }
 
   @Throws(Exception::class)
-  override fun configure(http: HttpSecurity) {
+  @Bean
+  fun filterChain(http: HttpSecurity): SecurityFilterChain {
     http
       .logout().disable()
       .httpBasic().disable()
@@ -82,6 +82,8 @@ class SecurityConfig(
     } else {
       http.cors().disable()
     }
+
+    return http.build()
   }
 
   protected fun applyUnauthorizedPaths(

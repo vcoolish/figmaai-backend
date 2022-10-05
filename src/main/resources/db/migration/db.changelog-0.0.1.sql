@@ -106,7 +106,14 @@ ALTER TABLE users
   ALTER COLUMN distance SET DEFAULT 0;
 --rollback
 
+--changeset yemets:20220928150421
+ALTER TABLE users
+  ADD COLUMN donation SMALLINT NOT NULL DEFAULT 5;
+--rollback ALTER TABLE users DROP COLUMN donation;
+
+
 --changeset yemets:20220928152606
 ALTER TABLE car_nfts
   ALTER level TYPE SMALLINT;
 --rollback ALTER TABLE car_nfts ALTER level TYPE INT;
+

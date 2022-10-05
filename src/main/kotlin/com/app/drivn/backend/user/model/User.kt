@@ -32,6 +32,11 @@ class User() : AbstractJpaPersistable<String>() {
   var energy: BigDecimal = this.maxEnergy
   var nextEnergyRenew: ZonedDateTime? = null
 
+  /**
+   * Donation percent. From 0 to 50.
+   */
+  var donation: Short = 5
+
   constructor(address: String, tokensLimitPerDay: BigDecimal, maxEnergy: BigDecimal) : this() {
     this.address = address
     this.tokensLimitPerDay = tokensLimitPerDay

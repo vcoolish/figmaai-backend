@@ -6,6 +6,7 @@ import com.app.drivn.backend.nft.dto.NftExternalDto
 import com.app.drivn.backend.nft.dto.NftInternalDto
 import com.app.drivn.backend.nft.mapper.NftMapper
 import com.app.drivn.backend.nft.service.NftService
+import org.springdoc.api.annotations.ParameterObject
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
@@ -25,6 +26,7 @@ class NftController(
 ) {
   @GetMapping("/nft")
   fun getAll(
+    @ParameterObject
     @PageableDefault(
       size = 15,
       page = 0,

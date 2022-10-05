@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.util.StreamUtils
 import org.springframework.web.filter.OncePerRequestFilter
+import java.util.*
 import java.util.stream.Collectors
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
@@ -25,7 +26,8 @@ class SigFilter(
   ) {
     val cachedRequest = CopyingRequestWrapper(request)
 
-    val sig = cachedRequest.getParameter("signature")
+    val sig: String? = Optional.ofNullable(cachedRequest.getHeader("signature"))
+      .orElseGet { cachedRequest.getParameter("signature") }
     val message = buildString {
       append(properties.sigKey)
       cachedRequest.parameterMap.forEach { (key, value) ->

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
+import javax.validation.constraints.Pattern
 
 @Validated
 @RestController
@@ -27,7 +28,9 @@ class UserController(
 ) {
 
   @GetMapping("/{address}")
-  fun getUser(@PathVariable address: String): UserExtendedDto {
+  fun getUser(
+    @Pattern(regexp = "^0x[\\da-fA-F]{40}$") @PathVariable address: String
+  ): UserExtendedDto {
 //    val nfts = bounceClient.getNfts(address)
     val user = userService.getOrCreate(address)
     return UserMapper.toDto(user, nftInfoDtos)

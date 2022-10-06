@@ -44,7 +44,9 @@ class SigFilter(
       }
     }
 
-    if (sha256(message) == sig) {
+    val messageSignature = sha256(message)
+    logger.debug("Message is $message and its signature is $messageSignature.")
+    if (messageSignature == sig) {
       SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(
         /* principal = */
         "", /* credentials = */

@@ -114,15 +114,21 @@ class SecurityConfig(
     for (roleRestriction in paths) {
       val methods = roleRestriction.methods
       if (methods.isEmpty()) {
-        urlRegistry
-          .antMatchers(*roleRestriction.paths)
-          .hasAnyAuthority(*roleRestriction.roles)
+        val matchers = urlRegistry.antMatchers(*roleRestriction.paths)
+        if (roleRestriction.roles.isNotEmpty()) {
+          matchers.hasAnyAuthority(*roleRestriction.roles)
+        } else {
+          matchers.authenticated()
+        }
         continue
       }
       for (method in methods) {
-        urlRegistry
-          .antMatchers(method, *roleRestriction.paths)
-          .hasAnyAuthority(*roleRestriction.roles)
+        val matchers = urlRegistry.antMatchers(method, *roleRestriction.paths)
+        if (roleRestriction.roles.isNotEmpty()) {
+          matchers.hasAnyAuthority(*roleRestriction.roles)
+        } else {
+          matchers.authenticated()
+        }
       }
     }
   }

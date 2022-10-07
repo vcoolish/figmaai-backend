@@ -5,7 +5,6 @@ import com.app.drivn.backend.config.properties.AppProperties
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.util.StreamUtils
 import org.springframework.web.filter.OncePerRequestFilter
@@ -18,6 +17,13 @@ import javax.servlet.http.HttpServletResponse
 class SigFilter(
   private val properties: AppProperties,
 ) : OncePerRequestFilter() {
+
+  companion object {
+
+    private val EMPTY_AUTH_TOKEN = UsernamePasswordAuthenticationToken(
+      /* principal = */ "", /* credentials = */ "", /* authorities = */ listOf(),
+    )
+  }
 
   override fun doFilterInternal(
     request: HttpServletRequest,
@@ -47,12 +53,7 @@ class SigFilter(
     val messageSignature = sha256(message)
     logger.debug("Message is $message and its signature is $messageSignature.")
     if (messageSignature == sig) {
-      SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(
-        /* principal = */
-        "", /* credentials = */
-        "", /* authorities = */
-        listOf(GrantedAuthority { properties.baseRole }),
-      )
+      SecurityContextHolder.getContext().authentication = EMPTY_AUTH_TOKEN
     }
     filterChain.doFilter(cachedRequest, response)
   }

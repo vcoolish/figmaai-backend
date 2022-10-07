@@ -13,9 +13,6 @@ import javax.validation.constraints.Positive
 class AppProperties {
 
   @NotBlank
-  lateinit var baseRole: String
-
-  @NotBlank
   lateinit var sigKey: String
 
   @Positive

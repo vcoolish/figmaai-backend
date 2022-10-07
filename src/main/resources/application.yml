@@ -57,17 +57,14 @@ server:
 web-security:
   role-access-restriction-paths:
     - methods: PUT
-      roles: ${application.base-role}
       paths:
         - /address/*
     - methods: PATCH
-      roles: ${application.base-role}
       paths:
         - /nft/*
         - /address/*
 
 application:
-  base-role: ROLE_USER
   sig-key: poop
   default-user-energy-limit: 30
   default-user-tokens-limit-per-day: 10

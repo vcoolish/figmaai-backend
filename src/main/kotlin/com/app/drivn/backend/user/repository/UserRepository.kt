@@ -3,6 +3,7 @@ package com.app.drivn.backend.user.repository
 import com.app.drivn.backend.user.model.User
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.*
@@ -15,6 +16,12 @@ interface UserRepository : JpaRepository<User, String> {
   )
   fun getNextRenewTime(): Optional<Instant>
 
-  fun findByNextEnergyRenewLessThanEqualOrderByNextEnergyRenewAsc(nextEnergyRenew: ZonedDateTime): List<User>
+  @Query("select distinct u " +
+      "from User u " +
+      "where u.nextEnergyRenew <= :nextEnergyRenew or u.energy < u.maxEnergy " +
+      "order by u.nextEnergyRenew")
+  fun findByNextEnergyRenewLessThanEqualOrderByNextEnergyRenewAsc(
+    @Param("nextEnergyRenew") nextEnergyRenew: ZonedDateTime
+  ): Set<User>
 
 }

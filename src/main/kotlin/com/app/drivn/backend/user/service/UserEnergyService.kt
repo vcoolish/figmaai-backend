@@ -25,7 +25,7 @@ class UserEnergyService(
 
   fun getNextEnergyRenewTime(): Optional<Instant> = userRepository.getNextRenewTime()
 
-  fun getUsersByNextEnergyRenew(nextEnergyRenew: ZonedDateTime): List<User> =
+  fun getUsersByNextEnergyRenew(nextEnergyRenew: ZonedDateTime): Set<User> =
     userRepository.findByNextEnergyRenewLessThanEqualOrderByNextEnergyRenewAsc(nextEnergyRenew)
 
   fun tryToRenew(address: String): Optional<User> =

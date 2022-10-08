@@ -5,7 +5,7 @@ import com.app.drivn.backend.nft.model.Quality
 
 class NftInternalDto : NftBaseDto() {
 
-  var level: Int = 0
+  var level: Short = 0
   lateinit var quality: Quality
   lateinit var body: CarBody
   var minSpeed: Int = 0

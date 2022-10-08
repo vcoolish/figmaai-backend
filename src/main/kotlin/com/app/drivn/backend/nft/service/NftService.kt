@@ -3,6 +3,7 @@ package com.app.drivn.backend.nft.service
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.exception.BadRequestException
 import com.app.drivn.backend.nft.data.CarRepairInfo
+import com.app.drivn.backend.nft.dto.CarLevelUpCostResponse
 import com.app.drivn.backend.nft.dto.NftInternalDto
 import com.app.drivn.backend.nft.mapper.NftMapper
 import com.app.drivn.backend.nft.model.CarNft
@@ -12,6 +13,7 @@ import com.app.drivn.backend.user.service.UserService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import kotlin.math.min
 
@@ -56,6 +58,7 @@ class NftService(
     return CarRepairInfo()
   }
 
+  @Transactional
   fun repair(id: Long, collectionId: Long, address: String, newDurability: Float): CarNft {
     val car = get(id, collectionId)
 
@@ -75,5 +78,41 @@ class NftService(
     }
 
     return car
+  }
+
+  fun getLevelUpCost(car: CarNft): CarLevelUpCostResponse {
+    val newLevel: Short = car.level.inc()
+
+    val requiredDistance: Int = appProperties.carLevelDistanceRequirement[newLevel]
+      ?: throw BadRequestException("Maximum level reached.")
+
+    return CarLevelUpCostResponse(
+      appProperties.levelUpCarCost * newLevel.toInt().toBigDecimal(),
+      newLevel,
+      requiredDistance
+    )
+  }
+
+  @Transactional
+  fun levelUp(id: Long, collectionId: Long, initiatorAddress: String): CarNft {
+    val car = get(id, collectionId)
+
+    val (cost, newLevel, requiredDistance) = getLevelUpCost(car)
+
+    if (car.odometer < requiredDistance) {
+      throw BadRequestException("The car did not drive the required $requiredDistance kilometers.")
+    }
+
+    val user = userService.get(initiatorAddress)
+
+    if (user.tokensToClaim < cost) {
+      throw BadRequestException("Insufficient tokens amount ${user.tokensToClaim}!")
+    }
+
+    user.tokensToClaim -= cost
+    car.level = newLevel
+
+    userService.save(user)
+    return carNftRepository.save(car)
   }
 }

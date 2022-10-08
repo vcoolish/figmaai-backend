@@ -57,22 +57,26 @@ server:
 web-security:
   role-access-restriction-paths:
     - methods: PUT
-      roles: ${application.base-role}
       paths:
         - /address/*
     - methods: PATCH
-      roles: ${application.base-role}
       paths:
         - /nft/*
         - /address/*
 
 application:
-  base-role: ROLE_USER
   sig-key: poop
   default-user-energy-limit: 30
   default-user-tokens-limit-per-day: 10
   energy-renew-rate: PT6H
   durability-repair-cost: 0.625
+  level-up-car-cost: 100
+  car-level-distance-requirement:
+    1: 100
+    2: 300
+    3: 500
+    4: 1000
+    5: 2000
 
 probability:
   car:

@@ -1,6 +1,7 @@
 package com.app.drivn.backend.nft.controller
 
 import com.app.drivn.backend.nft.data.CarRepairInfo
+import com.app.drivn.backend.nft.dto.CarLevelUpCostResponse
 import com.app.drivn.backend.nft.dto.NftExternalDto
 import com.app.drivn.backend.nft.dto.NftInternalDto
 import com.app.drivn.backend.nft.mapper.NftMapper
@@ -53,9 +54,25 @@ class NftController(
   fun repairCar(
     @PathVariable collectionId: Long,
     @PathVariable id: Long,
-    @NotBlank @RequestParam address: String,
+    @NotBlank @RequestParam initiatorAddress: String,
     @Positive @RequestParam newDurability: Float
   ): NftInternalDto = NftMapper.toInternalDto(
-    nftService.repair(id, collectionId, address, newDurability)
+    nftService.repair(id, collectionId, initiatorAddress, newDurability)
+  )
+
+  @GetMapping("/nft/{collectionId}/{id}/level-up")
+  fun getLevelUpCarCost(
+    @PathVariable collectionId: Long,
+    @PathVariable id: Long
+  ): CarLevelUpCostResponse =
+    nftService.getLevelUpCost(nftService.get(id, collectionId))
+
+  @PatchMapping("/nft/{collectionId}/{id}/level-up")
+  fun levelUpCar(
+    @PathVariable collectionId: Long,
+    @PathVariable id: Long,
+    @NotBlank @RequestParam initiatorAddress: String
+  ): NftInternalDto = NftMapper.toInternalDto(
+    nftService.levelUp(id, collectionId, initiatorAddress)
   )
 }

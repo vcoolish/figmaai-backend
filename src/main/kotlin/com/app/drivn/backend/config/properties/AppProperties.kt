@@ -13,9 +13,6 @@ import javax.validation.constraints.Positive
 class AppProperties {
 
   @NotBlank
-  lateinit var baseRole: String
-
-  @NotBlank
   lateinit var sigKey: String
 
   @Positive
@@ -32,4 +29,9 @@ class AppProperties {
 
   @Positive
   var durabilityRepairCost: Double = 0.625
+
+  @Positive
+  var levelUpCarCost: BigDecimal = BigDecimal.valueOf(100)
+
+  var carLevelDistanceRequirement: Map<@Positive Short, @Positive Int> = emptyMap()
 }

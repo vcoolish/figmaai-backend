@@ -41,6 +41,9 @@ class NftService(
     carNftRepository.save(carNft)
   }
 
+  fun getRepairCost(car: CarNft) =
+    appProperties.durabilityRepairCost
+
   fun getRepairableCost(car: CarNft, newDurability: Float): CarRepairInfo {
     if (newDurability < car.durability) {
       throw BadRequestException("New durability can't be less than current durability!")

@@ -23,7 +23,4 @@ class BalanceHistory {
  lateinit var balance: BigDecimal
  lateinit var txId: String
  lateinit var createdAt: ZonedDateTime
-
-
-
 }

@@ -14,9 +14,11 @@ import javax.persistence.Table
 @Table(name = "balance_history")
 @Entity
 class BalanceHistory {
+
   @Id
   @GeneratedValue
   lateinit var id: UUID
+  
  @ManyToOne
  @JoinColumn(name = "user_address")
  lateinit var user: User

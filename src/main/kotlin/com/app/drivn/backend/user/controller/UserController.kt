@@ -46,7 +46,7 @@ class UserController(
   fun updateUser(
     @PathVariable address: String,
     @Valid @RequestBody request: UpdateUserRequest
-  ): UserInfoDto = UserMapper.toDto(userService.update(address, request))
+  ): UserInfoDto = UserMapper.toDto(userService.updateDonation(address, request))
 
   companion object {
 

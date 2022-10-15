@@ -5,7 +5,8 @@ import com.app.drivn.backend.user.dto.UpdateUserRequest
 import com.app.drivn.backend.user.model.User
 import com.app.drivn.backend.user.repository.UserRepository
 import org.springframework.stereotype.Service
-import java.util.Optional
+import java.math.BigDecimal
+import java.util.*
 
 @Service
 class UserService(
@@ -28,7 +29,7 @@ class UserService(
     repository.save(user)
   }
 
-  fun update(address: String, request: UpdateUserRequest): User {
+  fun updateDonation(address: String, request: UpdateUserRequest): User {
     val user = get(address)
 
     Optional.ofNullable(request.donation)
@@ -37,4 +38,33 @@ class UserService(
     return repository.save(user)
   }
 
+  fun addToBalance(address: String, amount: BigDecimal): User {
+    val user = get(address)
+    user.balance = user.balance.add(amount)
+    return repository.save(user)
+  }
+
+  fun subtractFromBalance(address: String, amount: BigDecimal): User {
+    val user = get(address)
+    if (user.balance >= amount) {
+      user.balance = user.balance.subtract(amount)
+      return repository.save(user)
+    }
+    return user
+  }
+
+  fun addToTokenBalance(address: String, amount: BigDecimal): User {
+    val user = get(address)
+    user.balance = user.tokensToClaim.add(amount)
+    return repository.save(user)
+  }
+
+  fun subtractFromTokenBalance(address: String, amount: BigDecimal): User {
+    val user = get(address)
+    if (user.tokensToClaim >= amount) {
+      user.balance = user.tokensToClaim.subtract(amount)
+      return repository.save(user)
+    }
+    return user
+  }
 }

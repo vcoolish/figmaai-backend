@@ -19,10 +19,10 @@ class User() : AbstractJpaPersistable<String>() {
   @Column(nullable = false, precision = 12, scale = 2)
   var distance: BigDecimal = BigDecimal.ZERO
 
-  @Column(nullable = false, precision = 30, scale = 18)
+  @Column(nullable = false, precision = 30, scale = 8)
   var tokensLimitPerDay: BigDecimal = BigDecimal.TEN
 
-  @Column(nullable = false, precision = 30, scale = 18)
+  @Column(nullable = false, precision = 30, scale = 8)
   var tokensToClaim: BigDecimal = BigDecimal.ZERO
 
   @Column(nullable = false, precision = 12, scale = 2)
@@ -33,7 +33,7 @@ class User() : AbstractJpaPersistable<String>() {
   var nextEnergyRenew: ZonedDateTime? = null
 
   @Column(nullable = false, precision = 30, scale = 18)
-  private var balance: BigDecimal = BigDecimal.ZERO
+  var balance: BigDecimal = BigDecimal.ZERO
 
   /**
    * Donation percent. From 0 to 50.

@@ -1,6 +1,5 @@
-package com.app.drivn.backend.config.properties
+package com.app.drivn.backend.config.probability
 
-import com.app.drivn.backend.config.probability.ProbabilityProperties
 import com.app.drivn.backend.nft.model.Quality
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.validation.annotation.Validated

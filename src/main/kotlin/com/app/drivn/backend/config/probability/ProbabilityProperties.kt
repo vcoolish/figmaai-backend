@@ -29,11 +29,11 @@ abstract class ProbabilityProperties<T : Comparable<T>> {
 
   abstract val proportions: Map<T, Double>
 
-  private val probabilities: SortedMap<ClosedRange<Double>, Set<T>> by lazy {
+  protected open val probabilities: SortedMap<ClosedRange<Double>, Set<T>> by lazy {
     getProbabilities(proportions)
   }
 
-  fun getNextRandom(): T {
+  open fun getNextRandom(): T {
     val chance = ThreadLocalRandom.current().nextDouble()
 
     for (probability in probabilities) {

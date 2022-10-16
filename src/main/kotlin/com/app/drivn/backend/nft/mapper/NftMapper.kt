@@ -27,7 +27,7 @@ object NftMapper {
     carNft.efficiency = (1..100).random().toShort()
     carNft.luck = (1..100).random().toShort()
     carNft.comfortability = (1..100).random().toShort()
-    carNft.durability = (1..100).random().toFloat()
+    carNft.maxDurability = (100..200).random().toFloat()
     carNft.minSpeed = (1..49).random()
     carNft.maxSpeed = (50..100).random()
     carNft.mint = (0..3).random()

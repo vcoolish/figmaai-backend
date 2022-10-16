@@ -1,7 +1,6 @@
 package com.app.drivn.backend.config
 
 import com.app.drivn.backend.config.properties.AppProperties
-import com.app.drivn.backend.config.properties.CarQualityProbabilityProperties
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -11,7 +10,7 @@ import java.time.Clock
 import java.util.*
 
 @Configuration
-@EnableConfigurationProperties(AppProperties::class, CarQualityProbabilityProperties::class)
+@EnableConfigurationProperties(AppProperties::class)
 class ApplicationConfig {
 
   @Bean

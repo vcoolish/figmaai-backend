@@ -10,7 +10,6 @@ import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.Table
 
-
 @Table(name = "balance_history")
 @Entity
 class BalanceHistory {
@@ -18,11 +17,11 @@ class BalanceHistory {
   @Id
   @GeneratedValue
   lateinit var id: UUID
-  
- @ManyToOne
- @JoinColumn(name = "user_address")
- lateinit var user: User
- lateinit var balance: BigDecimal
- lateinit var txId: String
- lateinit var createdAt: ZonedDateTime
+
+  @ManyToOne
+  @JoinColumn(name = "user_address")
+  lateinit var user: User
+  lateinit var balance: BigDecimal
+  lateinit var txId: String
+  lateinit var createdAt: ZonedDateTime
 }

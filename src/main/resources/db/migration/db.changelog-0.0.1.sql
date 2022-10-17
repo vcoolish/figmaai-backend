@@ -124,7 +124,15 @@ ALTER TABLE users
 
 --changeset vcoolish:20221017110000
 ALTER TABLE users
-  DROP COLUMN balance,
-  ALTER COLUMN balance SET DEFAULT 0,
+  DROP COLUMN balance;
+--rollback ALTER TABLE users DROP COLUMN balance;
+
+--changeset vcoolish:20221017120000
+ALTER TABLE users
+  ALTER COLUMN balance SET DEFAULT 0;
+--rollback ALTER TABLE users DROP COLUMN balance;
+
+--changeset vcoolish:20221017130000
+ALTER TABLE users
   ALTER COLUMN balance SET NOT NULL;
 --rollback ALTER TABLE users DROP COLUMN balance;

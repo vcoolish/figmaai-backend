@@ -1,9 +1,8 @@
 package com.app.drivn.backend.user.controller
 
+import com.app.drivn.backend.common.blockchain.BlockchainService
 import com.app.drivn.backend.nft.dto.NftInfoDto
-import com.app.drivn.backend.user.dto.UpdateUserRequest
-import com.app.drivn.backend.user.dto.UserExtendedDto
-import com.app.drivn.backend.user.dto.UserInfoDto
+import com.app.drivn.backend.user.dto.*
 import com.app.drivn.backend.user.mapper.UserMapper
 import com.app.drivn.backend.user.service.UserEnergyService
 import com.app.drivn.backend.user.service.UserService
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.math.BigDecimal
 import javax.validation.Valid
 import javax.validation.constraints.Pattern
 
@@ -24,7 +24,8 @@ import javax.validation.constraints.Pattern
 @RequestMapping("/address")
 class UserController(
   private val userService: UserService,
-  private val userEnergyService: UserEnergyService
+  private val userEnergyService: UserEnergyService,
+  private val blockchainService: BlockchainService,
 ) {
 
   @GetMapping("/{address}")
@@ -45,7 +46,7 @@ class UserController(
   @PatchMapping("/{address}")
   fun updateUser(
     @PathVariable address: String,
-    @Valid @RequestBody request: UpdateUserRequest
+    @Valid @RequestBody request: UpdateUserDonationRequest
   ): UserInfoDto = UserMapper.toDto(userService.updateDonation(address, request))
 
   @PostMapping("/{address}/withdraw")

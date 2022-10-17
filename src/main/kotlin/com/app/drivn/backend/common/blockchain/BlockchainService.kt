@@ -1,26 +1,29 @@
 package com.app.drivn.backend.common.blockchain
 
 import com.app.drivn.backend.common.util.logger
+import com.app.drivn.backend.config.properties.AppProperties
+import com.app.drivn.backend.user.model.User
 import com.app.drivn.backend.user.service.UserService
-import com.fasterxml.jackson.databind.ObjectMapper
+import net.osslabz.evm.abi.decoder.AbiDecoder
+import org.springframework.boot.context.event.ApplicationStartedEvent
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.datatypes.Function
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
+import org.web3j.protocol.core.DefaultBlockParameter
 import org.web3j.protocol.core.DefaultBlockParameterName
 import org.web3j.protocol.core.methods.request.Transaction
 import org.web3j.protocol.http.HttpService
 import org.web3j.tx.FastRawTransactionManager
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.net.URI
-import java.net.http.HttpClient
 import java.net.http.WebSocket
-import java.time.Duration
-import java.util.concurrent.CompletionStage
+import java.util.stream.Stream
 
-const val ADMIN_ADDRESS = "0x0000000000000000000000000000000000001004"
+//region Move to application.yml
+const val ADMIN_ADDRESS = "0xF36f148D6FdEaCD6c765F8f59D4074109E311f0c"
 const val CONTRACT_ADDRESS = "0xe418eE8ec1Bca66FFa7E088e4656Cc628661043d"
 const val CLIENT_URL =
   "https://intensive-divine-mountain.bsc.discover.quiknode.pro/79d20c28b6e2219dd4c5e8e9599f6440a6627034/"
@@ -33,80 +36,87 @@ class BlockchainService(
   appProperties: AppProperties
 ) : WebSocket.Listener {
 
-  private var socket: WebSocket = HttpClient.newHttpClient().newWebSocketBuilder()
-    .connectTimeout(Duration.ofMinutes(1))
-    .buildAsync(URI(SOCKET_URL), this)
-    .get()
-  private val client = Web3j.build(HttpService(CLIENT_URL))
-
   @Volatile
   var isConnected: Boolean = false
 
-  var onDisconnect: (code: Int, reason: String) -> Unit = { _, _ ->  }
+  var onDisconnect: (code: Int, reason: String) -> Unit = { _, _ -> }
+
   val logger = logger()
+  var erc20Decoder: AbiDecoder = AbiDecoder(appProperties.ercFile.inputStream)
 
-  private fun subscribe() {
-    val message = RpcRequest(
-      id = 0,
-      method = "eth_subscribe",
-      params = listOf(
-        "logs",
-        mapOf(
-          "fromBlock" to "earliest",
-          "toBlock" to "latest",
-          "address" to ADMIN_ADDRESS,
-        )
-      )
-    )
+  private val client: Web3j = Web3j.build(HttpService(CLIENT_URL))
+  private val tokenUnit = com.app.drivn.backend.common.blockchain.entity.Unit(8, "DRIVE", "DRIVE")
+  private val coinUnit = com.app.drivn.backend.common.blockchain.entity.Unit(18, "BNB", "BNB")
 
-    socket.sendText(ObjectMapper().writeValueAsString(message), true)
+  @EventListener
+  fun onApplicationStarted(event: ApplicationStartedEvent) {
+    // todo: store start block in db
+    val startBlock = (100500).toBigInteger()
+    val endBlock = client.ethBlockNumber().send().blockNumber
+
+    Stream.iterate(startBlock, { current -> current <= endBlock }, BigInteger::inc)
+      .map(DefaultBlockParameter::valueOf)
+      .forEach {
+        client.ethGetBlockByNumber(it, true).sendAsync().whenComplete { result, ex ->
+          if (ex != null) {
+            logger.warn("Got an exception on getting block ${it.value}", ex)
+            return@whenComplete
+          }
+          result.block.transactions.stream().map { tx ->
+            tx.get() as org.web3j.protocol.core.methods.response.Transaction
+          }.forEach(::processTx)
+        }
+      }
+
+    var isPassedStart = false
+    client.transactionFlowable().subscribe {
+      if (isPassedStart) {
+        logger.debug("New transaction")
+        logger.debug("from" + it.from)
+        logger.debug("to" + it.to)
+        logger.debug(it.value.toString())
+        processTx(it)
+      } else {
+        isPassedStart = it.blockNumber !in startBlock..endBlock
+      }
+    }
   }
 
-  override fun onText(
-    webSocket: WebSocket?,
-    data: CharSequence?,
-    last: Boolean
-  ): CompletionStage<*> {
-    logger.debug("<< websocket message >>")
-    logger.debug(data.toString())
-    //todo: parse transaction of address and do balance action
-    return super.onText(webSocket, data, last)
-  }
-
-  override fun onClose(
-    webSocket: WebSocket?,
-    statusCode: Int,
-    reason: String?
-  ): CompletionStage<*> {
-    logger.debug("<< websocket close >>")
-    return super.onClose(webSocket, statusCode, reason)
-  }
-
-  override fun onOpen(webSocket: WebSocket?) {
-    logger.debug("<< websocket opened >>")
-    isConnected = true
-    subscribe()
-    super.onOpen(webSocket)
+  private fun processTx(tx: org.web3j.protocol.core.methods.response.Transaction) {
+    try {
+      if (tx.to.equals(ADMIN_ADDRESS, true)) {
+        depositCoin(tx.from, tx.value.toBigDecimal())
+      } else if (tx.to.equals(CONTRACT_ADDRESS, true)) {
+        val call = erc20Decoder.decodeFunctionCall(tx.input)
+        val name = call?.name
+        val amount = BigDecimal(call.getParam("amount").value.toString())
+        if (name == "burn") {
+          depositToken(tx.from, amount)
+        } else if (name == "burnFrom") {
+          val account = call.getParam("account").value
+          depositToken(account.toString(), amount)
+        }
+      }
+    } catch (ignored: Throwable) { }
   }
 
   private fun depositToken(to: String, amount: BigDecimal) {
     //todo: validate transaction before
-    userService.addToTokenBalance(to, amount)
+    userService.addToTokenBalance(to, tokenUnit.toValue(amount))
   }
 
-  private fun withdrawToken(to: String, amount: BigDecimal) {
-    mint(to, amount.toBigInteger())
-    userService.subtractFromTokenBalance(to, amount)
+  fun withdrawToken(to: String, amount: BigDecimal): User {
+    mint(to, tokenUnit.toUnit(amount))
+    return userService.subtractFromTokenBalance(to, amount)
+  }
+
+  fun withdrawCoin(to: String, amount: BigDecimal): User {
+    transferCoins(to, coinUnit.toUnit(amount))
+    return userService.subtractFromBalance(to, amount)
   }
 
   private fun depositCoin(to: String, amount: BigDecimal) {
-    //todo: validate transaction before
-    userService.addToBalance(to, amount)
-  }
-
-  private fun withdrawCoin(to: String, amount: BigDecimal) {
-    transferCoins(to, amount.toBigInteger())
-    userService.subtractFromBalance(to, amount)
+    userService.addToBalance(to, coinUnit.toValue(amount))
   }
 
   //todo: Should retry in case of fail

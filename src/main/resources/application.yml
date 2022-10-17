@@ -51,7 +51,6 @@ server:
     include-exception: true
     include-message: always
     include-binding-errors: always
-    include-stacktrace: on_param
 
 web-security:
   role-access-restriction-paths:

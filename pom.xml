@@ -132,6 +132,11 @@
       <artifactId>core</artifactId>
       <version>4.9.4</version>
     </dependency>
+    <dependency>
+      <groupId>net.osslabz.evm</groupId>
+      <artifactId>evm-abi-decoder</artifactId>
+      <version>0.0.6</version>
+    </dependency>
   </dependencies>
 
   <build>

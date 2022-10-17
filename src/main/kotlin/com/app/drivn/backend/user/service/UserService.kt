@@ -1,7 +1,7 @@
 package com.app.drivn.backend.user.service
 
 import com.app.drivn.backend.config.properties.AppProperties
-import com.app.drivn.backend.user.dto.UpdateUserRequest
+import com.app.drivn.backend.user.dto.UpdateUserDonationRequest
 import com.app.drivn.backend.user.model.User
 import com.app.drivn.backend.user.repository.UserRepository
 import org.springframework.stereotype.Service
@@ -29,7 +29,7 @@ class UserService(
     repository.save(user)
   }
 
-  fun updateDonation(address: String, request: UpdateUserRequest): User {
+  fun updateDonation(address: String, request: UpdateUserDonationRequest): User {
     val user = get(address)
 
     Optional.ofNullable(request.donation)
@@ -62,7 +62,7 @@ class UserService(
   fun subtractFromTokenBalance(address: String, amount: BigDecimal): User {
     val user = get(address)
     if (user.tokensToClaim >= amount) {
-      user.balance = user.tokensToClaim.subtract(amount)
+      user.tokensToClaim = user.tokensToClaim.subtract(amount)
       return repository.save(user)
     }
     return user

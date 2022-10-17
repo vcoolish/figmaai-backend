@@ -55,7 +55,7 @@ class UserService(
 
   fun addToTokenBalance(address: String, amount: BigDecimal): User {
     val user = get(address)
-    user.balance = user.tokensToClaim.add(amount)
+    user.tokensToClaim = user.tokensToClaim.add(amount)
     return repository.save(user)
   }
 

@@ -22,13 +22,15 @@ import java.util.concurrent.CompletionStage
 
 const val ADMIN_ADDRESS = "0x0000000000000000000000000000000000001004"
 const val CONTRACT_ADDRESS = "0xe418eE8ec1Bca66FFa7E088e4656Cc628661043d"
-const val CLIENT_URL = "https://intensive-divine-mountain.bsc.discover.quiknode.pro/79d20c28b6e2219dd4c5e8e9599f6440a6627034/"
-const val SOCKET_URL = "wss://intensive-divine-mountain.bsc.discover.quiknode.pro/79d20c28b6e2219dd4c5e8e9599f6440a6627034/"
+const val CLIENT_URL =
+  "https://intensive-divine-mountain.bsc.discover.quiknode.pro/79d20c28b6e2219dd4c5e8e9599f6440a6627034/"
+//endregion
 
 @Service
 class BlockchainService(
   private val userService: UserService,
   private val privateKeyProvider: PrivateKeyProvider,
+  appProperties: AppProperties
 ) : WebSocket.Listener {
 
   private var socket: WebSocket = HttpClient.newHttpClient().newWebSocketBuilder()
@@ -118,9 +120,17 @@ class BlockchainService(
     val creds = Credentials.create(privateKeyProvider.fetchPrivateKey())
     val gasPrice = client.ethGasPrice().send().gasPrice
 
-    val nonce = client.ethGetTransactionCount(ADMIN_ADDRESS, DefaultBlockParameterName.LATEST).send().transactionCount
+    val nonce = client.ethGetTransactionCount(ADMIN_ADDRESS, DefaultBlockParameterName.LATEST)
+      .send().transactionCount
     val transactionForEstimate = Transaction.createFunctionCallTransaction(
-      ADMIN_ADDRESS, nonce, gasPrice, BigInteger.valueOf(10000000), CONTRACT_ADDRESS, BigInteger.ZERO, encodedFunction)
+      ADMIN_ADDRESS,
+      nonce,
+      gasPrice,
+      BigInteger.valueOf(10000000),
+      CONTRACT_ADDRESS,
+      BigInteger.ZERO,
+      encodedFunction
+    )
     val gasLimit = client.ethEstimateGas(transactionForEstimate).send().amountUsed
     return FastRawTransactionManager(client, creds)
       .sendTransaction(
@@ -146,10 +156,3 @@ class BlockchainService(
       ).transactionHash
   }
 }
-
-data class RpcRequest<out T>(
-  val id: Int,
-  val jsonrpc: String = "2.0",
-  val method: String,
-  val params: List<T>
-)

@@ -21,7 +21,6 @@ spring:
   mvc:
     throw-exception-if-no-handler-found: true
     static-path-pattern: /static/**
-
 springdoc:
   api-docs:
     resolve-schema-properties: true

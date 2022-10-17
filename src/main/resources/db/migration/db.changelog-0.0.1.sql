@@ -117,6 +117,7 @@ ALTER TABLE car_nfts
   ALTER level TYPE SMALLINT;
 --rollback ALTER TABLE car_nfts ALTER level TYPE INT;
 
+--changeset vcoolish:20221017100000
 ALTER TABLE users
   ADD COLUMN balance DECIMAL(30, 18)
 --rollback ALTER TABLE users DROP COLUMN balance;

@@ -120,4 +120,14 @@ ALTER TABLE car_nfts
 --changeset vcoolish:20221017100000
 ALTER TABLE users
   ADD COLUMN balance DECIMAL(30, 18) NOT NULL DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS balance_history
+(
+  id           UUID PRIMARY KEY                  DEFAULT gen_random_uuid(),
+  user_address VARCHAR(255)             NOT NULL REFERENCES users,
+  balance      DECIMAL(30, 18)          NOT NULL DEFAULT 0,
+  tx_id        VARCHAR(255)             NOT NULL,
+  created_at   TIMESTAMP with time zone NOT NULL
+);
 --rollback ALTER TABLE users DROP COLUMN balance;
+--rollback DROP TABLE balance_history;

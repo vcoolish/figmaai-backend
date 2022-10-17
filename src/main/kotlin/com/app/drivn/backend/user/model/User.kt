@@ -33,7 +33,7 @@ class User() : AbstractJpaPersistable<String>() {
   var nextEnergyRenew: ZonedDateTime? = null
 
   @Column(nullable = false, precision = 30, scale = 18)
-  private var balance: BigDecimal = BigDecimal.ZERO
+  var balance: BigDecimal = BigDecimal.ZERO
 
   /**
    * Donation percent. From 0 to 50.

@@ -20,6 +20,7 @@ object UserMapper {
     dto.tokensLimitPerDay = user.tokensLimitPerDay
     dto.nextEnergyRenew = user.nextEnergyRenew
     dto.donation = user.donation
+    dto.balance = user.balance
 
     return dto
   }

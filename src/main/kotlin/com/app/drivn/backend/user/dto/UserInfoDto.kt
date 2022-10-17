@@ -9,6 +9,7 @@ open class UserInfoDto {
   lateinit var distance: BigDecimal
   lateinit var energy: BigDecimal
   lateinit var maxEnergy: BigDecimal
+  lateinit var balance: BigDecimal
   lateinit var tokenClaimable: BigDecimal
   lateinit var tokensLimitPerDay: BigDecimal
   var nextEnergyRenew: ZonedDateTime? = null

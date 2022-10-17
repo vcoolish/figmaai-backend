@@ -39,4 +39,13 @@ class AppProperties {
 
   @Value("classpath:erc20.json")
   lateinit var ercFile: Resource
+
+  @NotBlank
+  lateinit var adminAddress: String
+
+  @NotBlank
+  lateinit var contractAddress: String
+
+  @NotBlank
+  lateinit var clientUrl: String
 }

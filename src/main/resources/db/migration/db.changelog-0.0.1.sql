@@ -131,3 +131,9 @@ CREATE TABLE IF NOT EXISTS balance_history
 );
 --rollback ALTER TABLE users DROP COLUMN balance;
 --rollback DROP TABLE balance_history;
+
+--changeset vcoolish:20221017180000
+ALTER TABLE users
+  ALTER COLUMN tokens_to_claim TYPE DECIMAL(30, 8) USING (tokens_to_claim::DECIMAL(30, 18)),
+  ALTER COLUMN tokens_limit_per_day TYPE DECIMAL(30, 8) USING (tokens_limit_per_day::DECIMAL(30, 18));
+--rollback ALTER TABLE users DROP COLUMN balance;

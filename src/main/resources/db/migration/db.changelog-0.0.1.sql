@@ -121,3 +121,9 @@ ALTER TABLE car_nfts
 ALTER TABLE users
   ADD COLUMN balance DECIMAL(30, 18)
 --rollback ALTER TABLE users DROP COLUMN balance;
+
+--changeset vcoolish:20221017110000
+ALTER TABLE users
+  ALTER COLUMN balance SET NOT NULL,
+  ALTER COLUMN balance SET DEFAULT 0;
+--rollback ALTER TABLE users DROP COLUMN balance;

@@ -1,17 +1,20 @@
 package com.app.drivn.backend.user.service
 
+import com.app.drivn.backend.common.blockchain.validateMessageSign
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.user.dto.UpdateUserDonationRequest
+import com.app.drivn.backend.user.dto.UserRegistrationEntryDto
 import com.app.drivn.backend.user.model.User
 import com.app.drivn.backend.user.repository.UserRepository
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.util.*
 
+
 @Service
 class UserService(
   private val repository: UserRepository,
-  private val appProperties: AppProperties
+  private val appProperties: AppProperties,
 ) {
 
   fun getOrCreate(address: String): User = repository.findById(address)
@@ -35,6 +38,15 @@ class UserService(
     Optional.ofNullable(request.donation)
       .ifPresent { user.donation = it }
 
+    return repository.save(user)
+  }
+
+  fun updateSignMessage(address: String, request: UserRegistrationEntryDto): User {
+    if (!validateMessageSign(address, request.message, request.signature)) {
+      throw IllegalStateException("Verification failed")
+    }
+    val user = getOrCreate(address)
+    user.signMessage = request.message
     return repository.save(user)
   }
 

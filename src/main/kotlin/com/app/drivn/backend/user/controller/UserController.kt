@@ -28,6 +28,15 @@ class UserController(
   private val blockchainService: BlockchainService,
 ) {
 
+  @PostMapping("/register/{address}")
+  fun registerUser(
+    @Pattern(regexp = "^0x[\\da-fA-F]{40}$") @PathVariable address: String,
+    @Valid @RequestBody request: UserRegistrationEntryDto
+  ): UserExtendedDto {
+    val user = userService.updateSignMessage(address, request)
+    return UserMapper.toDto(user, nftInfoDtos)
+  }
+
   @GetMapping("/{address}")
   fun getUser(
     @Pattern(regexp = "^0x[\\da-fA-F]{40}$") @PathVariable address: String

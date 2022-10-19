@@ -35,6 +35,9 @@ class User() : AbstractJpaPersistable<String>() {
   @Column(nullable = false, precision = 30, scale = 18)
   var balance: BigDecimal = BigDecimal.ZERO
 
+  @Column(nullable = false)
+  var signMessage: String = ""
+
   /**
    * Donation percent. From 0 to 50.
    */

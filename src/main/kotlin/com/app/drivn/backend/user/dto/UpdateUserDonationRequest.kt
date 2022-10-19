@@ -8,13 +8,3 @@ class UpdateUserDonationRequest(
   @Max(50)
   val donation: Short?
 )
-
-class WithdrawUserBalanceRequest(
-  val type: String?,
-  val amount: String?,
-)
-
-enum class BalanceType {
-  coin,
-  token
-}

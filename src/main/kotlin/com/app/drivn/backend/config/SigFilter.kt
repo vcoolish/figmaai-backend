@@ -34,6 +34,7 @@ class SigFilter(
 
     val sig: String? = Optional.ofNullable(cachedRequest.getHeader("signature"))
       .orElseGet { cachedRequest.getParameter("signature") }
+    //TODO: add signature verification
     val message = buildString {
       append(properties.sigKey)
       cachedRequest.parameterMap.forEach { (key, value) ->

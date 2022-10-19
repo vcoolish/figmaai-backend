@@ -137,3 +137,8 @@ ALTER TABLE users
   ALTER COLUMN tokens_to_claim TYPE DECIMAL(30, 8) USING (tokens_to_claim::DECIMAL(30, 18)),
   ALTER COLUMN tokens_limit_per_day TYPE DECIMAL(30, 8) USING (tokens_limit_per_day::DECIMAL(30, 18));
 --rollback ALTER TABLE users DROP COLUMN balance;
+
+--changeset vcoolish:20221018180000
+ALTER TABLE users
+  ADD COLUMN sign_message VARCHAR(255) NOT NULL DEFAULT '';
+--rollback ALTER TABLE users DROP COLUMN sign_message;

@@ -16,7 +16,6 @@ import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.datatypes.Function
 import org.web3j.crypto.WalletUtils
 import org.web3j.protocol.Web3j
-import org.web3j.protocol.core.DefaultBlockParameter
 import org.web3j.protocol.core.DefaultBlockParameterName
 import org.web3j.protocol.core.methods.request.Transaction
 import org.web3j.protocol.http.HttpService
@@ -25,7 +24,6 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.net.http.WebSocket
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.stream.Stream
 
 @Service
 class BlockchainService(
@@ -53,33 +51,29 @@ class BlockchainService(
   fun onApplicationStarted(event: ApplicationStartedEvent) {
     // todo: store start block in db
     //todo: process cached queue
-    val startBlock = (100500).toBigInteger()
-    val endBlock = client.ethBlockNumber().send().blockNumber
-
-    Stream.iterate(startBlock, { current -> current <= endBlock }, BigInteger::inc)
-      .map(DefaultBlockParameter::valueOf)
-      .forEach {
-        client.ethGetBlockByNumber(it, true).sendAsync().whenComplete { result, ex ->
-          if (ex != null) {
-            logger.warn("Got an exception on getting block ${it.value}", ex)
-            return@whenComplete
-          }
-          result.block.transactions.stream().map { tx ->
-            tx.get() as org.web3j.protocol.core.methods.response.Transaction
-          }.forEach(::processTx)
-        }
-      }
+//    val startBlock = (100500).toBigInteger()
+//    val endBlock = client.ethBlockNumber().send().blockNumber
+//
+//    Stream.iterate(startBlock, { current -> current <= endBlock }, BigInteger::inc)
+//      .map(DefaultBlockParameter::valueOf)
+//      .forEach {
+//        client.ethGetBlockByNumber(it, true).sendAsync().whenComplete { result, ex ->
+//          if (ex != null) {
+//            logger.warn("Got an exception on getting block ${it.value}", ex)
+//            return@whenComplete
+//          }
+//          result.block.transactions.stream().map { tx ->
+//            tx.get() as org.web3j.protocol.core.methods.response.Transaction
+//          }.forEach(::processTx)
+//        }
+//      }
 
     var isPassedStart = false
     client.transactionFlowable().subscribe {
       if (isPassedStart) {
-        logger.debug("New transaction")
-        logger.debug("from" + it.from)
-        logger.debug("to" + it.to)
-        logger.debug(it.value.toString())
         processTx(it)
       } else {
-        isPassedStart = it.blockNumber !in startBlock..endBlock
+        isPassedStart = true//it.blockNumber !in startBlock..endBlock
       }
     }
   }
@@ -98,7 +92,13 @@ class BlockchainService(
           val account = call.getParam("account").value
           depositToken(account.toString(), amount)
         }
+      } else {
+        return
       }
+      logger.debug("New transaction")
+      logger.debug("from" + tx.from)
+      logger.debug("to" + tx.to)
+      logger.debug(tx.value.toString())
     } catch (ignored: Throwable) { }
   }
 

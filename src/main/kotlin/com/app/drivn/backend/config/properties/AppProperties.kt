@@ -17,6 +17,9 @@ class AppProperties {
   @NotBlank
   lateinit var sigKey: String
 
+  @NotBlank
+  lateinit var key: String
+
   @Positive
   var defaultUserEnergyLimit: BigDecimal = BigDecimal.valueOf(30)
 

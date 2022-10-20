@@ -29,7 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 class BlockchainService(
   private val userService: UserService,
   private val privateKeyProvider: PrivateKeyProvider,
-  private val appProperties: AppProperties
+  private val appProperties: AppProperties,
 ) : WebSocket.Listener {
 
   val logger = logger()

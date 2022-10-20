@@ -154,8 +154,8 @@ CREATE TABLE IF NOT EXISTS transactions
 );
 CREATE TABLE IF NOT EXISTS blockchain_state
 (
-  transaction_id       VARCHAR(255) NOT NULL REFERENCES transactions,
-  last_processed_block VARCHAR(255) NOT NULL DEFAULT ''
+  transaction_id       UUID NOT NULL REFERENCES transactions,
+  last_processed_block VARCHAR(255) NOT NULL
 );
 --rollback DROP TABLE transactions;
 --rollback DROP TABLE blockchain_state;

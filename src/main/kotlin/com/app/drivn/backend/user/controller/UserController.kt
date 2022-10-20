@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.math.BigDecimal
@@ -28,39 +29,39 @@ class UserController(
   private val blockchainService: BlockchainService,
 ) {
 
-  @PostMapping("/register/{address}")
+  @PostMapping("/register")
   fun registerUser(
-    @Pattern(regexp = "^0x[\\da-fA-F]{40}$") @PathVariable address: String,
+    @Pattern(regexp = "^0x[\\da-fA-F]{40}$") @RequestHeader address: String,
     @Valid @RequestBody request: UserRegistrationEntryDto
   ): UserExtendedDto {
     val user = userService.updateSignMessage(address, request)
     return UserMapper.toDto(user, nftInfoDtos)
   }
 
-  @GetMapping("/{address}")
+  @GetMapping("/")
   fun getUser(
-    @Pattern(regexp = "^0x[\\da-fA-F]{40}$") @PathVariable address: String
+    @Pattern(regexp = "^0x[\\da-fA-F]{40}$") @RequestHeader address: String
   ): UserExtendedDto {
 //    val nfts = bounceClient.getNfts(address)
     val user = userService.getOrCreate(address)
     return UserMapper.toDto(user, nftInfoDtos)
   }
 
-  @PostMapping("/{address}/energy")
-  fun renewMyEnergy(@PathVariable address: String): ResponseEntity<UserInfoDto> =
+  @PostMapping("/energy")
+  fun renewMyEnergy(@RequestHeader address: String): ResponseEntity<UserInfoDto> =
     userEnergyService.tryToRenew(address)
       .map(UserMapper::toDto)
       .let { ResponseEntity.of(it) }
 
-  @PatchMapping("/{address}")
+  @PatchMapping("/")
   fun updateUser(
-    @PathVariable address: String,
+    @RequestHeader address: String,
     @Valid @RequestBody request: UpdateUserDonationRequest
   ): UserInfoDto = UserMapper.toDto(userService.updateDonation(address, request))
 
-  @PostMapping("/{address}/withdraw")
+  @PostMapping("/withdraw")
   fun withdraw(
-    @PathVariable address: String,
+    @RequestHeader address: String,
     @Valid @RequestBody request: WithdrawUserBalanceRequest
   ): UserInfoDto {
     val user = when (request.type) {

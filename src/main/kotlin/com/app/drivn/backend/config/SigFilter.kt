@@ -38,6 +38,7 @@ class SigFilter(
     val sig: String = Optional.ofNullable(cachedRequest.getHeader("signature"))
       .orElseGet { cachedRequest.getParameter("signature") }
       ?: error("No signature provided")
+    //todo: consider validating params too
     val message = buildString {
       append(properties.sigKey)
       cachedRequest.parameterMap.forEach { (key, value) ->

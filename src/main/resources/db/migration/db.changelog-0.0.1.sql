@@ -142,3 +142,20 @@ ALTER TABLE users
 ALTER TABLE users
   ADD COLUMN sign_message VARCHAR(255) NOT NULL DEFAULT '';
 --rollback ALTER TABLE users DROP COLUMN sign_message;
+
+--changeset vcoolish:20221019100000
+CREATE TABLE IF NOT EXISTS transactions
+(
+  id        UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
+  address   VARCHAR(255)    NOT NULL REFERENCES users,
+  amount    DECIMAL(30, 18) NOT NULL DEFAULT 0,
+  tx_type   VARCHAR(255)    NOT NULL,
+  direction VARCHAR(255)    NOT NULL
+);
+CREATE TABLE IF NOT EXISTS blockchain_state
+(
+  transaction_id       VARCHAR(255) NOT NULL REFERENCES transactions,
+  last_processed_block VARCHAR(255) NOT NULL DEFAULT ''
+);
+--rollback DROP TABLE transactions;
+--rollback DROP TABLE blockchain_state;

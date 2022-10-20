@@ -1,7 +1,10 @@
 package com.app.drivn.backend.common.blockchain
 
 import com.app.drivn.backend.common.blockchain.entity.Direction
-import com.app.drivn.backend.common.blockchain.entity.TransactionCache
+import com.app.drivn.backend.common.blockchain.entity.TransactionUnprocessed
+import com.app.drivn.backend.common.blockchain.model.BlockchainState
+import com.app.drivn.backend.common.blockchain.model.TransactionCache
+import com.app.drivn.backend.common.blockchain.repository.BlockchainStateRepository
 import com.app.drivn.backend.common.util.logger
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.user.dto.BalanceType
@@ -16,6 +19,7 @@ import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.datatypes.Function
 import org.web3j.crypto.WalletUtils
 import org.web3j.protocol.Web3j
+import org.web3j.protocol.core.DefaultBlockParameter
 import org.web3j.protocol.core.DefaultBlockParameterName
 import org.web3j.protocol.core.methods.request.Transaction
 import org.web3j.protocol.http.HttpService
@@ -24,12 +28,14 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.net.http.WebSocket
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.stream.Stream
 
 @Service
 class BlockchainService(
   private val userService: UserService,
   private val privateKeyProvider: PrivateKeyProvider,
   private val appProperties: AppProperties,
+  private val blockchainStateRepository: BlockchainStateRepository,
 ) : WebSocket.Listener {
 
   val logger = logger()
@@ -39,43 +45,74 @@ class BlockchainService(
   private val tokenUnit = com.app.drivn.backend.common.blockchain.entity.Unit(8, "DRIVE", "DRIVE")
   private val coinUnit = com.app.drivn.backend.common.blockchain.entity.Unit(18, "BNB", "BNB")
 
-  //todo: Cache it
-  private val queue = CopyOnWriteArrayList<TransactionCache>()
+  private val queue = CopyOnWriteArrayList<TransactionUnprocessed>()
 
   @EventListener
   fun onApplicationStopped(event: ApplicationFailedEvent) {
-    //todo: Cache queue
+    blockchainStateRepository.save(
+      BlockchainState().apply {
+        lastProcessedBlock = (client.ethBlockNumber().send().blockNumber - BigInteger.ONE).toString()
+        transactions = queue.map {
+          TransactionCache().apply {
+            amount = it.amount
+            txType = it.type.name
+            address = it.address
+            direction = it.direction.name
+          }
+        }
+      }
+    )
   }
 
   @EventListener
   fun onApplicationStarted(event: ApplicationStartedEvent) {
-    // todo: store start block in db
-    //todo: process cached queue
-//    val startBlock = (100500).toBigInteger()
-//    val endBlock = client.ethBlockNumber().send().blockNumber
-//
-//    Stream.iterate(startBlock, { current -> current <= endBlock }, BigInteger::inc)
-//      .map(DefaultBlockParameter::valueOf)
-//      .forEach {
-//        client.ethGetBlockByNumber(it, true).sendAsync().whenComplete { result, ex ->
-//          if (ex != null) {
-//            logger.warn("Got an exception on getting block ${it.value}", ex)
-//            return@whenComplete
-//          }
-//          result.block.transactions.stream().map { tx ->
-//            tx.get() as org.web3j.protocol.core.methods.response.Transaction
-//          }.forEach(::processTx)
-//        }
-//      }
+    val state = blockchainStateRepository.findAll().firstOrNull()
+    val startBlock = (state?.lastProcessedBlock)?.toBigInteger()  ?: BigInteger.ZERO
+    val endBlock = client.ethBlockNumber().send().blockNumber
+    if (startBlock > BigInteger.ZERO && startBlock < endBlock) {
+      processBlocks(startBlock, endBlock)
+      state?.transactions?.forEach {
+        processTxCache(it)
+      }
+    }
 
     var isPassedStart = false
     client.transactionFlowable().subscribe {
       if (isPassedStart) {
         processTx(it)
       } else {
-        isPassedStart = true//it.blockNumber !in startBlock..endBlock
+        isPassedStart = it.blockNumber !in startBlock..endBlock
       }
     }
+  }
+
+  private fun processTxCache(tx: TransactionCache) {
+    when (tx.txType) {
+      BalanceType.coin.name -> when (tx.direction) {
+        Direction.withdraw.name -> withdrawCoin(tx.address, tx.amount)
+        Direction.deposit.name -> depositCoin(tx.address, tx.amount)
+      }
+      BalanceType.token.name -> when (tx.direction) {
+        Direction.withdraw.name -> withdrawToken(tx.address, tx.amount)
+        Direction.deposit.name -> depositToken(tx.address, tx.amount)
+      }
+    }
+  }
+
+  private fun processBlocks(start: BigInteger, end: BigInteger) {
+    Stream.iterate(start, { current -> current <= end }, BigInteger::inc)
+      .map(DefaultBlockParameter::valueOf)
+      .forEach {
+        client.ethGetBlockByNumber(it, true).sendAsync().whenComplete { result, ex ->
+          if (ex != null) {
+            logger.warn("Got an exception on getting block ${it.value}", ex)
+            return@whenComplete
+          }
+          result.block.transactions.stream().map { tx ->
+            tx.get() as org.web3j.protocol.core.methods.response.Transaction
+          }.forEach(::processTx)
+        }
+      }
   }
 
   private fun processTx(tx: org.web3j.protocol.core.methods.response.Transaction) {
@@ -103,14 +140,14 @@ class BlockchainService(
   }
 
   private fun depositToken(to: String, amount: BigDecimal) {
-    val item = TransactionCache(to, Direction.deposit, amount, BalanceType.token)
+    val item = TransactionUnprocessed(to, Direction.deposit, amount, BalanceType.token)
     queue.add(item)
     userService.addToTokenBalance(to, tokenUnit.toValue(amount))
     queue.remove(item)
   }
 
   fun withdrawToken(to: String, amount: BigDecimal): User {
-    val item = TransactionCache(to, Direction.withdraw, amount, BalanceType.token)
+    val item = TransactionUnprocessed(to, Direction.withdraw, amount, BalanceType.token)
     queue.add(item)
     mint(to, tokenUnit.toUnit(amount))
     val user = userService.subtractFromTokenBalance(to, amount)
@@ -119,7 +156,7 @@ class BlockchainService(
   }
 
   fun withdrawCoin(to: String, amount: BigDecimal): User {
-    val item = TransactionCache(to, Direction.withdraw, amount, BalanceType.coin)
+    val item = TransactionUnprocessed(to, Direction.withdraw, amount, BalanceType.coin)
     queue.add(item)
     transferCoins(to, coinUnit.toUnit(amount))
     val user = userService.subtractFromBalance(to, amount)
@@ -128,13 +165,12 @@ class BlockchainService(
   }
 
   private fun depositCoin(to: String, amount: BigDecimal) {
-    val item = TransactionCache(to, Direction.deposit, amount, BalanceType.coin)
+    val item = TransactionUnprocessed(to, Direction.deposit, amount, BalanceType.coin)
     queue.add(item)
     userService.addToBalance(to, coinUnit.toValue(amount))
     queue.remove(item)
   }
 
-  //todo: Should retry in case of fail
   private fun mint(address: String, amount: BigInteger): String {
     val function = Function(
       "mint",

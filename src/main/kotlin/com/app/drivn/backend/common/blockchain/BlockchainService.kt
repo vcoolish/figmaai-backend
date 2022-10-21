@@ -66,6 +66,7 @@ class BlockchainService(
 
   @EventListener
   fun onApplicationStarted(event: ApplicationStartedEvent) {
+    //save processed tx id and check it to avoid double spends
     val state = blockchainStateRepository.findAll().firstOrNull()
     val startBlock = (state?.lastProcessedBlock)?.toBigInteger()  ?: BigInteger.ZERO
     val endBlock = client.ethBlockNumber().send().blockNumber

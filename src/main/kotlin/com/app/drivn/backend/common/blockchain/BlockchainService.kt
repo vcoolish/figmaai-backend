@@ -168,9 +168,11 @@ class BlockchainService(
   }
 
   private fun depositCoin(to: String, amount: BigDecimal) {
+    val fee = BigDecimal.valueOf(0.0005)
     val item = TransactionUnprocessed(to, Direction.deposit, amount, BalanceType.coin)
     queue.add(item)
-    userService.addToBalance(to, coinUnit.toValue(amount))
+    val finalUnitAmount = coinUnit.toValue(amount).minus(fee).max(BigDecimal.ZERO)
+    userService.addToBalance(to, finalUnitAmount)
     queue.remove(item)
   }
 

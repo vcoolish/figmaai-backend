@@ -10,13 +10,15 @@ fun validateMessageSign(
   address: String,
   message: String,
   signature: String,
-): Boolean {
+): Boolean = try {
   val key = Sign.signedPrefixedMessageToKey(
     message.toByteArray(StandardCharsets.UTF_8),
     getSignatureData(signature),
   )
   val recovered = ("0x" + Keys.getAddress(key)).trim()
-  return recovered.equals(address, ignoreCase = true)
+  recovered.equals(address, ignoreCase = true)
+} catch (t: Throwable) {
+  false
 }
 
 private fun getSignatureData(signature: String): Sign.SignatureData {

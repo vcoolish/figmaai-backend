@@ -17,16 +17,16 @@ class UserService(
   private val appProperties: AppProperties,
 ) {
 
-  fun getOrCreate(address: String): User = repository.findById(address)
+  fun getOrCreate(address: String): User = repository.findById(address.lowercase())
     .orElseGet {
       User(
-        address,
+        address.lowercase(),
         appProperties.defaultUserTokensLimitPerDay,
         appProperties.defaultUserEnergyLimit
       ).let(repository::save)
     }
 
-  fun get(address: String): User = repository.findById(address).orElseThrow()
+  fun get(address: String): User = repository.findById(address.lowercase()).orElseThrow()
 
   fun save(user: User) {
     repository.save(user)
@@ -51,7 +51,7 @@ class UserService(
   }
 
   fun addToBalance(address: String, amount: BigDecimal): User {
-    val user = get(address)
+    val user = getOrCreate(address)
     user.balance = user.balance.add(amount)
     return repository.save(user)
   }

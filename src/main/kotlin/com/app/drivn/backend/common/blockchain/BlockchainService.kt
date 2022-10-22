@@ -45,6 +45,7 @@ class BlockchainService(
   private val tokenUnit = com.app.drivn.backend.common.blockchain.entity.Unit(8, "DRIVE", "DRIVE")
   private val coinUnit = com.app.drivn.backend.common.blockchain.entity.Unit(18, "BNB", "BNB")
 
+  //todo: add scheduler and process time to time
   private val queue = CopyOnWriteArrayList<TransactionUnprocessed>()
 
   @EventListener
@@ -67,13 +68,16 @@ class BlockchainService(
   @EventListener
   fun onApplicationStarted(event: ApplicationStartedEvent) {
     //save processed tx id and check it to avoid double spends
-    val state = blockchainStateRepository.findAll().firstOrNull()
-    val startBlock = (state?.lastProcessedBlock)?.toBigInteger()  ?: BigInteger.ZERO
+    val states = blockchainStateRepository.findAll()
+    val startBlock = (states.lastOrNull()?.lastProcessedBlock)?.toBigInteger()  ?: BigInteger.ZERO
     val endBlock = client.ethBlockNumber().send().blockNumber
     if (startBlock > BigInteger.ZERO && startBlock < endBlock) {
       processBlocks(startBlock, endBlock)
-      state?.transactions?.forEach {
-        processTxCache(it)
+      states.forEach {
+        it.transactions.forEach { tx ->
+          processTxCache(tx)
+        }
+        blockchainStateRepository.delete(it)
       }
     }
 
@@ -168,12 +172,17 @@ class BlockchainService(
   }
 
   private fun depositCoin(to: String, amount: BigDecimal) {
-    val fee = BigDecimal.valueOf(0.0005)
-    val item = TransactionUnprocessed(to, Direction.deposit, amount, BalanceType.coin)
-    queue.add(item)
-    val finalUnitAmount = coinUnit.toValue(amount).minus(fee).max(BigDecimal.ZERO)
-    userService.addToBalance(to, finalUnitAmount)
-    queue.remove(item)
+    try {
+
+      val fee = BigDecimal.valueOf(0.0005)
+      val item = TransactionUnprocessed(to, Direction.deposit, amount, BalanceType.coin)
+      queue.add(item)
+      val finalUnitAmount = coinUnit.toValue(amount).minus(fee).max(BigDecimal.ZERO)
+      userService.addToBalance(to, finalUnitAmount)
+      queue.remove(item)
+    } catch (t: Throwable) {
+      t.printStackTrace()
+    }
   }
 
   private fun mint(address: String, amount: BigInteger): String {

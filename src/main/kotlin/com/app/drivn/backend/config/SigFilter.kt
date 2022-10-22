@@ -37,6 +37,7 @@ class SigFilter(
     val user = userService.get(request.getHeader("address"))
     val sig: String = Optional.ofNullable(cachedRequest.getHeader("signature"))
       .orElseGet { cachedRequest.getParameter("signature") }
+      ?: ""
     //todo: consider validating params too
     val message = buildString {
       append(properties.sigKey)

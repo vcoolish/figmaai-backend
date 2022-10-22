@@ -65,8 +65,8 @@ class UserController(
     @Valid @RequestBody request: WithdrawUserBalanceRequest
   ): UserInfoDto {
     val user = when (request.type) {
-      BalanceType.coin.name -> blockchainService.withdrawCoin(address, BigDecimal(request.amount))
-      BalanceType.token.name -> blockchainService.withdrawToken(address, BigDecimal(request.amount))
+      BalanceType.coin.name -> blockchainService.withdrawCoin(address)
+      BalanceType.token.name -> blockchainService.withdrawToken(address)
       else -> error("Unknown type")
     }
     return UserMapper.toDto(user)

@@ -1,8 +1,7 @@
 package com.app.drivn.backend.user.dto
 
 class WithdrawUserBalanceRequest(
-  val type: String?,
-  val amount: String?,
+  val type: String,
 )
 
 enum class BalanceType {

@@ -90,11 +90,11 @@ class BlockchainService(
   private fun processTxCache(tx: TransactionCache) {
     when (tx.txType) {
       BalanceType.coin.name -> when (tx.direction) {
-        Direction.withdraw.name -> withdrawCoin(tx.address, tx.amount)
+        Direction.withdraw.name -> withdrawCoin(tx.address)
         Direction.deposit.name -> depositCoin(tx.address, tx.amount)
       }
       BalanceType.token.name -> when (tx.direction) {
-        Direction.withdraw.name -> withdrawToken(tx.address, tx.amount)
+        Direction.withdraw.name -> withdrawToken(tx.address)
         Direction.deposit.name -> depositToken(tx.address, tx.amount)
       }
     }
@@ -147,7 +147,8 @@ class BlockchainService(
     queue.remove(item)
   }
 
-  fun withdrawToken(to: String, amount: BigDecimal): User {
+  fun withdrawToken(to: String): User {
+    val amount = userService.get(to).tokensToClaim
     val item = TransactionUnprocessed(to, Direction.withdraw, amount, BalanceType.token)
     queue.add(item)
     mint(to, tokenUnit.toUnit(amount))
@@ -156,7 +157,8 @@ class BlockchainService(
     return user
   }
 
-  fun withdrawCoin(to: String, amount: BigDecimal): User {
+  fun withdrawCoin(to: String): User {
+    val amount = userService.get(to).balance
     val item = TransactionUnprocessed(to, Direction.withdraw, amount, BalanceType.coin)
     queue.add(item)
     transferCoins(to, coinUnit.toUnit(amount))

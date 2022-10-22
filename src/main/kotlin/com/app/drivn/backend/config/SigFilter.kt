@@ -34,10 +34,9 @@ class SigFilter(
   ) {
     val cachedRequest = CopyingRequestWrapper(request)
 
-    val user = userService.get(request.getHeader("address"))
-    val sig: String = Optional.ofNullable(cachedRequest.getHeader("signature"))
+    val user = Optional.ofNullable(userService.get(request.getHeader("address")))
+    val sig: String? = Optional.ofNullable(cachedRequest.getHeader("signature"))
       .orElseGet { cachedRequest.getParameter("signature") }
-      ?: ""
     //todo: consider validating params too
     val message = buildString {
       append(properties.sigKey)
@@ -56,9 +55,9 @@ class SigFilter(
     }
 
     val isValid = validateMessageSign(
-      address = user.address,
-      message = user.signMessage,
-      signature = sig,
+      address = user.orElseGet { null }?.address ?: "",
+      message = user.orElseGet { null }?.signMessage ?: "",
+      signature = sig ?: "",
     )
     if (isValid) {
       SecurityContextHolder.getContext().authentication = EMPTY_AUTH_TOKEN

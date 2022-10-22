@@ -43,7 +43,7 @@ class UserController(
     @Pattern(regexp = "^0x[\\da-fA-F]{40}$") @RequestHeader address: String
   ): UserExtendedDto {
 //    val nfts = bounceClient.getNfts(address)
-    val user = userService.getOrCreate(address)
+    val user = userService.get(address)
     return UserMapper.toDto(user, nftInfoDtos)
   }
 

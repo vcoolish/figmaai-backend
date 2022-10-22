@@ -1,7 +1,8 @@
 package com.app.drivn.backend.config
 
-import com.app.drivn.backend.common.util.sha256
+import com.app.drivn.backend.common.blockchain.validateMessageSign
 import com.app.drivn.backend.config.properties.AppProperties
+import com.app.drivn.backend.user.service.UserService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletResponse
 
 class SigFilter(
   private val properties: AppProperties,
+  private val userService: UserService,
 ) : OncePerRequestFilter() {
 
   companion object {
@@ -32,8 +34,11 @@ class SigFilter(
   ) {
     val cachedRequest = CopyingRequestWrapper(request)
 
-    val sig: String? = Optional.ofNullable(cachedRequest.getHeader("signature"))
+    val user = userService.get(request.getHeader("address"))
+    val sig: String = Optional.ofNullable(cachedRequest.getHeader("signature"))
       .orElseGet { cachedRequest.getParameter("signature") }
+      ?: error("No signature provided")
+    //todo: consider validating params too
     val message = buildString {
       append(properties.sigKey)
       cachedRequest.parameterMap.forEach { (key, value) ->
@@ -50,9 +55,12 @@ class SigFilter(
       }
     }
 
-    val messageSignature = sha256(message)
-    logger.debug("Message is $message and its signature is $messageSignature.")
-    if (messageSignature == sig) {
+    val isValid = validateMessageSign(
+      address = user.address,
+      message = user.signMessage,
+      signature = sig,
+    )
+    if (isValid) {
       SecurityContextHolder.getContext().authentication = EMPTY_AUTH_TOKEN
     }
     filterChain.doFilter(cachedRequest, response)

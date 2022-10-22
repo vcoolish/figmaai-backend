@@ -3,6 +3,7 @@ package com.app.drivn.backend.config
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.config.properties.CorsProperties
 import com.app.drivn.backend.config.properties.WebSecurityProperties
+import com.app.drivn.backend.user.service.UserService
 import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -33,6 +34,7 @@ class SecurityConfig(
   protected val corsProperties: CorsProperties,
   private val properties: ServerProperties,
   private val appProperties: AppProperties,
+  private val userService: UserService,
 ) {
 
   @Bean
@@ -68,7 +70,7 @@ class SecurityConfig(
       .sessionManagement { c: SessionManagementConfigurer<HttpSecurity?> ->
         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       }
-      .addFilterAt(SigFilter(appProperties), UsernamePasswordAuthenticationFilter::class.java)
+      .addFilterAt(SigFilter(appProperties, userService), UsernamePasswordAuthenticationFilter::class.java)
 
     val urlRegistry = http.authorizeRequests()
 

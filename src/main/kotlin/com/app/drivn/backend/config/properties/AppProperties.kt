@@ -51,4 +51,6 @@ class AppProperties {
 
   @NotBlank
   lateinit var clientUrl: String
+
+  var chainId: Long = 56
 }

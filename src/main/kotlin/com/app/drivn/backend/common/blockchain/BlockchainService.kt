@@ -209,7 +209,7 @@ class BlockchainService(
       encodedFunction
     )
     val gasLimit = client.ethEstimateGas(transactionForEstimate).send().amountUsed
-    return FastRawTransactionManager(client, loadCreds())
+    return FastRawTransactionManager(client, loadCreds(), appProperties.chainId)
       .sendTransaction(
         gasPrice,
         gasLimit,
@@ -221,7 +221,7 @@ class BlockchainService(
 
   private fun transferCoins(address: String, amount: BigInteger): String {
     val gasPrice = client.ethGasPrice().send().gasPrice
-    return FastRawTransactionManager(client, loadCreds())
+    return FastRawTransactionManager(client, loadCreds(), appProperties.chainId)
       .sendTransaction(
         gasPrice,
         BigInteger.valueOf(21000),

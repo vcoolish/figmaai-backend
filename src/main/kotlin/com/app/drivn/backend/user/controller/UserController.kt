@@ -38,7 +38,7 @@ class UserController(
     return UserMapper.toDto(user, nftInfoDtos)
   }
 
-  @GetMapping("/")
+  @GetMapping("")
   fun getUser(
     @Pattern(regexp = "^0x[\\da-fA-F]{40}$") @RequestHeader address: String
   ): UserExtendedDto {
@@ -53,7 +53,7 @@ class UserController(
       .map(UserMapper::toDto)
       .let { ResponseEntity.of(it) }
 
-  @PatchMapping("/")
+  @PatchMapping("")
   fun updateUser(
     @RequestHeader address: String,
     @Valid @RequestBody request: UpdateUserDonationRequest

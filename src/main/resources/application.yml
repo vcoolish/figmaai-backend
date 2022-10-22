@@ -57,6 +57,9 @@ web-security:
     - methods: PUT
       paths:
         - /address/*
+    - methods: POST
+      paths:
+        - /address/withdraw
     - methods: PATCH
       paths:
         - /nft/*

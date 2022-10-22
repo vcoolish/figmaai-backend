@@ -17,7 +17,10 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.datatypes.Function
-import org.web3j.crypto.WalletUtils
+import org.web3j.crypto.Bip32ECKeyPair
+import org.web3j.crypto.Bip32ECKeyPair.HARDENED_BIT
+import org.web3j.crypto.Credentials
+import org.web3j.crypto.MnemonicUtils
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.DefaultBlockParameter
 import org.web3j.protocol.core.DefaultBlockParameterName
@@ -228,7 +231,13 @@ class BlockchainService(
       ).transactionHash
   }
 
-  private fun loadCreds() =
-    WalletUtils.loadBip39Credentials("", privateKeyProvider.fetchPrivateKey())
+  private fun loadCreds(): Credentials {
+    val path = intArrayOf(44 or HARDENED_BIT, 60 or HARDENED_BIT, 0 or HARDENED_BIT, 0, 0)
+    val seed = MnemonicUtils.generateSeed(privateKeyProvider.fetchPrivateKey(),"")
+    val masterKeyPair = Bip32ECKeyPair.generateKeyPair(seed)
+    val bip44Keypair = Bip32ECKeyPair.deriveKeyPair(masterKeyPair, path)
+
+    return Credentials.create(bip44Keypair)
+  }
 }
 

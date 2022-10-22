@@ -34,7 +34,11 @@ class SigFilter(
   ) {
     val cachedRequest = CopyingRequestWrapper(request)
 
-    val user = Optional.ofNullable(userService.get(request.getHeader("address")))
+    val user = try {
+      userService.get(request.getHeader("address"))
+    } catch (t: Throwable) {
+      null
+    }
     val sig: String? = Optional.ofNullable(cachedRequest.getHeader("signature"))
       .orElseGet { cachedRequest.getParameter("signature") }
     //todo: consider validating params too
@@ -55,8 +59,8 @@ class SigFilter(
     }
 
     val isValid = validateMessageSign(
-      address = user.orElseGet { null }?.address ?: "",
-      message = user.orElseGet { null }?.signMessage ?: "",
+      address = user?.address ?: "",
+      message = user?.signMessage ?: "",
       signature = sig ?: "",
     )
     if (isValid) {

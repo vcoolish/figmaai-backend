@@ -50,6 +50,9 @@ class AppProperties {
   lateinit var contractAddress: String
 
   @NotBlank
+  lateinit var collectionAddress: String
+
+  @NotBlank
   lateinit var clientUrl: String
 
   var chainId: Long = 56

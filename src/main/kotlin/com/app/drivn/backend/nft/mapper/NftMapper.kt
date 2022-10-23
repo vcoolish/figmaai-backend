@@ -3,6 +3,7 @@ package com.app.drivn.backend.nft.mapper
 import com.app.drivn.backend.nft.dto.NftBaseDto
 import com.app.drivn.backend.nft.dto.NftExternalDto
 import com.app.drivn.backend.nft.dto.NftInternalDto
+import com.app.drivn.backend.nft.entity.CarCollection
 import com.app.drivn.backend.nft.model.CarBody
 import com.app.drivn.backend.nft.model.CarNft
 import com.app.drivn.backend.nft.model.Nft
@@ -31,6 +32,35 @@ object NftMapper {
     carNft.minSpeed = (1..49).random()
     carNft.maxSpeed = (50..100).random()
     carNft.mint = (0..3).random()
+
+    return carNft
+  }
+
+  fun generateCar(
+    id: Long,
+    collectionId: Long,
+  ): CarNft {
+    val carType = CarCollection.values().first { it.collectionId == collectionId }
+    val carNft = CarNft()
+    carNft.id = id
+    carNft.collectionId = collectionId
+
+    carNft.name = "${carType.title} #$id"
+    carNft.description = "NFT Car, drive it in DRIVN to earn"
+    carNft.image = "https://arweave.net/Zh1XgakvwR6xPoXefYZbHhIJVmaLfIyjuJXca3kRpE4"
+    carNft.externalUrl = "https://opensea.io/assets/matic/0x34031C84Ee86e11D45974847C380091A84705921/0"
+    carNft.creatorAddress = "0xa81A54123dcafb6C3056a8f513DE28ef699790D8"
+
+    carNft.level = 0
+    carNft.body = carType.body
+    carNft.quality = carType.quality
+    carNft.efficiency = (1..carType.efficiency).random().toShort()
+    carNft.luck = (1..carType.luck).random().toShort()
+    carNft.comfortability = (1..carType.comfortability).random().toShort()
+    carNft.maxDurability = carType.maxDurability.toFloat()
+    carNft.minSpeed = carType.minSpeed
+    carNft.maxSpeed = carType.maxSpeed
+    carNft.mint = 0
 
     return carNft
   }

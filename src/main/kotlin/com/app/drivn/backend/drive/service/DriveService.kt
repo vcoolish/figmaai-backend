@@ -1,6 +1,7 @@
 package com.app.drivn.backend.drive.service
 
 import com.app.drivn.backend.common.util.logger
+import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.drive.dto.DriveInfoDto
 import com.app.drivn.backend.drive.mapper.DriveMapper
 import com.app.drivn.backend.nft.model.CarNft
@@ -19,7 +20,8 @@ class DriveService(
   private val nftService: NftService,
   private val userService: UserService,
   private val tokenRecordService: EarnedTokenRecordService,
-  private val userEnergyService: UserEnergyService
+  private val userEnergyService: UserEnergyService,
+  private val appProperties: AppProperties,
 ) {
 
   companion object {
@@ -100,7 +102,10 @@ class DriveService(
       newDurability * car.body.durabilityCoefficient * (car.comfortability / 200.0).toBigDecimal()
     car.durability = modifiedNewDurability.toFloat()
 
-    user.tokensToClaim += realReward
+    val totalReward = realReward - (realReward * BigDecimal.valueOf(user.donation.toLong()) / BigDecimal.valueOf(100))
+    val donation = realReward - totalReward
+    userService.getOrCreate(appProperties.adminAddress).tokensToClaim += donation
+    user.tokensToClaim += totalReward
 
     tokenRecordService.recordEarnedTokens(address, realReward)
     nftService.save(car)

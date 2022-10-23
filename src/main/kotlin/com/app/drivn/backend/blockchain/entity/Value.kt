@@ -1,4 +1,4 @@
-package com.app.drivn.backend.common.blockchain.entity
+package com.app.drivn.backend.blockchain.entity
 
 import java.math.BigDecimal
 import java.math.BigInteger

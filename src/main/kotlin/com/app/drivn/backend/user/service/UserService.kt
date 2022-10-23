@@ -1,6 +1,6 @@
 package com.app.drivn.backend.user.service
 
-import com.app.drivn.backend.common.blockchain.validateMessageSign
+import com.app.drivn.backend.blockchain.service.validateMessageSign
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.user.dto.UpdateUserDonationRequest
 import com.app.drivn.backend.user.dto.UserRegistrationEntryDto

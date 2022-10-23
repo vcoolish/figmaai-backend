@@ -1,4 +1,4 @@
-package com.app.drivn.backend.common.blockchain.model
+package com.app.drivn.backend.blockchain.model
 
 import com.app.drivn.backend.common.model.AbstractJpaPersistable
 import javax.persistence.*
@@ -7,8 +7,7 @@ import javax.persistence.*
 @Entity
 class BlockchainState : AbstractJpaPersistable<String>() {
 
-  @OneToMany
-  @JoinColumn(name = "transaction_id")
+  @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "blockchainState")
   lateinit var transactions: List<TransactionCache>
 
   @Id

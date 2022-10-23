@@ -19,7 +19,7 @@ object NftMapper {
     carNft.name = "Car #$id"
     carNft.description = "NFT Car, drive it in DRIVN to earn"
     carNft.image = "https://arweave.net/Zh1XgakvwR6xPoXefYZbHhIJVmaLfIyjuJXca3kRpE4"
-    carNft.externalUrl = "https://opensea.io/"
+    carNft.externalUrl = "https://tofunft.com/nft/bsc/0x34031C84Ee86e11D45974847C380091A84705921/$id"
     carNft.creatorAddress = "0xF36f148D6FdEaCD6c765F8f59D4074109E311f0c"
 
     carNft.level = 0
@@ -46,9 +46,9 @@ object NftMapper {
     carNft.collectionId = collectionId
 
     carNft.name = "${carType.title} #$id"
-    carNft.description = "NFT Car, drive it in DRIVN to earn"
+    carNft.description = "NFT Car, use it in DRIVN to earn while driving"
     carNft.image = "https://arweave.net/Zh1XgakvwR6xPoXefYZbHhIJVmaLfIyjuJXca3kRpE4"
-    carNft.externalUrl = "https://opensea.io/assets/matic/0x34031C84Ee86e11D45974847C380091A84705921/0"
+    carNft.externalUrl = "https://tofunft.com/nft/bsc/0x34031C84Ee86e11D45974847C380091A84705921/$id"
     carNft.creatorAddress = "0xa81A54123dcafb6C3056a8f513DE28ef699790D8"
 
     carNft.level = 0

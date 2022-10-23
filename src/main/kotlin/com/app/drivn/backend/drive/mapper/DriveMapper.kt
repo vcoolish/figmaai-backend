@@ -8,6 +8,7 @@ object DriveMapper {
     user.distance,
     user.energy,
     user.maxEnergy,
+    user.balance,
     user.tokensToClaim,
     user.tokensLimitPerDay,
     user.nextEnergyRenew

@@ -1,6 +1,8 @@
 package com.app.drivn.backend.config.properties
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.core.io.Resource
 import org.springframework.validation.annotation.Validated
 import java.math.BigDecimal
 import java.time.Duration
@@ -14,6 +16,9 @@ class AppProperties {
 
   @NotBlank
   lateinit var sigKey: String
+
+  @NotBlank
+  lateinit var key: String
 
   @Positive
   var defaultUserEnergyLimit: BigDecimal = BigDecimal.valueOf(30)
@@ -34,4 +39,18 @@ class AppProperties {
   var levelUpCarCost: BigDecimal = BigDecimal.valueOf(100)
 
   var carLevelDistanceRequirement: Map<@Positive Short, @Positive Int> = emptyMap()
+
+  @Value("classpath:erc20.json")
+  lateinit var ercFile: Resource
+
+  @NotBlank
+  lateinit var adminAddress: String
+
+  @NotBlank
+  lateinit var contractAddress: String
+
+  @NotBlank
+  lateinit var clientUrl: String
+
+  var chainId: Long = 56
 }

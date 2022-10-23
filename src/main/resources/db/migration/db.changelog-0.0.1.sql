@@ -117,3 +117,45 @@ ALTER TABLE car_nfts
   ALTER level TYPE SMALLINT;
 --rollback ALTER TABLE car_nfts ALTER level TYPE INT;
 
+--changeset vcoolish:20221017100000
+ALTER TABLE users
+  ADD COLUMN balance DECIMAL(30, 18) NOT NULL DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS balance_history
+(
+  id           UUID PRIMARY KEY                  DEFAULT gen_random_uuid(),
+  user_address VARCHAR(255)             NOT NULL REFERENCES users,
+  balance      DECIMAL(30, 18)          NOT NULL DEFAULT 0,
+  tx_id        VARCHAR(255)             NOT NULL,
+  created_at   TIMESTAMP with time zone NOT NULL
+);
+--rollback ALTER TABLE users DROP COLUMN balance;
+--rollback DROP TABLE balance_history;
+
+--changeset vcoolish:20221017180000
+ALTER TABLE users
+  ALTER COLUMN tokens_to_claim TYPE DECIMAL(30, 8) USING (tokens_to_claim::DECIMAL(30, 18)),
+  ALTER COLUMN tokens_limit_per_day TYPE DECIMAL(30, 8) USING (tokens_limit_per_day::DECIMAL(30, 18));
+--rollback ALTER TABLE users DROP COLUMN balance;
+
+--changeset vcoolish:20221018180000
+ALTER TABLE users
+  ADD COLUMN sign_message VARCHAR(255) NOT NULL DEFAULT '';
+--rollback ALTER TABLE users DROP COLUMN sign_message;
+
+--changeset vcoolish:20221019100000
+CREATE TABLE IF NOT EXISTS transactions
+(
+  id        UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
+  address   VARCHAR(255)    NOT NULL REFERENCES users,
+  amount    DECIMAL(30, 18) NOT NULL DEFAULT 0,
+  tx_type   VARCHAR(255)    NOT NULL,
+  direction VARCHAR(255)    NOT NULL
+);
+CREATE TABLE IF NOT EXISTS blockchain_state
+(
+  transaction_id       UUID NOT NULL REFERENCES transactions,
+  last_processed_block VARCHAR(255) NOT NULL
+);
+--rollback DROP TABLE transactions;
+--rollback DROP TABLE blockchain_state;

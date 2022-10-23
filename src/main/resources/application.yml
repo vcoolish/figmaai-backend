@@ -21,7 +21,6 @@ spring:
   mvc:
     throw-exception-if-no-handler-found: true
     static-path-pattern: /static/**
-
 springdoc:
   api-docs:
     resolve-schema-properties: true
@@ -52,13 +51,15 @@ server:
     include-exception: true
     include-message: always
     include-binding-errors: always
-    include-stacktrace: on_param
 
 web-security:
   role-access-restriction-paths:
     - methods: PUT
       paths:
         - /address/*
+    - methods: POST
+      paths:
+        - /address/withdraw
     - methods: PATCH
       paths:
         - /nft/*
@@ -66,17 +67,22 @@ web-security:
 
 application:
   sig-key: poop
+  key: "0x2342db94aae1023c489b4e0ed0ecd880df0353a0da0214b348ed43b1c601db5025c514b7557e530f75d90aa5d1e3e5de175b01d7ebdbe26a5dc87288ef3183b69bb886cc1622935339a9271fb98c7ce40c4270eca120bd92c9dd354171b7c466"
   default-user-energy-limit: 30
   default-user-tokens-limit-per-day: 10
   energy-renew-rate: PT6H
   durability-repair-cost: 0.625
   level-up-car-cost: 100
+  chain-id: 56
   car-level-distance-requirement:
     1: 100
     2: 300
     3: 500
     4: 1000
     5: 2000
+  admin-address: "0xa81A54123dcafb6C3056a8f513DE28ef699790D8"
+  contract-address: "0xe418eE8ec1Bca66FFa7E088e4656Cc628661043d"
+  client-url: https://intensive-divine-mountain.bsc.discover.quiknode.pro/79d20c28b6e2219dd4c5e8e9599f6440a6627034/
 
 probability:
   car:

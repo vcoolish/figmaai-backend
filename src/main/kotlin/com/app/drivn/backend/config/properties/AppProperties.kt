@@ -56,4 +56,6 @@ class AppProperties {
 
   @NotBlank
   lateinit var arweaveUrl: String
+
+  var bernoulliRequestedPercentage: Short = 1
 }

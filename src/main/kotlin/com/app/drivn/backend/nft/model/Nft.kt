@@ -5,7 +5,9 @@ import java.util.*
 import javax.persistence.Column
 import javax.persistence.Id
 import javax.persistence.IdClass
+import javax.persistence.JoinColumn
 import javax.persistence.MappedSuperclass
+import javax.persistence.OneToOne
 
 @IdClass(NftId::class)
 @MappedSuperclass
@@ -23,8 +25,9 @@ open class Nft {
   @Column(length = 512)
   lateinit var description: String
 
-  @Column(length = 2048)
-  lateinit var image: String
+  @OneToOne
+  @JoinColumn(name = "image_id")
+  lateinit var image: Image
 
   @Column(length = 2048)
   lateinit var externalUrl: String

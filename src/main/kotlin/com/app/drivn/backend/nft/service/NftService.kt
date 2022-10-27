@@ -2,11 +2,13 @@ package com.app.drivn.backend.nft.service
 
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.exception.BadRequestException
+import com.app.drivn.backend.exception.NotFoundException
 import com.app.drivn.backend.nft.data.CarRepairInfo
 import com.app.drivn.backend.nft.dto.CarLevelUpCostResponse
 import com.app.drivn.backend.nft.dto.NftInternalDto
 import com.app.drivn.backend.nft.mapper.NftMapper
 import com.app.drivn.backend.nft.model.CarNft
+import com.app.drivn.backend.nft.model.Image
 import com.app.drivn.backend.nft.model.NftId
 import com.app.drivn.backend.nft.repository.CarNftRepository
 import com.app.drivn.backend.user.service.UserService
@@ -21,16 +23,24 @@ import kotlin.math.min
 class NftService(
   private val carNftRepository: CarNftRepository,
   private val userService: UserService,
-  private val appProperties: AppProperties
+  private val appProperties: AppProperties,
+  private val imageService: ImageService,
 ) {
 
-  fun getAll(pageable: Pageable): Page<NftInternalDto> {
-    return carNftRepository.findAll(pageable).map(NftMapper::toInternalDto)
+  fun getAll(pageable: Pageable): Page<CarNft> {
+    return carNftRepository.findAll(pageable)
   }
 
   fun getOrCreate(id: Long, collectionId: Long): CarNft {
-    return carNftRepository.findById(NftId(id, collectionId))
-      .orElseGet { carNftRepository.save(NftMapper.generateRandomCar(id, collectionId)) }
+    return carNftRepository.findById(NftId(id, collectionId)).orElseGet {
+      NftMapper.generateRandomCar(id, collectionId)
+        .apply { image = getNextFreeImage() }
+        .apply(carNftRepository::save)
+    }
+  }
+
+  private fun getNextFreeImage(): Image {
+    return imageService.findFreeImage() ?: throw NotFoundException("Free image for NFT not found")
   }
 
   fun get(id: Long, collectionId: Long): CarNft {

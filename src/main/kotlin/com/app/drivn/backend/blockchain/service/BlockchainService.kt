@@ -171,7 +171,11 @@ class BlockchainService(
     val amount = userService.get(to).tokensToClaim
     val item = TransactionUnprocessed(to, Direction.WITHDRAW, amount, BalanceType.TOKEN)
     queue.add(item)
-    mint(to, tokenUnit.toUnit(amount))
+    mint(
+      contractAddress = appProperties.contractAddress,
+      address = to,
+      tokenId = tokenUnit.toUnit(amount),
+    )
     val user = userService.subtractFromTokenBalance(to, amount)
     queue.remove(item)
     return user
@@ -201,37 +205,6 @@ class BlockchainService(
     }
   }
 
-  private fun mint(address: String, amount: BigInteger): String {
-    val function = Function(
-      "mint",
-      listOf(org.web3j.abi.datatypes.Address(address), org.web3j.abi.datatypes.Uint(amount)),
-      listOf(),
-    )
-    val encodedFunction = FunctionEncoder.encode(function)
-    val gasPrice = client.ethGasPrice().send().gasPrice
-
-    val nonce = client.ethGetTransactionCount(appProperties.adminAddress, DefaultBlockParameterName.LATEST)
-      .send().transactionCount
-    val transactionForEstimate = Transaction.createFunctionCallTransaction(
-      appProperties.adminAddress,
-      nonce,
-      gasPrice,
-      BigInteger.valueOf(10000000),
-      appProperties.contractAddress,
-      BigInteger.ZERO,
-      encodedFunction
-    )
-    val gasLimit = client.ethEstimateGas(transactionForEstimate).send().amountUsed
-    return FastRawTransactionManager(client, loadCreds(), appProperties.chainId)
-      .sendTransaction(
-        gasPrice,
-        gasLimit,
-        address,
-        encodedFunction,
-        BigInteger.ZERO,
-      ).transactionHash
-  }
-
   private fun transferCoins(address: String, amount: BigInteger): String {
     val gasPrice = client.ethGasPrice().send().gasPrice
     return FastRawTransactionManager(client, loadCreds(), appProperties.chainId)
@@ -251,6 +224,41 @@ class BlockchainService(
     val bip44Keypair = Bip32ECKeyPair.deriveKeyPair(masterKeyPair, path)
 
     return Credentials.create(bip44Keypair)
+  }
+
+  fun mint(
+    contractAddress: String,
+    address: String,
+    tokenId: BigInteger,
+  ): String {
+    val function = Function(
+      "mint",
+      listOf(org.web3j.abi.datatypes.Address(address), org.web3j.abi.datatypes.Uint(tokenId)),
+      listOf(),
+    )
+    val encodedFunction = FunctionEncoder.encode(function)
+    val gasPrice = client.ethGasPrice().send().gasPrice
+
+    val nonce = client.ethGetTransactionCount(appProperties.adminAddress, DefaultBlockParameterName.LATEST)
+      .send().transactionCount
+    val transactionForEstimate = Transaction.createFunctionCallTransaction(
+      appProperties.adminAddress,
+      nonce,
+      gasPrice,
+      BigInteger.valueOf(1000000),
+      contractAddress,
+      BigInteger.ZERO,
+      encodedFunction
+    )
+    val gasLimit = client.ethEstimateGas(transactionForEstimate).send().amountUsed
+    return FastRawTransactionManager(client, loadCreds(), appProperties.chainId)
+      .sendTransaction(
+        gasPrice,
+        gasLimit,
+        contractAddress,
+        encodedFunction,
+        BigInteger.ZERO,
+      ).transactionHash
   }
 }
 

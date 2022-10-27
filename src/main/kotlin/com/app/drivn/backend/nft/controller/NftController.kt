@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import javax.validation.constraints.NotBlank
@@ -38,11 +39,11 @@ class NftController(
 
   @GetMapping("/nft/{collectionId}/{id}")
   fun getNftExternalInfo(@PathVariable collectionId: Long, @PathVariable id: Long): NftExternalDto =
-    NftMapper.toExternalDto(nftService.getOrCreate(id, collectionId), appProperties.arweaveUrl)
+    NftMapper.toExternalDto(nftService.get(id, collectionId), appProperties.arweaveUrl)
 
   @GetMapping("/nft/{collectionId}/{id}/internals")
   fun getNftInternalInfo(@PathVariable collectionId: Long, @PathVariable id: Long): NftInternalDto =
-    NftMapper.toInternalDto(nftService.getOrCreate(id, collectionId), appProperties.arweaveUrl)
+    NftMapper.toInternalDto(nftService.get(id, collectionId), appProperties.arweaveUrl)
 
   @GetMapping("/nft/{collectionId}/{id}/repair")
   fun getRepairCost(
@@ -78,4 +79,12 @@ class NftController(
     nftService.levelUp(id, collectionId, initiatorAddress),
     appProperties.arweaveUrl
   )
+
+  @PatchMapping("/nft/{collectionId}/purchase")
+  fun purchaseCar(
+    @PathVariable collectionId: String,
+    @NotBlank @RequestHeader address: String
+  ): NftInternalDto {
+    return NftMapper.toInternalDto(nftService.create(address, collectionId.toLong()), appProperties.arweaveUrl)
+  }
 }

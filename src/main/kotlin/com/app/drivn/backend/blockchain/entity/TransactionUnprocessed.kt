@@ -1,6 +1,7 @@
-package com.app.drivn.backend.common.blockchain.entity
+package com.app.drivn.backend.blockchain.entity
 
-import com.app.drivn.backend.user.dto.BalanceType
+import com.app.drivn.backend.blockchain.model.Direction
+import com.app.drivn.backend.blockchain.model.BalanceType
 import java.math.BigDecimal
 
 data class TransactionUnprocessed(
@@ -9,8 +10,3 @@ data class TransactionUnprocessed(
   val amount: BigDecimal,
   val type: BalanceType,
 )
-
-enum class Direction {
-  deposit,
-  withdraw,
-}

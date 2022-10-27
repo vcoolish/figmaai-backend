@@ -56,4 +56,9 @@ class AppProperties {
   lateinit var clientUrl: String
 
   var chainId: Long = 56
+
+  @NotBlank
+  lateinit var arweaveUrl: String
+
+  var bernoulliRequestedPercentage: Short = 1
 }

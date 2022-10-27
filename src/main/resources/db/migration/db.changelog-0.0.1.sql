@@ -159,3 +159,14 @@ CREATE TABLE IF NOT EXISTS blockchain_state
 );
 --rollback DROP TABLE transactions;
 --rollback DROP TABLE blockchain_state;
+
+--changeset yemets:20221023171535
+ALTER TABLE blockchain_state
+  DROP COLUMN transaction_id,
+  ADD CONSTRAINT pk_blockchain_state PRIMARY KEY (last_processed_block);
+
+ALTER TABLE IF EXISTS transactions
+  ALTER tx_type TYPE VARCHAR(20),
+  ALTER direction TYPE VARCHAR(20),
+  ADD block_id VARCHAR(255) NOT NULL REFERENCES blockchain_state(last_processed_block);
+--rollback

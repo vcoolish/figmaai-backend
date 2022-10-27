@@ -1,4 +1,4 @@
-package com.app.drivn.backend.common.blockchain
+package com.app.drivn.backend.blockchain.service
 
 import org.web3j.crypto.Keys
 import org.web3j.crypto.Sign

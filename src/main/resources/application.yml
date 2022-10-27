@@ -11,6 +11,9 @@ spring:
   sql:
     init:
       continue-on-error: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
   task:
     scheduling:
       pool:
@@ -21,6 +24,7 @@ spring:
   mvc:
     throw-exception-if-no-handler-found: true
     static-path-pattern: /static/**
+
 springdoc:
   api-docs:
     resolve-schema-properties: true
@@ -84,6 +88,7 @@ application:
   contract-address: "0xe418eE8ec1Bca66FFa7E088e4656Cc628661043d"
   collection-address: "0x34031C84Ee86e11D45974847C380091A84705921"
   client-url: https://intensive-divine-mountain.bsc.discover.quiknode.pro/79d20c28b6e2219dd4c5e8e9599f6440a6627034/
+  arweave-url: "https://arweave.net/"
 
 probability:
   car:

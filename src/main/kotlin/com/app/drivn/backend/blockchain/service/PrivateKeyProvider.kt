@@ -1,4 +1,4 @@
-package com.app.drivn.backend.common.blockchain
+package com.app.drivn.backend.blockchain.service
 
 import com.app.drivn.backend.config.properties.AppProperties
 import org.springframework.stereotype.Service

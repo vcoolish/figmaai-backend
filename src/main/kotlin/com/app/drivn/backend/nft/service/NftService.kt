@@ -1,14 +1,12 @@
 package com.app.drivn.backend.nft.service
 
-import com.app.drivn.backend.common.blockchain.BlockchainService
+import com.app.drivn.backend.blockchain.service.BlockchainService
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.exception.BadRequestException
 import com.app.drivn.backend.exception.NotFoundException
 import com.app.drivn.backend.nft.data.CarRepairInfo
 import com.app.drivn.backend.nft.dto.CarLevelUpCostResponse
-import com.app.drivn.backend.nft.dto.NftInternalDto
 import com.app.drivn.backend.nft.entity.CarCollection
-import com.app.drivn.backend.nft.mapper.NftMapper
 import com.app.drivn.backend.nft.model.CarNft
 import com.app.drivn.backend.nft.model.Image
 import com.app.drivn.backend.nft.model.NftId
@@ -36,18 +34,9 @@ class NftService(
     return carNftRepository.findAll(pageable)
   }
 
-  fun getOrCreate(id: Long, collectionId: Long): CarNft {
-    return carNftRepository.findById(NftId(id, collectionId)).orElseGet {
-      NftMapper.generateRandomCar(id, collectionId)
-        .apply { image = getNextFreeImage() }
-        .apply(carNftRepository::save)
-    }
-  }
-
   private fun getNextFreeImage(): Image {
-    return imageService.findFreeImage() ?: throw NotFoundException("Free image for NFT not found")
-    return carNftRepository.findById(NftId(id, collectionId))
-      .orElseGet { carNftRepository.save(carCreationService.create(id, collectionId)) }
+    return imageService.findFreeImage()
+      ?: throw NotFoundException("Free image for NFT not found")
   }
 
   fun create(address: String, collectionId: Long): CarNft {
@@ -57,12 +46,14 @@ class NftService(
     if (user.balance < carType.price.toBigDecimal()) {
       throw IllegalStateException("Insuffucient balance")
     }
+    val image = getNextFreeImage()
     blockchainService.mint(
       contractAddress = appProperties.collectionAddress,
       address = address,
       tokenId = BigInteger.valueOf(id),
     )
     val nft = carCreationService.create(id, collectionId)
+      .apply { this.image = image }
     user.balance = user.balance - carType.price.toBigDecimal()
     userService.save(user)
     return carNftRepository.save(nft)

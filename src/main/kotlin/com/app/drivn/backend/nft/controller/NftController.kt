@@ -39,11 +39,11 @@ class NftController(
 
   @GetMapping("/nft/{collectionId}/{id}")
   fun getNftExternalInfo(@PathVariable collectionId: Long, @PathVariable id: Long): NftExternalDto =
-    NftMapper.toExternalDto(nftService.getOrCreate(id, collectionId), appProperties.arweaveUrl)
+    NftMapper.toExternalDto(nftService.get(id, collectionId), appProperties.arweaveUrl)
 
   @GetMapping("/nft/{collectionId}/{id}/internals")
   fun getNftInternalInfo(@PathVariable collectionId: Long, @PathVariable id: Long): NftInternalDto =
-    NftMapper.toInternalDto(nftService.getOrCreate(id, collectionId), appProperties.arweaveUrl)
+    NftMapper.toInternalDto(nftService.get(id, collectionId), appProperties.arweaveUrl)
 
   @GetMapping("/nft/{collectionId}/{id}/repair")
   fun getRepairCost(
@@ -85,6 +85,6 @@ class NftController(
     @PathVariable collectionId: String,
     @NotBlank @RequestHeader address: String
   ): NftInternalDto {
-    return NftMapper.toInternalDto(nftService.create(address, collectionId.toLong()))
+    return NftMapper.toInternalDto(nftService.create(address, collectionId.toLong()), appProperties.arweaveUrl)
   }
 }

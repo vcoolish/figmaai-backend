@@ -17,7 +17,6 @@ object NftMapper {
 
     carNft.name = "Car #$id"
     carNft.description = "NFT Car, drive it in DRIVN to earn"
-    carNft.image = "https://arweave.net/Zh1XgakvwR6xPoXefYZbHhIJVmaLfIyjuJXca3kRpE4"
     carNft.externalUrl = "https://opensea.io/"
     carNft.creatorAddress = "0xF36f148D6FdEaCD6c765F8f59D4074109E311f0c"
 
@@ -35,10 +34,10 @@ object NftMapper {
     return carNft
   }
 
-  private fun <T : NftBaseDto> fillBaseDto(nft: Nft, dto: T): T {
+  private fun <T : NftBaseDto> fillBaseDto(nft: Nft, dto: T, arweaveUrl: String): T {
     dto.name = nft.name
     dto.description = nft.description
-    dto.image = nft.image
+    dto.image = arweaveUrl + nft.image.dataTxId
     dto.externalUrl = nft.externalUrl
     dto.collection = NftBaseDto.Collection(
       name = "Car",
@@ -48,8 +47,8 @@ object NftMapper {
     return dto
   }
 
-  fun toInternalDto(carNft: CarNft): NftInternalDto {
-    val dto = fillBaseDto(carNft, NftInternalDto())
+  fun toInternalDto(carNft: CarNft, arweaveUrl: String): NftInternalDto {
+    val dto = fillBaseDto(carNft, NftInternalDto(), arweaveUrl)
 
     dto.level = carNft.level
     dto.quality = carNft.quality
@@ -68,8 +67,8 @@ object NftMapper {
     return dto
   }
 
-  fun toExternalDto(carNft: CarNft): NftExternalDto {
-    val dto = fillBaseDto(carNft, NftExternalDto())
+  fun toExternalDto(carNft: CarNft, arweaveUrl: String): NftExternalDto {
+    val dto = fillBaseDto(carNft, NftExternalDto(), arweaveUrl)
 
     dto.attributes = listOf(
       NftExternalDto.Attribute(

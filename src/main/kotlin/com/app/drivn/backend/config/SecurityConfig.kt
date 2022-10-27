@@ -64,13 +64,16 @@ class SecurityConfig(
       .logout().disable()
       .httpBasic().disable()
       .csrf().disable()
-      //            .exceptionHandling(c -> c
-      //                    .authenticationEntryPoint(new SecurityAuthenticationEntryPoint(objectMapper))
-      //                    .accessDeniedHandler(new SecurityAccessDeniedHandler(objectMapper)))
+//      .exceptionHandling(c -> c
+//              .authenticationEntryPoint(new SecurityAuthenticationEntryPoint(objectMapper))
+//              .accessDeniedHandler(new SecurityAccessDeniedHandler(objectMapper)))
       .sessionManagement { c: SessionManagementConfigurer<HttpSecurity?> ->
         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       }
-      .addFilterAt(SigFilter(appProperties, userService), UsernamePasswordAuthenticationFilter::class.java)
+      .addFilterAt(
+        SigFilter(appProperties, userService),
+        UsernamePasswordAuthenticationFilter::class.java
+      )
 
     val urlRegistry = http.authorizeRequests()
 

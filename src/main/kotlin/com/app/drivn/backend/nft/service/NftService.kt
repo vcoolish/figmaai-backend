@@ -44,7 +44,7 @@ class NftService(
     val user = userService.get(address)
     val carType = CarCollection.values().first { it.collectionId == collectionId }
     if (user.balance < carType.price.toBigDecimal()) {
-      throw IllegalStateException("Insuffucient balance")
+      throw IllegalStateException("Insufficient balance")
     }
     val image = getNextFreeImage()
     blockchainService.mint(
@@ -52,7 +52,7 @@ class NftService(
       address = address,
       tokenId = BigInteger.valueOf(id),
     )
-    val nft = carCreationService.create(id, collectionId)
+    val nft = carCreationService.create(user, id, collectionId)
       .apply { this.image = image }
     user.balance = user.balance - carType.price.toBigDecimal()
     userService.save(user)

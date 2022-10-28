@@ -1,12 +1,10 @@
 package com.app.drivn.backend.user.model
 
 import com.app.drivn.backend.common.model.AbstractJpaPersistable
+import com.app.drivn.backend.nft.model.CarNft
 import java.math.BigDecimal
 import java.time.ZonedDateTime
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "users")
@@ -15,6 +13,9 @@ class User() : AbstractJpaPersistable<String>() {
   @Id
   lateinit var address: String
   override fun getId(): String = address
+
+  @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "user")
+  lateinit var nfts: List<CarNft>
 
   @Column(nullable = false, precision = 12, scale = 2)
   var distance: BigDecimal = BigDecimal.ZERO

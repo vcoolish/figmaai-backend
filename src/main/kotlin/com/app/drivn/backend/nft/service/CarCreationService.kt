@@ -5,6 +5,7 @@ import com.app.drivn.backend.config.probability.CarEfficiencyProbabilityProperti
 import com.app.drivn.backend.config.probability.CarQualityProbabilityProperties
 import com.app.drivn.backend.nft.mapper.NftMapper
 import com.app.drivn.backend.nft.model.CarNft
+import com.app.drivn.backend.user.model.User
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
 
@@ -20,12 +21,13 @@ class CarCreationService(
   private val carEfficiencyProbabilityProperties: CarEfficiencyProbabilityProperties
 ) {
 
-  fun create(id: Long, collectionId: Long): CarNft {
+  fun create(user: User, id: Long, collectionId: Long): CarNft {
     val car = NftMapper.generateCar(id, collectionId)
 
     car.quality = carQualityProbabilityProperties.getNextRandom()
     car.body = carBodyProbabilityProperties.getNextRandom()
     car.efficiency = carEfficiencyProbabilityProperties.getNextValue().toShort()
+    car.user = user
 
     return car
   }

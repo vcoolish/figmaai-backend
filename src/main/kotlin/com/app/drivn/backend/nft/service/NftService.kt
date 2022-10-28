@@ -52,7 +52,7 @@ class NftService(
       address = address,
       tokenId = BigInteger.valueOf(id),
     )
-    val nft = carCreationService.create(id, collectionId)
+    val nft = carCreationService.create(user, id, collectionId)
       .apply { this.image = image }
     user.balance = user.balance - carType.price.toBigDecimal()
     userService.save(user)

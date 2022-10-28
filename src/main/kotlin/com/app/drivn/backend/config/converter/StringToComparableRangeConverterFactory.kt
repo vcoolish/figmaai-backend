@@ -1,12 +1,16 @@
 package com.app.drivn.backend.config.converter
 
 import com.app.drivn.backend.config.probability.ComparableRange
+import org.springframework.boot.context.properties.ConfigurationPropertiesBinding
 import org.springframework.core.convert.TypeDescriptor
 import org.springframework.core.convert.converter.ConditionalConverter
 import org.springframework.core.convert.converter.Converter
 import org.springframework.core.convert.converter.ConverterFactory
+import org.springframework.stereotype.Component
 import org.springframework.util.ObjectUtils
 
+@Component
+@ConfigurationPropertiesBinding
 class StringToComparableRangeConverterFactory : ConverterFactory<String, ComparableRange<*>>,
   ConditionalConverter {
 
@@ -29,6 +33,11 @@ class StringToComparableRangeConverterFactory : ConverterFactory<String, Compara
     val strings = source.split('-', limit = 2)
     val start = strings.first()
     val end = strings.last()
+
+//    if (Int::class == targetType) {
+//      return ComparableRange(Integer.parseInt(end), Integer.parseInt(start))
+//    }
+
     TODO("Not yet implemented")
   }
 }

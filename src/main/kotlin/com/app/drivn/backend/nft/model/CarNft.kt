@@ -1,14 +1,15 @@
 package com.app.drivn.backend.nft.model
 
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.Table
+import com.app.drivn.backend.user.model.User
+import javax.persistence.*
 
 @Entity
 @Table(name = "car_nfts")
 class CarNft : Nft() {
 
+  @ManyToOne
+  @JoinColumn(name = "user_address")
+  lateinit var user: User
   var level: Short = 0
 
   @Enumerated(EnumType.STRING)

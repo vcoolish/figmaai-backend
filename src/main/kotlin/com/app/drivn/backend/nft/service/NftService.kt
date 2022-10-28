@@ -44,7 +44,7 @@ class NftService(
     val user = userService.get(address)
     val carType = CarCollection.values().first { it.collectionId == collectionId }
     if (user.balance < carType.price.toBigDecimal()) {
-      throw IllegalStateException("Insuffucient balance")
+      throw IllegalStateException("Insufficient balance")
     }
     val image = getNextFreeImage()
     blockchainService.mint(

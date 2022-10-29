@@ -18,7 +18,7 @@ class BlockchainState : AbstractJpaPersistable<String>() {
     cascade = [CascadeType.ALL],
     orphanRemoval = true
   )
-  var transactions: MutableList<TransactionCache> = mutableListOf()
+  var transactions: List<TransactionCache> = mutableListOf()
 
   @Id
   lateinit var lastProcessedBlock: String

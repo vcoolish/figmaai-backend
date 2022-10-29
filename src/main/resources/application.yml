@@ -112,5 +112,3 @@ probability:
 logging:
   level:
     com.app.drivn: debug
-
-debug: true

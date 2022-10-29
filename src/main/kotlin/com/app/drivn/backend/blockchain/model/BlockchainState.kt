@@ -1,14 +1,24 @@
 package com.app.drivn.backend.blockchain.model
 
 import com.app.drivn.backend.common.model.AbstractJpaPersistable
-import javax.persistence.*
+import javax.persistence.CascadeType
+import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.Id
+import javax.persistence.OneToMany
+import javax.persistence.Table
 
 @Table(name = "blockchain_state")
 @Entity
 class BlockchainState : AbstractJpaPersistable<String>() {
 
-  @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "blockchainState")
-  lateinit var transactions: List<TransactionCache>
+  @OneToMany(
+    fetch = FetchType.EAGER,
+    mappedBy = "blockchainState",
+    cascade = [CascadeType.ALL],
+    orphanRemoval = true
+  )
+  var transactions: MutableList<TransactionCache> = mutableListOf()
 
   @Id
   lateinit var lastProcessedBlock: String

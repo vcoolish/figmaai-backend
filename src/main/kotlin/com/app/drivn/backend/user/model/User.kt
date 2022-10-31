@@ -15,7 +15,7 @@ class User() : AbstractJpaPersistable<String>() {
   override fun getId(): String = address
 
   @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "user")
-  lateinit var nfts: List<CarNft>
+  var nfts: List<CarNft> = listOf()
 
   @Column(nullable = false, precision = 12, scale = 2)
   var distance: BigDecimal = BigDecimal.ZERO

@@ -241,14 +241,17 @@ class BlockchainService(
 
     val nonce = client.ethGetTransactionCount(appProperties.adminAddress, DefaultBlockParameterName.LATEST)
       .send().transactionCount
-    val transactionForEstimate = Transaction.createFunctionCallTransaction(
+    val transactionForEstimate = Transaction(
       appProperties.adminAddress,
       nonce,
       gasPrice,
       BigInteger.valueOf(1000000),
       contractAddress,
       BigInteger.ZERO,
-      encodedFunction
+      encodedFunction,
+      56L,
+      null,
+      null,
     )
     val gasLimit = client.ethEstimateGas(transactionForEstimate).send().amountUsed
     return FastRawTransactionManager(client, loadCreds(), appProperties.chainId)

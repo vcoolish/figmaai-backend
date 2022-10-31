@@ -47,7 +47,7 @@ object NftMapper {
     carNft.name = "${carType.title} #$id"
     carNft.description = "NFT Car, use it in DRIVN to earn while driving"
     carNft.externalUrl = "https://tofunft.com/nft/bsc/0x34031C84Ee86e11D45974847C380091A84705921/$id"
-    carNft.creatorAddress = "0xa81A54123dcafb6C3056a8f513DE28ef699790D8"
+    carNft.creatorAddress = "0xe418eE8ec1Bca66FFa7E088e4656Cc628661043d"
 
     carNft.level = 0
     carNft.body = carType.body

@@ -11,6 +11,9 @@ import com.app.drivn.backend.common.util.logger
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.user.model.User
 import com.app.drivn.backend.user.service.UserService
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Flowable
+import io.reactivex.FlowableEmitter
 import net.osslabz.evm.abi.decoder.AbiDecoder
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
@@ -24,9 +27,12 @@ import org.web3j.crypto.MnemonicUtils
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.DefaultBlockParameter
 import org.web3j.protocol.core.DefaultBlockParameterName
+import org.web3j.protocol.core.filters.BlockFilter
 import org.web3j.protocol.core.methods.request.Transaction
+import org.web3j.protocol.core.methods.response.EthBlock.TransactionResult
 import org.web3j.protocol.http.HttpService
 import org.web3j.tx.FastRawTransactionManager
+import org.web3j.utils.Async
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.net.http.WebSocket
@@ -78,6 +84,10 @@ class BlockchainService(
 
   @EventListener(ApplicationReadyEvent::class)
   fun onApplicationStarted() {
+    init()
+  }
+
+  private fun init() {
     logger.info("Syncing with blockchain...")
 
     //save processed tx id and check it to avoid double spends
@@ -97,15 +107,34 @@ class BlockchainService(
 
     var isPassedStart = false
     //implement block queue and reprocess failed blocks
-    client.transactionFlowable()
-      .retry { _, _ -> true }
+    Flowable.create({ subscriber: FlowableEmitter<String?> ->
+      val blockFilter = BlockFilter(client) { value: String? ->
+        subscriber.onNext(value ?: "")
+      }
+      try {
+        blockFilter.run(Async.defaultExecutorService(), 15000L)
+      } catch (t: Throwable) {
+        init()
+        subscriber.onError(t)
+      }
+      subscriber.setCancellable { blockFilter.cancel() }
+    }, BackpressureStrategy.BUFFER)
       .subscribe(
         {
-          if (isPassedStart) {
-            processTx(it)
-          } else {
-            isPassedStart = it.blockNumber !in startBlock..endBlock
-          }
+          try {
+            val block = client.ethGetBlockByHash(it, true).send().result
+            logger.info(block.number.toString())
+            val txs = block.transactions
+              .map { transactionResult: TransactionResult<*> -> transactionResult.get() as org.web3j.protocol.core.methods.response.Transaction }
+            txs.forEach { tx ->
+              if (isPassedStart) {
+                //todo: save processed tx hash and check if we have it
+                processTx(tx)
+              } else {
+                isPassedStart = tx.blockNumber !in startBlock..endBlock
+              }
+            }
+          } catch (ignored: Throwable) { }
         },
         Throwable::printStackTrace,
       )

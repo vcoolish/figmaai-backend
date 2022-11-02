@@ -55,6 +55,7 @@ object NftMapper {
     carNft.efficiency = (1..carType.efficiency).random().toShort()
     carNft.luck = (1..carType.luck).random().toShort()
     carNft.comfortability = (1..carType.comfortability).random().toShort()
+    carNft.durability = carType.maxDurability.toFloat()
     carNft.maxDurability = carType.maxDurability.toFloat()
     carNft.minSpeed = carType.minSpeed
     carNft.maxSpeed = carType.maxSpeed

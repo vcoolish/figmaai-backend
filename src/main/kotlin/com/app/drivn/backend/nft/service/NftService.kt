@@ -1,6 +1,7 @@
 package com.app.drivn.backend.nft.service
 
 import com.app.drivn.backend.blockchain.service.BlockchainService
+import com.app.drivn.backend.common.util.logger
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.exception.BadRequestException
 import com.app.drivn.backend.exception.NotFoundException
@@ -30,6 +31,8 @@ class NftService(
   private val blockchainService: BlockchainService,
 ) {
 
+  private val logger = logger()
+
   fun getAll(pageable: Pageable): Page<CarNft> {
     return carNftRepository.findAll(pageable)
   }
@@ -40,22 +43,36 @@ class NftService(
   }
 
   fun create(address: String, collectionId: Long): CarNft {
-    val id = System.currentTimeMillis() / 100
     val user = userService.get(address)
     val carType = CarCollection.values().first { it.collectionId == collectionId }
     if (user.balance < carType.price.toBigDecimal()) {
-      throw IllegalStateException("Insufficient balance")
+      throw BadRequestException("Insufficient balance")
     }
-    val image = getNextFreeImage()
-    blockchainService.mint(
-      contractAddress = appProperties.collectionAddress,
-      address = address,
-      tokenId = BigInteger.valueOf(id),
-    )
-    val nft = carCreationService.create(user, id, collectionId)
-      .apply { this.image = image }
+
+    val nft = carCreationService.create(user, collectionId)
+      .apply { this.image = getNextFreeImage() }
+      .run(carNftRepository::save)
+
+    val id: Long = nft.id!!
+
+    nft.name = "${carType.title} #$id"
+    nft.externalUrl = "https://tofunft.com/nft/bsc/0x34031C84Ee86e11D45974847C380091A84705921/$id"
+
+    try {
+      blockchainService.mint(
+        contractAddress = appProperties.collectionAddress,
+        address = address,
+        tokenId = BigInteger.valueOf(id),
+      )
+    } catch (e: Exception) {
+      logger.error("Failed to mint car $collectionId-$id")
+      carNftRepository.delete(nft)
+      throw e
+    }
+
     user.balance = user.balance - carType.price.toBigDecimal()
     userService.save(user)
+
     return carNftRepository.save(nft)
   }
 

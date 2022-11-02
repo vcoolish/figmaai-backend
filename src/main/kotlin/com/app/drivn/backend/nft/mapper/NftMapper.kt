@@ -36,17 +36,13 @@ object NftMapper {
   }
 
   fun generateCar(
-    id: Long,
     collectionId: Long,
   ): CarNft {
     val carType = CarCollection.values().first { it.collectionId == collectionId }
     val carNft = CarNft()
-    carNft.id = id
     carNft.collectionId = collectionId
 
-    carNft.name = "${carType.title} #$id"
     carNft.description = "NFT Car, use it in DRIVN to earn while driving"
-    carNft.externalUrl = "https://tofunft.com/nft/bsc/0x34031C84Ee86e11D45974847C380091A84705921/$id"
     carNft.creatorAddress = "0xe418eE8ec1Bca66FFa7E088e4656Cc628661043d"
 
     carNft.level = 0

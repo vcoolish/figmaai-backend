@@ -21,8 +21,8 @@ class CarCreationService(
   private val carEfficiencyProbabilityProperties: CarEfficiencyProbabilityProperties
 ) {
 
-  fun create(user: User, id: Long, collectionId: Long): CarNft {
-    val car = NftMapper.generateCar(id, collectionId)
+  fun create(user: User, collectionId: Long): CarNft {
+    val car = NftMapper.generateCar(collectionId)
 
     car.quality = carQualityProbabilityProperties.getNextRandom()
     car.body = carBodyProbabilityProperties.getNextRandom()

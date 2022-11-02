@@ -3,16 +3,21 @@ package com.app.drivn.backend.nft.model
 import org.hibernate.Hibernate
 import java.util.*
 import javax.persistence.Column
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.IdClass
 import javax.persistence.JoinColumn
 import javax.persistence.MappedSuperclass
 import javax.persistence.OneToOne
+import javax.persistence.SequenceGenerator
 
 @IdClass(NftId::class)
 @MappedSuperclass
 open class Nft {
   @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "car_nfts_id_sequence")
+  @SequenceGenerator(name = "car_nfts_id_sequence", sequenceName = "car_nfts_id_sequence")
   @Column(nullable = false)
   var id: Long? = null
 

@@ -52,20 +52,20 @@ class UserController(
   )
 
   @PostMapping("/energy")
-  fun renewMyEnergy(@RequestHeader address: String): ResponseEntity<UserInfoDto> =
+  fun renewMyEnergy(@Address @RequestHeader address: String): ResponseEntity<UserInfoDto> =
     userEnergyService.tryToRenew(address)
       .map(UserMapper::toDto)
       .let { ResponseEntity.of(it) }
 
   @PatchMapping
   fun updateUser(
-    @RequestHeader address: String,
+    @Address @RequestHeader address: String,
     @Valid @RequestBody request: UpdateUserDonationRequest
   ): UserInfoDto = UserMapper.toDto(userService.updateDonation(address, request))
 
   @PostMapping("/withdraw")
   fun withdraw(
-    @RequestHeader address: String,
+    @Address @RequestHeader address: String,
     @Valid @RequestBody request: WithdrawUserBalanceRequest
   ): UserInfoDto {
     val user = when (request.type) {

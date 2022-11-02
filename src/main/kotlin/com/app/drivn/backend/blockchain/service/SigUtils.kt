@@ -18,6 +18,7 @@ fun validateMessageSign(
   val recovered = ("0x" + Keys.getAddress(key)).trim()
   recovered.equals(address, ignoreCase = true)
 } catch (t: Throwable) {
+  t.printStackTrace()
   false
 }
 

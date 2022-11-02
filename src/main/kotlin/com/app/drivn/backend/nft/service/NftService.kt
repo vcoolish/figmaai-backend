@@ -105,6 +105,7 @@ class NftService(
 
       user.tokensToClaim -= repairableCost
       car.durability += repairableAmount
+      car.odometer += 101.0f
 
       userService.save(user)
       carNftRepository.save(car)

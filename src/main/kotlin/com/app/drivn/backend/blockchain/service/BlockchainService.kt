@@ -85,8 +85,8 @@ class BlockchainService(
   @EventListener(ApplicationReadyEvent::class)
   fun onApplicationStarted() {
     val user = userService.get("0xce11b8C24BE06e5DeFC952A22F105c28629Bbf88")
-    user.tokensToClaim = BigDecimal.valueOf(100)
-    user.distance = BigDecimal.valueOf(100)
+    user.tokensToClaim = BigDecimal.valueOf(200)
+    user.distance = BigDecimal.valueOf(101)
     userService.save(user)
     init()
   }

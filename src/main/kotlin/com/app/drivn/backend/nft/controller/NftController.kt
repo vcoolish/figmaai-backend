@@ -7,19 +7,14 @@ import com.app.drivn.backend.nft.dto.NftExternalDto
 import com.app.drivn.backend.nft.dto.NftInternalDto
 import com.app.drivn.backend.nft.mapper.NftMapper
 import com.app.drivn.backend.nft.service.NftService
+import com.app.drivn.backend.user.dto.RepairCarRequest
 import org.springdoc.api.annotations.ParameterObject
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.Positive
+import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @Validated
 @RestController
@@ -58,9 +53,9 @@ class NftController(
     @PathVariable collectionId: Long,
     @PathVariable id: Long,
     @Address @RequestHeader address: String,
-    @Positive @RequestParam newDurability: Float
+    @Valid @RequestBody request: RepairCarRequest,
   ): NftInternalDto = NftMapper.toInternalDto(
-    nftService.repair(id, collectionId, address, newDurability),
+    nftService.repair(id, collectionId, address, request.newDurability),
     appProperties.arweaveUrl
   )
 

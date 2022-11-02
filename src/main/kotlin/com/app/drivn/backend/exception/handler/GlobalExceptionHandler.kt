@@ -11,6 +11,7 @@ import java.util.NoSuchElementException
 import javax.persistence.EntityNotFoundException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import javax.validation.ConstraintViolationException
 
 @ControllerAdvice
 class GlobalExceptionHandler {
@@ -41,6 +42,16 @@ class GlobalExceptionHandler {
   @ExceptionHandler(HttpMessageNotReadableException::class)
   fun handleHttpMessageNotReadableException(
     exception: HttpMessageNotReadableException,
+    request: HttpServletRequest,
+    response: HttpServletResponse
+  ): ModelAndView {
+    response.sendError(HttpServletResponse.SC_BAD_REQUEST, exception.message)
+    return ModelAndView()
+  }
+
+  @ExceptionHandler(ConstraintViolationException::class)
+  fun handleConstraintViolationException(
+    exception: ConstraintViolationException,
     request: HttpServletRequest,
     response: HttpServletResponse
   ): ModelAndView {

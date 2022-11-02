@@ -6,11 +6,13 @@ import com.app.drivn.backend.constraint.Address
 import com.app.drivn.backend.nft.dto.NftInfoDto
 import com.app.drivn.backend.user.dto.*
 import com.app.drivn.backend.user.mapper.UserMapper
+import com.app.drivn.backend.user.service.EarnedTokenRecordService
 import com.app.drivn.backend.user.service.UserEnergyService
 import com.app.drivn.backend.user.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import java.math.BigDecimal
 import javax.validation.Valid
 
 @Validated
@@ -20,6 +22,7 @@ class UserController(
   private val userService: UserService,
   private val userEnergyService: UserEnergyService,
   private val blockchainService: BlockchainService,
+  private val earnedTokenRecordService: EarnedTokenRecordService,
 ) {
 
   @PostMapping("/register")
@@ -28,16 +31,16 @@ class UserController(
     @Valid @RequestBody request: UserRegistrationEntryDto
   ): UserExtendedDto {
     val user = userService.updateSignMessage(address, request)
-    return UserMapper.toExtendedDto(user)
+    return UserMapper.toExtendedDto(user, BigDecimal.ZERO)
   }
 
-  @GetMapping("")
+  @GetMapping
   fun getUser(
     @Address @RequestHeader address: String
-  ): UserExtendedDto {
-    val user = userService.get(address)
-    return UserMapper.toExtendedDto(user)
-  }
+  ): UserExtendedDto = UserMapper.toExtendedDto(
+    userService.get(address),
+    earnedTokenRecordService.getEarnedTokensForDay(address)
+  )
 
   @PostMapping("/energy")
   fun renewMyEnergy(@RequestHeader address: String): ResponseEntity<UserInfoDto> =
@@ -45,7 +48,7 @@ class UserController(
       .map(UserMapper::toDto)
       .let { ResponseEntity.of(it) }
 
-  @PatchMapping("")
+  @PatchMapping
   fun updateUser(
     @RequestHeader address: String,
     @Valid @RequestBody request: UpdateUserDonationRequest

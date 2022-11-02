@@ -98,6 +98,7 @@ class BlockchainService(
     var isPassedStart = false
     //implement block queue and reprocess failed blocks
     client.transactionFlowable()
+      .retry { _, _ -> true }
       .subscribe(
         {
           if (isPassedStart) {

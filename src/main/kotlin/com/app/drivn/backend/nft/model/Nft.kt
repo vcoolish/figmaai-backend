@@ -17,7 +17,11 @@ import javax.persistence.SequenceGenerator
 open class Nft {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "car_nfts_id_sequence")
-  @SequenceGenerator(name = "car_nfts_id_sequence", sequenceName = "car_nfts_id_sequence")
+  @SequenceGenerator(
+    name = "car_nfts_id_sequence",
+    sequenceName = "car_nfts_id_sequence",
+    initialValue = 1_000_000,
+    allocationSize = 1)
   @Column(nullable = false)
   var id: Long? = null
 

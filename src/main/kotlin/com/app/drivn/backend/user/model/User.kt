@@ -42,6 +42,7 @@ class User() : AbstractJpaPersistable<String>() {
   /**
    * Donation percent. From 0 to 50.
    */
+  @Column(nullable = false)
   var donation: Short = 5
 
   constructor(address: String, tokensLimitPerDay: BigDecimal, maxEnergy: BigDecimal) : this() {

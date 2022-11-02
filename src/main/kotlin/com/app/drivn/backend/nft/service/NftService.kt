@@ -41,27 +41,22 @@ class NftService(
 
   fun create(address: String, collectionId: Long): CarNft {
     val id = System.currentTimeMillis() / 100
-    try {
-      carNftRepository.getReferenceById(NftId(id, collectionId))
-      throw IllegalStateException("Car already exists")
-    } catch (t: Throwable) {
-      val user = userService.get(address)
-      val carType = CarCollection.values().first { it.collectionId == collectionId }
-      if (user.balance < carType.price.toBigDecimal()) {
-        throw IllegalStateException("Insufficient balance")
-      }
-      val image = getNextFreeImage()
-      blockchainService.mint(
-        contractAddress = appProperties.collectionAddress,
-        address = address,
-        tokenId = BigInteger.valueOf(id),
-      )
-      val nft = carCreationService.create(user, id, collectionId)
-        .apply { this.image = image }
-      user.balance = user.balance - carType.price.toBigDecimal()
-      userService.save(user)
-      return carNftRepository.save(nft)
+    val user = userService.get(address)
+    val carType = CarCollection.values().first { it.collectionId == collectionId }
+    if (user.balance < carType.price.toBigDecimal()) {
+      throw IllegalStateException("Insufficient balance")
     }
+    val image = getNextFreeImage()
+    blockchainService.mint(
+      contractAddress = appProperties.collectionAddress,
+      address = address,
+      tokenId = BigInteger.valueOf(id),
+    )
+    val nft = carCreationService.create(user, id, collectionId)
+      .apply { this.image = image }
+    user.balance = user.balance - carType.price.toBigDecimal()
+    userService.save(user)
+    return carNftRepository.save(nft)
   }
 
   fun get(id: Long, collectionId: Long): CarNft {

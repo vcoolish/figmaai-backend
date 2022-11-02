@@ -95,12 +95,11 @@ class DriveService(
     car.odometer += realDistance.toFloat()
 
     val newDurability = car.durability.toBigDecimal()
-      .subtract(distance / FIVE)
+      .subtract((distance / FIVE) / car.body.durabilityCoefficient)
+      .subtract((1 - (car.comfortability / 200.0)).toBigDecimal())
       .max(BigDecimal.ZERO)
 
-    val modifiedNewDurability =
-      newDurability * car.body.durabilityCoefficient * (car.comfortability / 200.0).toBigDecimal()
-    car.durability = modifiedNewDurability.toFloat()
+    car.durability = newDurability.toFloat()
 
     val totalReward = realReward - (realReward * BigDecimal.valueOf(user.donation.toLong()) / BigDecimal.valueOf(100))
     val donation = realReward - totalReward

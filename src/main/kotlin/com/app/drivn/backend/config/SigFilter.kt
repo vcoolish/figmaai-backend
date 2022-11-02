@@ -39,7 +39,7 @@ class SigFilter(
     } catch (t: Throwable) {
       null
     }
-    val sig: String? = Optional.ofNullable(cachedRequest.getHeader("signature"))
+    val sig: String? = Optional.ofNullable(request.getHeader("signature"))
       .orElseGet { cachedRequest.getParameter("signature") }
     //todo: consider validating params too
     val message = buildString {

@@ -91,18 +91,24 @@ class BlockchainService(
     logger.info("Syncing with blockchain...")
 
     //save processed tx id and check it to avoid double spends
-    val states = blockchainStateRepository.findAll()
-    val startBlock = (states.lastOrNull()?.lastProcessedBlock)?.toBigInteger() ?: BigInteger.ZERO
-    val endBlock = client.ethBlockNumber().send().blockNumber
+    val blocks = try {
+      val states = blockchainStateRepository.findAll()
+      val startBlock = (states.lastOrNull()?.lastProcessedBlock)?.toBigInteger() ?: BigInteger.ZERO
+      val endBlock = client.ethBlockNumber().send().blockNumber
 
-    started = true
+      started = true
 
-    if (startBlock > BigInteger.ZERO && startBlock < endBlock) {
-      processBlocks(startBlock, endBlock)
-      states.forEach {
-        it.transactions.forEach(this::processTxCache)
-        blockchainStateRepository.delete(it)
+      if (startBlock > BigInteger.ZERO && startBlock < endBlock) {
+        processBlocks(startBlock, endBlock)
+        states.forEach {
+          it.transactions.forEach(this::processTxCache)
+          blockchainStateRepository.delete(it)
+        }
       }
+      Pair(startBlock, endBlock)
+    } catch (t: Throwable) {
+      t.printStackTrace()
+      Pair(BigInteger.ZERO, BigInteger.ZERO)
     }
 
     var isPassedStart = false
@@ -131,7 +137,7 @@ class BlockchainService(
                 //todo: save processed tx hash and check if we have it
                 processTx(tx)
               } else {
-                isPassedStart = tx.blockNumber !in startBlock..endBlock
+                isPassedStart = tx.blockNumber !in blocks.first..blocks.second
               }
             }
           } catch (ignored: Throwable) { }

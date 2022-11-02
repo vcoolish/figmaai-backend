@@ -11,6 +11,7 @@ object DriveMapper {
     user.balance,
     user.tokensToClaim,
     user.tokensLimitPerDay,
-    user.nextEnergyRenew
+    user.donation,
+    user.nextEnergyRenew,
   )
 }

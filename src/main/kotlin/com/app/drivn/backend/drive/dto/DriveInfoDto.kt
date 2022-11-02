@@ -10,5 +10,6 @@ data class DriveInfoDto(
   val balance: BigDecimal,
   val tokenClaimable: BigDecimal,
   val tokensLimitPerDay: BigDecimal,
+  val donation: Short,
   val nextEnergyRenew: ZonedDateTime?
 )

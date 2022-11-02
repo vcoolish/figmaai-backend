@@ -1,6 +1,7 @@
 package com.app.drivn.backend.nft.controller
 
 import com.app.drivn.backend.config.properties.AppProperties
+import com.app.drivn.backend.constraint.Address
 import com.app.drivn.backend.nft.dto.CarLevelUpCostResponse
 import com.app.drivn.backend.nft.dto.NftExternalDto
 import com.app.drivn.backend.nft.dto.NftInternalDto
@@ -56,10 +57,10 @@ class NftController(
   fun repairCar(
     @PathVariable collectionId: Long,
     @PathVariable id: Long,
-    @NotBlank @RequestParam initiatorAddress: String,
+    @Address @RequestHeader address: String,
     @Positive @RequestParam newDurability: Float
   ): NftInternalDto = NftMapper.toInternalDto(
-    nftService.repair(id, collectionId, initiatorAddress, newDurability),
+    nftService.repair(id, collectionId, address, newDurability),
     appProperties.arweaveUrl
   )
 
@@ -74,16 +75,16 @@ class NftController(
   fun levelUpCar(
     @PathVariable collectionId: Long,
     @PathVariable id: Long,
-    @NotBlank @RequestParam initiatorAddress: String
+    @Address @RequestHeader address: String,
   ): NftInternalDto = NftMapper.toInternalDto(
-    nftService.levelUp(id, collectionId, initiatorAddress),
+    nftService.levelUp(id, collectionId, address),
     appProperties.arweaveUrl
   )
 
   @PatchMapping("/nft/{collectionId}/purchase")
   fun purchaseCar(
     @PathVariable collectionId: String,
-    @NotBlank @RequestHeader address: String
+    @Address @RequestHeader address: String
   ): NftInternalDto {
     return NftMapper.toInternalDto(nftService.create(address, collectionId.toLong()), appProperties.arweaveUrl)
   }

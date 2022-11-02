@@ -63,7 +63,8 @@ web-security:
         - /address/*
     - methods: POST
       paths:
-        - /address/*
+        - /address/energy
+        - /address/withdraw
     - methods: PATCH
       paths:
         - /nft/*

@@ -96,13 +96,18 @@ class BlockchainService(
     }
 
     var isPassedStart = false
-    client.transactionFlowable().subscribe {
-      if (isPassedStart) {
-        processTx(it)
-      } else {
-        isPassedStart = it.blockNumber !in startBlock..endBlock
-      }
-    }
+    //implement block queue and reprocess failed blocks
+    client.transactionFlowable()
+      .subscribe(
+        {
+          if (isPassedStart) {
+            processTx(it)
+          } else {
+            isPassedStart = it.blockNumber !in startBlock..endBlock
+          }
+        },
+        Throwable::printStackTrace,
+      )
     logger.info("Synced with blockchain.")
   }
 

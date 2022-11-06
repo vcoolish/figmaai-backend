@@ -35,20 +35,20 @@ class DriveService(
     val user = userService.get(address)
     if (user.energy <= BigDecimal.ZERO) {
       log.warn("User $address has no fuel!")
-      return DriveMapper.toDto(user)
+      return DriveMapper.toDto(user, tokenRecordService.getEarnedTokensForDay(user.address))
     }
 
     val earnedTokensForDay = tokenRecordService.getEarnedTokensForDay(address)
     val availableToEarn = user.tokensLimitPerDay - earnedTokensForDay
     if (availableToEarn <= BigDecimal.ZERO) {
       log.warn("User $address has reached his tokens limit per day!")
-      return DriveMapper.toDto(user)
+      return DriveMapper.toDto(user, tokenRecordService.getEarnedTokensForDay(user.address))
     }
 
     val car: CarNft = nftService.get(carId, collectionId)
     if (car.durability <= 0) {
       log.warn("The car $collectionId-$carId of user $address is broken!")
-      return DriveMapper.toDto(user)
+      return DriveMapper.toDto(user, tokenRecordService.getEarnedTokensForDay(user.address))
     }
 
     log.debug("User $address with car $collectionId-$carId drove through $distance")
@@ -109,7 +109,7 @@ class DriveService(
     tokenRecordService.recordEarnedTokens(address, realReward)
     nftService.save(car)
     userService.save(user)
-    return DriveMapper.toDto(user)
+    return DriveMapper.toDto(user, tokenRecordService.getEarnedTokensForDay(user.address))
   }
 
 }

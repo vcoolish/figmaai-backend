@@ -106,10 +106,10 @@ class DriveService(
     userService.getOrCreate(appProperties.adminAddress).tokensToClaim += donation
     user.tokensToClaim += totalReward
 
-    tokenRecordService.recordEarnedTokens(address, realReward)
+    val record = tokenRecordService.recordEarnedTokens(address, realReward)
     nftService.save(car)
     userService.save(user)
-    return DriveMapper.toDto(user, tokenRecordService.getEarnedTokensForDay(user.address))
+    return DriveMapper.toDto(user, record.tokenAmount)
   }
 
 }

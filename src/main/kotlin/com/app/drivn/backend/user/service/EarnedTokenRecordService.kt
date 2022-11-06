@@ -13,9 +13,9 @@ class EarnedTokenRecordService(
 
   fun getEarnedTokensForDay(address: String): BigDecimal {
     val dayAgo: ZonedDateTime = ZonedDateTime.now().minusDays(1)
-    return earnedTokenRecordRepository.sumAmountByAddressAndCreatedAtGreaterThanEqual(address, dayAgo)
+    return earnedTokenRecordRepository.sumAmountByAddressAndCreatedAtGreaterThanEqual(address.lowercase(), dayAgo)
   }
 
   fun recordEarnedTokens(address: String, earnedAmount: BigDecimal) : EarnedTokenRecord =
-    earnedTokenRecordRepository.save(EarnedTokenRecord(address, earnedAmount, ZonedDateTime.now()))
+    earnedTokenRecordRepository.save(EarnedTokenRecord(address.lowercase(), earnedAmount, ZonedDateTime.now()))
 }

@@ -33,7 +33,6 @@ class DriveService(
 
   fun drive(address: String, carId: Long, collectionId: Long, distance: BigDecimal): DriveInfoDto {
     val user = userService.get(address)
-    user.energy = BigDecimal.valueOf(30)
     if (user.energy <= BigDecimal.ZERO) {
       log.warn("User $address has no fuel!")
       return DriveMapper.toDto(user, tokenRecordService.getEarnedTokensForDay(user.address))

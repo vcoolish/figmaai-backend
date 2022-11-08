@@ -3,6 +3,7 @@ package com.app.drivn.backend.exception.handler
 import com.app.drivn.backend.common.util.LogUtil.*
 import com.app.drivn.backend.common.util.logger
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.servlet.ModelAndView
@@ -42,6 +43,16 @@ class GlobalExceptionHandler {
   @ExceptionHandler(HttpMessageNotReadableException::class)
   fun handleHttpMessageNotReadableException(
     exception: HttpMessageNotReadableException,
+    request: HttpServletRequest,
+    response: HttpServletResponse
+  ): ModelAndView {
+    response.sendError(HttpServletResponse.SC_BAD_REQUEST, exception.message)
+    return ModelAndView()
+  }
+
+  @ExceptionHandler(MissingServletRequestParameterException::class)
+  fun handleMissingServletRequestParameterException(
+    exception: MissingServletRequestParameterException,
     request: HttpServletRequest,
     response: HttpServletResponse
   ): ModelAndView {

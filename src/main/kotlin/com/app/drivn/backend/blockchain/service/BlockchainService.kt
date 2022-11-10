@@ -129,7 +129,6 @@ class BlockchainService(
         {
           try {
             val block = client.ethGetBlockByHash(it, true).send().result
-            logger.info(block.number.toString())
             val txs = block.transactions
               .map { transactionResult: TransactionResult<*> -> transactionResult.get() as org.web3j.protocol.core.methods.response.Transaction }
             txs.forEach { tx ->

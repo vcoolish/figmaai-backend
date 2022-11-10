@@ -183,13 +183,29 @@ class BlockchainService(
         depositCoin(tx.from, tx.value.toBigDecimal())
       } else if (tx.to.equals(appProperties.contractAddress, true)) {
         val call = erc20Decoder.decodeFunctionCall(tx.input)
-        val name = call?.name
+        val name = call?.name?.toString()
         val amount = BigDecimal(call.getParam("amount").value.toString())
         if (name == "burn") {
           depositToken(tx.from, amount)
         } else if (name == "burnFrom") {
           val account = call.getParam("account").value
           depositToken(account.toString(), amount)
+        }
+      } else if (tx.to.equals(appProperties.collectionAddress, true)) {
+        val call = erc20Decoder.decodeFunctionCall(tx.input)
+        val name = call?.name?.toString()
+        if (name == "transferFrom" || name == "safeTransferFrom") {
+          transferCarOwnership(
+            from = call.getParam("from").value.toString(),
+            to = call.getParam("to").value.toString(),
+            tokenId = call.getParam("tokenId").value.toString(),
+          )
+        } else if (name == "burn") {
+          transferCarOwnership(
+            from = tx.from,
+            to = "0x0000000000000000000000000000000000000000",
+            tokenId = call.getParam("tokenId").value.toString(),
+          )
         }
       } else {
         return
@@ -201,6 +217,20 @@ class BlockchainService(
     } catch (ignored: Throwable) { }
   }
 
+  private fun transferCarOwnership(from: String, to: String, tokenId: String) {
+    val sender = userService.getOrCreate(from)
+    val recipient = userService.getOrCreate(to)
+    val nft = sender.nfts.first { it.id.toString() == tokenId }
+    val senderNfts = sender.nfts.toMutableList()
+    val recipientNfts = recipient.nfts.toMutableList()
+    senderNfts.remove(nft)
+    recipientNfts.add(nft)
+    sender.nfts = senderNfts
+    recipient.nfts = recipientNfts
+    userService.save(sender)
+    userService.save(recipient)
+  }
+
   private fun depositToken(to: String, amount: BigDecimal) {
     val item = TransactionUnprocessed(to, Direction.DEPOSIT, amount, BalanceType.TOKEN)
     queue.add(item)
@@ -209,7 +239,7 @@ class BlockchainService(
   }
 
   fun withdrawToken(to: String): User {
-    val amount = userService.get(to).tokensToClaim
+    val amount = userService.getOrCreate(to).tokensToClaim
     val item = TransactionUnprocessed(to, Direction.WITHDRAW, amount, BalanceType.TOKEN)
     queue.add(item)
     mint(
@@ -223,7 +253,7 @@ class BlockchainService(
   }
 
   fun withdrawCoin(to: String): User {
-    val amount = userService.get(to).balance
+    val amount = userService.getOrCreate(to).balance
     val item = TransactionUnprocessed(to, Direction.WITHDRAW, amount, BalanceType.COIN)
     queue.add(item)
     transferCoins(to, coinUnit.toUnit(amount))

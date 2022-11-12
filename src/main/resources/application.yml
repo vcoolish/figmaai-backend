@@ -47,7 +47,7 @@ server:
           # To allow credentials to a set of origins, list them explicitly or consider
           # using "allowedOriginPatterns" instead.
           allow-credentials: false
-          allowed-headers: Content-Type,X-Requested-With,accept,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Authorization
+          allowed-headers: Content-Type,X-Requested-With,accept,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Authorization, signature, address
           allowed-methods: POST,PUT,GET,DELETE,PATCH,OPTIONS,HEAD
           allowed-origins: "*"
           exposed-headers: Location,Access-Control-Allow-Origin,Access-Control-Allow-Credentials

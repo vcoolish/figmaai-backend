@@ -1,6 +1,7 @@
 package com.app.drivn.backend.drive.service
 
 import com.app.drivn.backend.common.util.logger
+import com.app.drivn.backend.common.util.sha256
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.drive.dto.DriveInfoDto
 import com.app.drivn.backend.drive.mapper.DriveMapper
@@ -25,13 +26,21 @@ class DriveService(
 ) {
 
   companion object {
-
     val FIVE: BigDecimal = BigDecimal.valueOf(5)
   }
 
   val log: Logger = logger()
 
-  fun drive(address: String, carId: Long, collectionId: Long, distance: BigDecimal): DriveInfoDto {
+  fun drive(
+    address: String,
+    carId: Long,
+    collectionId: Long,
+    distance: BigDecimal,
+    timestamp: Long,
+    sig: String,
+  ): DriveInfoDto {
+    val messageSignature = sha256(appProperties.sigKey + carId + collectionId + distance.toString() + timestamp)
+    require(messageSignature == sig) { "Invalid key" }
     val user = userService.get(address)
     if (user.energy <= BigDecimal.ZERO) {
       log.warn("User $address has no fuel!")

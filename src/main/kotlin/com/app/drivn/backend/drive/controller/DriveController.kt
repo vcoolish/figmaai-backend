@@ -13,7 +13,7 @@ import java.math.BigDecimal
 @Validated
 @RestController
 class DriveController(
-  private val driveService: DriveService
+  private val driveService: DriveService,
 ) {
 
   @PutMapping("/address")
@@ -25,6 +25,13 @@ class DriveController(
     @RequestParam timestamp: Long,
     @RequestParam signature: String,
   ): DriveInfoDto {
-    return driveService.drive(address, carId, collectionId, distance)
+    return driveService.drive(
+      address = address,
+      carId = carId,
+      collectionId = collectionId,
+      distance = distance,
+      timestamp = timestamp,
+      sig = signature,
+    )
   }
 }

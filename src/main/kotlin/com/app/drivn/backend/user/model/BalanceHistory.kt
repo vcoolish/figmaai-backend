@@ -1,8 +1,10 @@
 package com.app.drivn.backend.user.model
 
+import org.hibernate.annotations.CreationTimestamp
 import java.math.BigDecimal
 import java.time.ZonedDateTime
-import java.util.UUID
+import java.util.*
+import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
@@ -18,10 +20,17 @@ class BalanceHistory {
   @GeneratedValue
   lateinit var id: UUID
 
-  @ManyToOne
-  @JoinColumn(name = "user_address")
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "user_address", nullable = false)
   lateinit var user: User
+
+  @Column(nullable = false)
   lateinit var balance: BigDecimal
+
+  @Column(nullable = false)
   lateinit var txId: String
+
+  @CreationTimestamp
+  @Column(nullable = false)
   lateinit var createdAt: ZonedDateTime
 }

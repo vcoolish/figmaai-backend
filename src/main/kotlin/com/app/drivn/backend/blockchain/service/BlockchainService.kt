@@ -49,7 +49,7 @@ class BlockchainService(
 ) : WebSocket.Listener {
 
   val logger = logger()
-  var erc20Decoder: AbiDecoder = AbiDecoder(appProperties.ercFile.inputStream)
+  var erc20Decoder: AbiDecoder = AbiDecoder(appProperties.getErcFile().inputStream)
 
   private var started: Boolean = false
   private val client: Web3j = Web3j.build(HttpService(appProperties.clientUrl))
@@ -107,7 +107,7 @@ class BlockchainService(
       }
       Pair(startBlock, endBlock)
     } catch (t: Throwable) {
-      t.printStackTrace()
+      logger.error("Failed to process skipped blocks!", t)
       Pair(BigInteger.ZERO, BigInteger.ZERO)
     }
 
@@ -141,8 +141,9 @@ class BlockchainService(
             }
           } catch (ignored: Throwable) { }
         },
-        Throwable::printStackTrace,
+        { logger.error("An error occurred while listening to the blockchain", it) }
       )
+
     logger.info("Synced with blockchain.")
   }
 
@@ -263,7 +264,6 @@ class BlockchainService(
 
   private fun depositCoin(to: String, amount: BigDecimal) {
     try {
-
       val fee = BigDecimal.valueOf(0.0005)
       val item = TransactionUnprocessed(to, Direction.DEPOSIT, amount, BalanceType.COIN)
       queue.add(item)
@@ -271,7 +271,7 @@ class BlockchainService(
       userService.addToBalance(to, finalUnitAmount)
       queue.remove(item)
     } catch (t: Throwable) {
-      t.printStackTrace()
+      logger.error("Failed to deposit coin to $to", t)
     }
   }
 
@@ -315,7 +315,7 @@ class BlockchainService(
       appProperties.adminAddress,
       nonce,
       gasPrice,
-      BigInteger.valueOf(1000000),
+      BigInteger.valueOf(1_000_000),
       contractAddress,
       BigInteger.ZERO,
       encodedFunction,

@@ -5,6 +5,7 @@ import com.app.drivn.backend.common.util.sha256
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.drive.dto.DriveInfoDto
 import com.app.drivn.backend.drive.mapper.DriveMapper
+import com.app.drivn.backend.exception.BadRequestException
 import com.app.drivn.backend.nft.model.CarNft
 import com.app.drivn.backend.nft.service.NftService
 import com.app.drivn.backend.user.service.EarnedTokenRecordService
@@ -40,7 +41,10 @@ class DriveService(
     sig: String,
   ): DriveInfoDto {
     val messageSignature = sha256(appProperties.sigKey + carId + collectionId + distance.toString() + timestamp)
-    require(messageSignature == sig) { "Invalid key" }
+    if (messageSignature != sig) {
+      throw BadRequestException("Invalid key")
+    }
+
     val user = userService.get(address)
     if (user.energy <= BigDecimal.ZERO) {
       log.warn("User $address has no fuel!")

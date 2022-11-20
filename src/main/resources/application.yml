@@ -48,7 +48,7 @@ server:
           # using "allowedOriginPatterns" instead.
           allow-credentials: false
           allowed-headers: Content-Type,X-Requested-With,accept,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Authorization, signature, address
-          allowed-methods: POST,PUT,GET,DELETE,PATCH,OPTIONS,HEAD
+          allowed-methods: POST,PUT,GET,DELETE,PATCH,OPTIONS,HEAD,post,put,get,delete,patch,options,head
           allowed-origins: "*"
           exposed-headers: Location,Access-Control-Allow-Origin,Access-Control-Allow-Credentials
   error:
@@ -58,6 +58,17 @@ server:
 
 web-security:
   role-access-restriction-paths:
+    - methods: PUT
+      paths:
+        - /address/*
+    - methods: POST
+      paths:
+        - /address/energy
+        - /address/withdraw
+    - methods: PATCH
+      paths:
+        - /nft/*
+        - /address/*
 
 application:
   sig-key: ${SIG_KEY}

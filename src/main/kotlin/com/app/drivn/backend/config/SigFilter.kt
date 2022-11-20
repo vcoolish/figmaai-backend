@@ -83,6 +83,11 @@ class SigFilter(
       message = user?.signMessage ?: "",
       signature = sig ?: "",
     )
+    val isGet = cachedRequest.method != "GET"
+    val isRegister = cachedRequest.method == "POST" && cachedRequest.pathInfo.startsWith("/register")
+    if (!isGet && !isRegister && !isValid) {
+      throw SecurityException("Invalid signature")
+    }
     if (isValid) {
       SecurityContextHolder.getContext().authentication = EMPTY_AUTH_TOKEN
     }

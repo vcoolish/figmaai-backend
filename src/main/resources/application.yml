@@ -91,24 +91,27 @@ application:
   client-url: https://intensive-divine-mountain.bsc.discover.quiknode.pro/79d20c28b6e2219dd4c5e8e9599f6440a6627034/
   arweave-url: "https://arweave.net/"
 
-probability:
-  car:
-    quality.proportions:
-      common: 0.5
-      uncommon: 0.25
-      rare: 0.15
-      epic: 0.06
-      legendary: 0.04
-    body.proportions:
-      WORKER: 0.3
-      BASIC: 0.5
-      RACING: 0.1
-      SUPERSPORT: 0.1
-    efficiency.proportions:
-      1-75: 0.01
-      75-80: 0.09
-      80-100: 0.8
-      100-125: 0.1
+probability.car:
+  PORSCHE:
+    quality:
+      proportions:
+        common: 0.5
+        uncommon: 0.25
+        rare: 0.15
+        epic: 0.06
+        legendary: 0.04
+    body:
+      proportions:
+        WORKER: 0.3
+        BASIC: 0.5
+        RACING: 0.1
+        SUPERSPORT: 0.1
+    efficiency:
+      proportions:
+        1-75: 0.01
+        75-80: 0.09
+        80-100: 0.8
+        100-125: 0.1
 
 logging:
   level:

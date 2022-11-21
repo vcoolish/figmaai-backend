@@ -1,8 +1,8 @@
 package com.app.drivn.backend.nft.service
 
-import com.app.drivn.backend.config.probability.CarBodyProbabilityProperties
-import com.app.drivn.backend.config.probability.CarEfficiencyProbabilityProperties
-import com.app.drivn.backend.config.probability.CarQualityProbabilityProperties
+import com.app.drivn.backend.config.probability.CarCollectionProbabilityProperties
+import com.app.drivn.backend.exception.BadRequestException
+import com.app.drivn.backend.nft.entity.CarCollection
 import com.app.drivn.backend.nft.mapper.NftMapper
 import com.app.drivn.backend.nft.model.CarNft
 import com.app.drivn.backend.user.model.User
@@ -11,22 +11,22 @@ import org.springframework.stereotype.Service
 
 @Service
 @EnableConfigurationProperties(
-  CarQualityProbabilityProperties::class,
-  CarBodyProbabilityProperties::class,
-  CarEfficiencyProbabilityProperties::class,
+  CarCollectionProbabilityProperties::class,
 )
 class CarCreationService(
-  private val carQualityProbabilityProperties: CarQualityProbabilityProperties,
-  private val carBodyProbabilityProperties: CarBodyProbabilityProperties,
-  private val carEfficiencyProbabilityProperties: CarEfficiencyProbabilityProperties
+  private val carCollectionProbabilityProperties: CarCollectionProbabilityProperties,
 ) {
 
   fun create(user: User, collectionId: Long): CarNft {
     val car = NftMapper.generateCar(collectionId)
 
-    car.quality = carQualityProbabilityProperties.getNextRandom()
-    car.body = carBodyProbabilityProperties.getNextRandom()
-    car.efficiency = carEfficiencyProbabilityProperties.getNextValue().toShort()
+    val collection = CarCollection.PORSCHE // TODO: select? generate?
+    val properties = carCollectionProbabilityProperties.car[collection]
+      ?: throw BadRequestException("Unsupported CarCollection $collection")
+
+    car.quality = properties.quality.getNextRandom()
+    car.body = properties.body.getNextRandom()
+    car.efficiency = properties.efficiency.getNextValue().toShort()
     car.user = user
 
     return car

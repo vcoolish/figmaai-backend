@@ -10,6 +10,7 @@ import com.app.drivn.backend.blockchain.repository.BlockchainStateRepository
 import com.app.drivn.backend.common.util.logger
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.user.model.User
+import com.app.drivn.backend.user.service.UserEnergyService
 import com.app.drivn.backend.user.service.UserService
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
@@ -46,6 +47,7 @@ class BlockchainService(
   private val privateKeyProvider: PrivateKeyProvider,
   private val appProperties: AppProperties,
   private val blockchainStateRepository: BlockchainStateRepository,
+  private val userEnergyService: UserEnergyService,
 ) : WebSocket.Listener {
 
   val logger = logger()
@@ -225,6 +227,14 @@ class BlockchainService(
     val recipientNfts = recipient.nfts.toMutableList()
     senderNfts.remove(nft)
     recipientNfts.add(nft)
+
+    if (sender.nfts.size == 3 && senderNfts.size < 3) {
+      userEnergyService.decreaseMaxEnergy(sender)
+    }
+    if (recipient.nfts.size < 3 && senderNfts.size == 3) {
+      userEnergyService.increaseMaxEnergy(sender)
+    }
+
     sender.nfts = senderNfts
     recipient.nfts = recipientNfts
     userService.save(sender)

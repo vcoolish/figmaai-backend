@@ -16,12 +16,17 @@ interface UserRepository : JpaRepository<User, String> {
   )
   fun getNextRenewTime(): Optional<Instant>
 
-  @Query("select distinct u " +
-      "from User u " +
-      "where u.nextEnergyRenew <= :nextEnergyRenew or u.energy < u.maxEnergy " +
-      "order by u.nextEnergyRenew")
+  @Query(
+    "select distinct u " +
+        "from User u " +
+        "where u.nextEnergyRenew <= :nextEnergyRenew or u.energy < u.maxEnergy " +
+        "order by u.nextEnergyRenew"
+  )
   fun findByNextEnergyRenewLessThanEqualOrderByNextEnergyRenewAsc(
     @Param("nextEnergyRenew") nextEnergyRenew: ZonedDateTime
   ): Set<User>
+
+  @Query("select u.signMessage from User u where u.address = ?1")
+  fun findSignMessageByAddress(address: String): Optional<String>
 
 }

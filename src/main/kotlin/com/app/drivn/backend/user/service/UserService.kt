@@ -28,6 +28,10 @@ class UserService(
 
   fun get(address: String): User = repository.findById(address.lowercase()).orElseThrow()
 
+  fun getSignMessage(address: String?): Optional<String> = address
+    ?.let(repository::findSignMessageByAddress)
+    ?: Optional.empty()
+
   fun save(user: User) {
     repository.save(user)
   }

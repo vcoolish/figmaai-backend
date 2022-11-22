@@ -67,27 +67,20 @@ class SigFilter(
     }
 
     val cachedRequest = CopyingRequestWrapper(request)
+    val address = cachedRequest.getHeader("address")
 
-    val user = try {
-      userService.get(request.getHeader("address"))
-    } catch (t: Throwable) {
-      null
-    }
+    val signMessage = userService.getSignMessage(address)
+
     val sig: String? = Optional.ofNullable(request.getHeader("signature"))
       .orElseGet { cachedRequest.getParameter("signature") }
     //todo: consider validating params too
     // val message = buildSignedPayload(cachedRequest)
 
     val isValid = validateMessageSign(
-      address = user?.address ?: "",
-      message = user?.signMessage ?: "",
+      address = address ?: "",
+      message = signMessage.orElse(""),
       signature = sig ?: "",
     )
-    val isGet = cachedRequest.method != "GET"
-    val isRegister = cachedRequest.method == "POST" && cachedRequest.pathInfo.startsWith("/register")
-    if (!isGet && !isRegister && !isValid) {
-      throw SecurityException("Invalid signature")
-    }
     if (isValid) {
       SecurityContextHolder.getContext().authentication = EMPTY_AUTH_TOKEN
     }

@@ -90,7 +90,7 @@ public class ExtendedCorsProcessor extends DefaultCorsProcessor {
       final var headers = request.getHeaders();
       final var method = Optional.ofNullable(headers.getFirst(ACCESS_CONTROL_REQUEST_METHOD))
           .orElse(headers.getFirst(ACCESS_CONTROL_REQUEST_METHOD.toLowerCase()));
-      return HttpMethod.resolve(method);
+      return HttpMethod.resolve(method.toUpperCase());
     }
 
     return request.getMethod();

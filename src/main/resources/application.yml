@@ -48,7 +48,7 @@ server:
           # using "allowedOriginPatterns" instead.
           allow-credentials: false
           allowed-headers: Content-Type,X-Requested-With,accept,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Authorization, signature, address
-          allowed-methods: POST,PUT,GET,DELETE,PATCH,OPTIONS,HEAD,post,put,get,delete,patch,options,head
+          allowed-methods: POST,PUT,GET,DELETE,PATCH,OPTIONS,HEAD
           allowed-origins: "*"
           exposed-headers: Location,Access-Control-Allow-Origin,Access-Control-Allow-Credentials
   error:

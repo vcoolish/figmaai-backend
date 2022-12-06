@@ -62,10 +62,12 @@ class SigFilter(
     response: HttpServletResponse,
     filterChain: FilterChain
   ) {
+    logger.info("check")
     if (isNotSecured(request)) {
       filterChain.doFilter(request, response)
       return
     }
+    logger.info("start validate")
 
     val cachedRequest = CopyingRequestWrapper(request)
     val address = cachedRequest.getHeader("address")

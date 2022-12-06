@@ -1,6 +1,7 @@
 package com.app.drivn.backend.config
 
 import com.app.drivn.backend.blockchain.service.validateMessageSign
+import com.app.drivn.backend.common.util.logger
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.config.properties.WebSecurityProperties
 import com.app.drivn.backend.user.service.UserService
@@ -76,11 +77,14 @@ class SigFilter(
     //todo: consider validating params too
     // val message = buildSignedPayload(cachedRequest)
 
+    val logger = logger()
+    logger.info("validating...")
     val isValid = validateMessageSign(
       address = address ?: "",
       message = signMessage.orElse(""),
       signature = sig ?: "",
     )
+    logger.info("validated $isValid")
     if (isValid) {
       SecurityContextHolder.getContext().authentication = EMPTY_AUTH_TOKEN
     }

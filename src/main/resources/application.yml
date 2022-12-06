@@ -68,10 +68,8 @@ web-security:
         - /address/withdraw
     - methods: PATCH
       paths:
-        - /nft/*
-        - /nft
-        - /address/*
-        - /address
+        - /nft/**
+        - /address/**
 
 application:
   sig-key: ${SIG_KEY}

@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
+import org.springframework.http.HttpMethod
 import org.springframework.security.access.hierarchicalroles.NullRoleHierarchy
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl
@@ -25,6 +26,7 @@ import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
 import java.security.SecureRandom
+import java.util.HashSet
 
 
 @Service
@@ -62,7 +64,22 @@ class SecurityConfig(
   @Bean
   fun httpFirewall(): HttpFirewall {
     val firewall = StrictHttpFirewall()
-    firewall.setUnsafeAllowAnyHttpMethod(true)
+    val result: MutableSet<String> = HashSet()
+    result.add(HttpMethod.DELETE.name)
+    result.add(HttpMethod.GET.name)
+    result.add(HttpMethod.HEAD.name)
+    result.add(HttpMethod.OPTIONS.name)
+    result.add(HttpMethod.PATCH.name)
+    result.add(HttpMethod.POST.name)
+    result.add(HttpMethod.PUT.name)
+    result.add(HttpMethod.DELETE.name.lowercase())
+    result.add(HttpMethod.GET.name.lowercase())
+    result.add(HttpMethod.HEAD.name.lowercase())
+    result.add(HttpMethod.OPTIONS.name.lowercase())
+    result.add(HttpMethod.PATCH.name.lowercase())
+    result.add(HttpMethod.POST.name.lowercase())
+    result.add(HttpMethod.PUT.name.lowercase())
+    firewall.setAllowedHttpMethods(result)
 
     return firewall
   }

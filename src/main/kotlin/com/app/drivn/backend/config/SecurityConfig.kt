@@ -65,24 +65,7 @@ class SecurityConfig(
   @Bean
   fun httpFirewall(): HttpFirewall {
     val firewall = StrictHttpFirewall()
-    val result: MutableSet<String> = HashSet()
-    result.add(HttpMethod.DELETE.name)
-    result.add(HttpMethod.GET.name)
-    result.add(HttpMethod.HEAD.name)
-    result.add(HttpMethod.OPTIONS.name)
-    result.add(HttpMethod.PATCH.name)
-    result.add(HttpMethod.POST.name)
-    result.add(HttpMethod.PUT.name)
-    result.add(HttpMethod.DELETE.name.lowercase())
-    result.add(HttpMethod.GET.name.lowercase())
-    result.add(HttpMethod.HEAD.name.lowercase())
-    result.add(HttpMethod.OPTIONS.name.lowercase())
-    result.add(HttpMethod.PATCH.name.lowercase())
-    result.add(HttpMethod.POST.name.lowercase())
-    result.add(HttpMethod.PUT.name.lowercase())
-    firewall.setAllowedHttpMethods(result)
-    firewall.setAllowedHeaderNames { true }
-    firewall.setAllowedHeaderValues { true }
+    firewall.setUnsafeAllowAnyHttpMethod(true)
 
     return firewall
   }

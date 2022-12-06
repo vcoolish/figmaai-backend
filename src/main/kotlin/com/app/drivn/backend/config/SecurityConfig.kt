@@ -3,6 +3,7 @@ package com.app.drivn.backend.config
 import com.app.drivn.backend.common.util.logger
 import com.app.drivn.backend.config.properties.CorsProperties
 import com.app.drivn.backend.config.properties.WebSecurityProperties
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.stereotype.Service
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import org.springframework.web.filter.CorsFilter
 import java.security.SecureRandom
 
 
@@ -55,6 +57,15 @@ class SecurityConfig(
     return roleHierarchy
   }
 
+  @Bean
+  @ConditionalOnProperty("server.cors.enabled", matchIfMissing = true)
+  fun corsFilter(): CorsFilter {
+    val filter = CorsFilter(corsConfigurationSource())
+    filter.setCorsProcessor(ExtendedCorsProcessor())
+
+    return filter
+  }
+
   @Throws(Exception::class)
   @Bean
   fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -84,7 +95,7 @@ class SecurityConfig(
 
     logger.info("cors ${corsProperties.isEnabled}")
     if (corsProperties.isEnabled) {
-      http.cors().configurationSource(corsConfigurationSource())
+      http.cors().configurationSource(null)
     } else {
       http.cors().disable()
     }

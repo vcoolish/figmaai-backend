@@ -16,9 +16,9 @@ import javax.persistence.SequenceGenerator
 @MappedSuperclass
 open class Nft {
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "car_nfts_id_sequence")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "car_nfts_id_sequence_gen")
   @SequenceGenerator(
-    name = "car_nfts_id_sequence",
+    name = "car_nfts_id_sequence_gen",
     sequenceName = "car_nfts_id_sequence",
     initialValue = 1_000_000,
     allocationSize = 1,

@@ -60,6 +60,7 @@ web-security:
   role-access-restriction-paths:
     - methods: PUT
       paths:
+        - /address
         - /address/**
     - methods: POST
       paths:
@@ -68,7 +69,9 @@ web-security:
     - methods: PATCH
       paths:
         - /nft/**
+        - /nft
         - /address/**
+        - /address
 
 application:
   sig-key: ${SIG_KEY}

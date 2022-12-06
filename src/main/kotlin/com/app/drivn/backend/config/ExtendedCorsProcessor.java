@@ -86,14 +86,23 @@ public class ExtendedCorsProcessor extends DefaultCorsProcessor {
 
   @Nullable
   protected HttpMethod getMethodToUse(ServerHttpRequest request, boolean isPreFlight) {
-    if (isPreFlight) {
-      final var headers = request.getHeaders();
-      final var method = Optional.ofNullable(headers.getFirst(ACCESS_CONTROL_REQUEST_METHOD))
-          .orElse(headers.getFirst(ACCESS_CONTROL_REQUEST_METHOD.toLowerCase()));
-      return HttpMethod.resolve(method.toUpperCase());
+    if (!isPreFlight) {
+      if (request.getMethod() == null) {
+        logger.warn("HTTP method from request is null!");
+      }
+      return request.getMethod();
     }
 
-    return request.getMethod();
+    final var headers = request.getHeaders();
+    final var method = Optional.ofNullable(headers.getFirst(ACCESS_CONTROL_REQUEST_METHOD))
+        .orElse(headers.getFirst(ACCESS_CONTROL_REQUEST_METHOD.toLowerCase()));
+    return Optional.ofNullable(method)
+        .map(String::toUpperCase)
+        .map(HttpMethod::resolve)
+        .orElseGet(() -> {
+          logger.warn("HTTP method from ACRM header is null!");
+          return null;
+        });
   }
 
   protected List<String> getHeadersToUse(ServerHttpRequest request, boolean isPreFlight) {

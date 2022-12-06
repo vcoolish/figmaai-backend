@@ -1,7 +1,6 @@
 package com.app.drivn.backend.config
 
 import com.app.drivn.backend.blockchain.service.validateMessageSign
-import com.app.drivn.backend.common.util.logger
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.config.properties.WebSecurityProperties
 import com.app.drivn.backend.user.service.UserService
@@ -82,7 +81,6 @@ class SigFilter(
     // val message = buildSignedPayload(cachedRequest)
 
     logger.info(sig)
-    val logger = logger()
     logger.info("validating...")
     val isValid = validateMessageSign(
       address = address ?: "",

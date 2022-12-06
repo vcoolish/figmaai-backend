@@ -61,9 +61,10 @@ class SecurityConfig(
       .logout().disable()
       .httpBasic().disable()
       .csrf().disable()
-//      .exceptionHandling(c -> c
-//              .authenticationEntryPoint(new SecurityAuthenticationEntryPoint(objectMapper))
-//              .accessDeniedHandler(new SecurityAccessDeniedHandler(objectMapper)))
+      .exceptionHandling()
+//          .authenticationEntryPoint(SecurityAuthenticationEntryPoint(objectMapper))
+      .accessDeniedHandler(SecurityAccessDeniedHandler())
+      .and()
       .sessionManagement { c: SessionManagementConfigurer<HttpSecurity?> ->
         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       }

@@ -1,5 +1,6 @@
 package com.app.drivn.backend.config
 
+import com.app.drivn.backend.common.util.logger
 import com.app.drivn.backend.config.properties.CorsProperties
 import com.app.drivn.backend.config.properties.WebSecurityProperties
 import org.springframework.boot.autoconfigure.web.ServerProperties
@@ -57,10 +58,13 @@ class SecurityConfig(
   @Throws(Exception::class)
   @Bean
   fun filterChain(http: HttpSecurity): SecurityFilterChain {
+    val logger = logger()
+    logger.info("start filter")
     http
       .logout().disable()
       .httpBasic().disable()
       .csrf().disable()
+      .exceptionHandling { logger.info("ex $it") }
 //      .exceptionHandling(c -> c
 //              .authenticationEntryPoint(new SecurityAuthenticationEntryPoint(objectMapper))
 //              .accessDeniedHandler(new SecurityAccessDeniedHandler(objectMapper)))
@@ -78,6 +82,7 @@ class SecurityConfig(
     applyAnonymousPaths(urlRegistry)
     applyRoleRestrictions(urlRegistry)
 
+    logger.info("cors ${corsProperties.isEnabled}")
     if (corsProperties.isEnabled) {
       http.cors().configurationSource(corsConfigurationSource())
     } else {

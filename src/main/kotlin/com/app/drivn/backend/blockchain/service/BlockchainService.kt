@@ -14,7 +14,6 @@ import com.app.drivn.backend.user.service.UserService
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.FlowableEmitter
-import io.reactivex.disposables.Disposable
 import net.osslabz.evm.abi.decoder.AbiDecoder
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
@@ -60,8 +59,6 @@ class BlockchainService(
   //todo: add scheduler and process time to time
   private val queue = CopyOnWriteArrayList<TransactionUnprocessed>()
 
-  var process: Disposable? = null
-
   @PreDestroy
   fun onApplicationStopped() {
     if (!started) {
@@ -69,7 +66,6 @@ class BlockchainService(
       return
     }
     logger.info("Saving blockchain state...")
-    process?.dispose()
 
     val state = BlockchainState()
     state.lastProcessedBlock = client.ethBlockNumber().send().blockNumber.dec().toString()
@@ -117,14 +113,13 @@ class BlockchainService(
 
     var isPassedStart = false
     //implement block queue and reprocess failed blocks
-    process = Flowable.create({ subscriber: FlowableEmitter<String?> ->
+    Flowable.create({ subscriber: FlowableEmitter<String?> ->
       val blockFilter = BlockFilter(client) { value: String? ->
         subscriber.onNext(value ?: "")
       }
       try {
         blockFilter.run(Async.defaultExecutorService(), 3000L)
       } catch (t: Throwable) {
-        process?.dispose()
         init()
         subscriber.onError(t)
       }

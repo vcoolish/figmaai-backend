@@ -69,14 +69,17 @@ class SigFilter(
 
     val cachedRequest = CopyingRequestWrapper(request)
     val address = cachedRequest.getHeader("address")
+    logger.info(address)
 
     val signMessage = userService.getSignMessage(address)
 
+    logger.info(signMessage)
     val sig: String? = Optional.ofNullable(request.getHeader("signature"))
       .orElseGet { cachedRequest.getParameter("signature") }
     //todo: consider validating params too
     // val message = buildSignedPayload(cachedRequest)
 
+    logger.info(sig)
     val logger = logger()
     logger.info("validating...")
     val isValid = validateMessageSign(

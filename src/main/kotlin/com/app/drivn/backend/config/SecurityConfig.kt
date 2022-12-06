@@ -27,6 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
 import java.security.SecureRandom
 import java.util.HashSet
+import java.util.function.Predicate
 
 
 @Service
@@ -80,6 +81,8 @@ class SecurityConfig(
     result.add(HttpMethod.POST.name.lowercase())
     result.add(HttpMethod.PUT.name.lowercase())
     firewall.setAllowedHttpMethods(result)
+    firewall.setAllowedHeaderNames { true }
+    firewall.setAllowedHeaderValues { true }
 
     return firewall
   }

@@ -1,19 +1,16 @@
 package com.app.drivn.backend.config
 
-import com.app.drivn.backend.common.util.logger
 import com.app.drivn.backend.config.properties.CorsProperties
 import com.app.drivn.backend.config.properties.WebSecurityProperties
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
-import org.springframework.http.HttpMethod
 import org.springframework.security.access.hierarchicalroles.NullRoleHierarchy
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer
-import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -21,13 +18,12 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.firewall.HttpFirewall
 import org.springframework.security.web.firewall.StrictHttpFirewall
+import org.springframework.security.web.session.DisableEncodeUrlFilter
 import org.springframework.stereotype.Service
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
 import java.security.SecureRandom
-import java.util.HashSet
-import java.util.function.Predicate
 
 
 @Service
@@ -82,8 +78,6 @@ class SecurityConfig(
   @Throws(Exception::class)
   @Bean
   fun filterChain(http: HttpSecurity): SecurityFilterChain {
-    val logger = logger()
-    logger.info("start filter")
     http
       .logout().disable()
       .httpBasic().disable()
@@ -92,9 +86,10 @@ class SecurityConfig(
 //          .authenticationEntryPoint(SecurityAuthenticationEntryPoint(objectMapper))
       .accessDeniedHandler(SecurityAccessDeniedHandler())
       .and()
-      .sessionManagement { c: SessionManagementConfigurer<HttpSecurity?> ->
-        c.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-      }
+      .sessionManagement()
+      .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+      .and()
+      .addFilterBefore(NormalizationFilter(), DisableEncodeUrlFilter::class.java)
       .addFilterAt(sigFilter, UsernamePasswordAuthenticationFilter::class.java)
 
     val urlRegistry = http.authorizeRequests()
@@ -106,7 +101,6 @@ class SecurityConfig(
     applyAnonymousPaths(urlRegistry)
     applyRoleRestrictions(urlRegistry)
 
-    logger.info("cors ${corsProperties.isEnabled}")
     if (corsProperties.isEnabled) {
       http.cors().configurationSource(null)
     } else {

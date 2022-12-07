@@ -52,7 +52,6 @@ class NftService(
     val nft = carCreationService.create(user, collectionId)
       .apply { this.image = getNextFreeImage() }
       .let(carNftRepository::saveAndFlush)
-    carNftRepository.findAll().forEach { logger.debug(it.id.toString()) }
 
     val id: Long = nft.id!!
 

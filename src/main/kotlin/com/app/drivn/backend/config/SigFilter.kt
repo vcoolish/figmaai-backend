@@ -18,7 +18,6 @@ import java.util.*
 import java.util.stream.Collectors
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletRequestWrapper
 import javax.servlet.http.HttpServletResponse
 
 
@@ -63,19 +62,17 @@ class SigFilter(
     response: HttpServletResponse,
     filterChain: FilterChain
   ) {
-    val normRequest = NormilizedHeaderRequest(request)
-
-    if (isNotSecured(normRequest)) {
-      filterChain.doFilter(normRequest, response)
+    if (isNotSecured(request)) {
+      filterChain.doFilter(request, response)
       return
     }
 
-    val cachedRequest = CopyingRequestWrapper(normRequest)
+    val cachedRequest = CopyingRequestWrapper(request)
     val address = cachedRequest.getHeader("address")
 
     val signMessage = userService.getSignMessage(address)
 
-    val sig: String? = Optional.ofNullable(normRequest.getHeader("signature"))
+    val sig: String? = Optional.ofNullable(request.getHeader("signature"))
       .orElseGet { cachedRequest.getParameter("signature") }
     //todo: consider validating params too
     // val message = buildSignedPayload(cachedRequest)
@@ -105,27 +102,5 @@ class SigFilter(
       val jsonRequest: MutableMap<String, String> = ObjectMapper().readValue(inputStreamBytes)
       append(jsonRequest.values.stream().collect(Collectors.joining()))
     }
-  }
-}
-
-class NormilizedHeaderRequest(request: HttpServletRequest?) : HttpServletRequestWrapper(request) {
-
-  override fun getHeader(name: String): String {
-    val header = super.getHeader(name) ?: super.getHeader(name.lowercase())
-    return header ?: super.getParameter(name)
-  }
-
-  override fun getMethod(): String {
-    return super.getMethod().uppercase()
-  }
-
-  override fun getHeaderNames(): Enumeration<String>? {
-    val names: MutableList<String> = Collections.list(super.getHeaderNames())
-    names.addAll(Collections.list(super.getParameterNames()))
-    return Collections.enumeration(names)
-  }
-
-  override fun getHeaders(name: String?): Enumeration<String> {
-    return super.getHeaders(name?.lowercase()) ?: super.getHeaders(name)
   }
 }

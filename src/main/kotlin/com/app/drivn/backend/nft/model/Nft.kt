@@ -1,5 +1,6 @@
 package com.app.drivn.backend.nft.model
 
+import com.app.drivn.backend.common.model.AbstractJpaPersistable
 import org.hibernate.Hibernate
 import java.util.*
 import javax.persistence.Column
@@ -14,17 +15,20 @@ import javax.persistence.SequenceGenerator
 
 @IdClass(NftId::class)
 @MappedSuperclass
-open class Nft {
+open class Nft : AbstractJpaPersistable<Long>() {
+
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO, generator = "car_nfts_id_sequence_gen")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "car_nfts_id_sequence_gen")
   @SequenceGenerator(
     name = "car_nfts_id_sequence_gen",
     sequenceName = "car_nfts_id_sequence",
     initialValue = 1_000_000,
     allocationSize = 1,
   )
-  @Column(nullable = false)
-  var id: Long? = null
+  @Column(name = "id", nullable = false)
+  private var _id: Long? = null
+
+  override fun getId(): Long? = _id
 
   @Id
   @Column(nullable = false)

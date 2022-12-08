@@ -13,7 +13,6 @@ object NftMapper {
 
   fun generateRandomCar(id: Long, collectionId: Long): CarNft {
     val carNft = CarNft()
-    carNft.id = id
     carNft.collectionId = collectionId
 
     carNft.name = "Car #$id"

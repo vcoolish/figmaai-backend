@@ -23,6 +23,12 @@ class UserEnergyService(
   private val log = logger()
   private val sync: SyncTemplate<String> = SyncTemplate()
 
+  companion object {
+
+    @JvmStatic
+    private val TWO: BigDecimal = BigDecimal.valueOf(2)
+  }
+
   fun getNextEnergyRenewTime(): Optional<Instant> = userRepository.getNextRenewTime()
 
   fun getUsersByNextEnergyRenew(nextEnergyRenew: ZonedDateTime): Set<User> =
@@ -71,5 +77,23 @@ class UserEnergyService(
     }
 
     eventPublisher.publishEvent(UserSpendEnergyEvent())
+  }
+
+  fun increaseMaxEnergy(user: User) {
+    sync.execute(user.address) {
+      user.energy *= TWO
+      user.maxEnergy *= TWO
+
+      userRepository.save(user)
+    }
+  }
+
+  fun decreaseMaxEnergy(user: User) {
+    sync.execute(user.address) {
+      user.energy /= TWO
+      user.maxEnergy /= TWO
+
+      userRepository.save(user)
+    }
   }
 }

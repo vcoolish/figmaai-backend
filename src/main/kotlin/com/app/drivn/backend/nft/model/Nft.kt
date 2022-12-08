@@ -26,9 +26,9 @@ open class Nft : AbstractJpaPersistable<Long>() {
     allocationSize = 1,
   )
   @Column(name = "id", nullable = false)
-  private var _id: Long? = null
+  private var id: Long? = null
 
-  override fun getId(): Long? = _id
+  override fun getId(): Long? = id
 
   @Id
   @Column(nullable = false)

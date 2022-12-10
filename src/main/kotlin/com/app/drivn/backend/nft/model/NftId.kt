@@ -5,8 +5,8 @@ import java.io.Serializable
 import java.util.*
 
 class NftId() : Serializable {
-  var id: Long = 0
-  var collectionId: Long = 0
+  var id: Long? = null
+  var collectionId: Long? = null
 
   constructor(
     id: Long,

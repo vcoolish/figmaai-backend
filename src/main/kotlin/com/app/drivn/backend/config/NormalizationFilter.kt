@@ -14,10 +14,10 @@ class NormalizationFilter : OncePerRequestFilter() {
     response: HttpServletResponse,
     filterChain: FilterChain
   ) {
-    filterChain.doFilter(NormilizedHeaderRequest(request), response)
+    filterChain.doFilter(NormalizedHeaderRequest(request), response)
   }
 
-  class NormilizedHeaderRequest(request: HttpServletRequest?) : HttpServletRequestWrapper(request) {
+  class NormalizedHeaderRequest(request: HttpServletRequest?) : HttpServletRequestWrapper(request) {
 
     override fun getHeader(name: String): String? {
       val header: String? = super.getHeader(name) ?: super.getHeader(name.lowercase())

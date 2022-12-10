@@ -19,7 +19,7 @@ class NormalizationFilter : OncePerRequestFilter() {
 
   class NormilizedHeaderRequest(request: HttpServletRequest?) : HttpServletRequestWrapper(request) {
 
-    override fun getHeader(name: String): String {
+    override fun getHeader(name: String): String? {
       val header: String? = super.getHeader(name) ?: super.getHeader(name.lowercase())
       return header ?: super.getParameter(name)
     }

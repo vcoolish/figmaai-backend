@@ -34,6 +34,7 @@ import org.web3j.protocol.core.methods.response.EthBlock.TransactionResult
 import org.web3j.protocol.http.HttpService
 import org.web3j.tx.FastRawTransactionManager
 import org.web3j.utils.Async
+import org.web3j.utils.Numeric
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.net.http.WebSocket
@@ -236,7 +237,7 @@ class BlockchainService(
   private fun transferCarOwnership(from: String, to: String, tokenId: String) {
     val sender = userService.getOrCreate(from)
     val recipient = userService.getOrCreate(to)
-    val nft = sender.nfts.first { it.id.toString() == tokenId }
+    val nft = sender.nfts.first { it.id == tokenId.toLong(16) }
     val senderNfts = sender.nfts.toMutableList()
     val recipientNfts = recipient.nfts.toMutableList()
     senderNfts.remove(nft)

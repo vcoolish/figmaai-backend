@@ -55,6 +55,7 @@ class BlockchainService(
 
   private var started: Boolean = false
   private val client: Web3j = Web3j.build(HttpService(appProperties.clientUrl))
+  private val fallbackClient: Web3j = Web3j.build(HttpService(appProperties.secondClientUrl))
   private val tokenUnit = Unit(8, "DRIVE", "DRIVE")
   private val coinUnit = Unit(18, "BNB", "BNB")
 
@@ -166,16 +167,29 @@ class BlockchainService(
   private fun processBlocks(start: BigInteger, end: BigInteger) {
     Stream.iterate(start, { current -> current <= end }, BigInteger::inc)
       .map(DefaultBlockParameter::valueOf)
-      .forEach {
-        client.ethGetBlockByNumber(it, true).sendAsync().whenComplete { result, ex ->
-          if (ex != null) {
-            logger.warn("Got an exception on getting block ${it.value}", ex)
-            return@whenComplete
+      .forEach { block ->
+//        client.ethGetBlockByNumber(it, true).sendAsync().whenComplete { result, ex ->
+//          if (ex != null) {
+//            logger.warn("Got an exception on getting block ${it.value}", ex)
+//            return@whenComplete
+//          }
+//          result.block.transactions.stream().map { tx ->
+//            tx.get() as org.web3j.protocol.core.methods.response.Transaction
+//          }.forEach(::processTx)
+//        }
+        val result = kotlin.runCatching {
+          client.ethGetBlockByNumber(block, true).send()
+        }.getOrElse {
+          kotlin.runCatching {
+            fallbackClient.ethGetBlockByNumber(block, true).send()
+          }.getOrElse {
+            logger.warn("Got an exception on getting block ${block.value}", it)
+            return@forEach
           }
-          result.block.transactions.stream().map { tx ->
-            tx.get() as org.web3j.protocol.core.methods.response.Transaction
-          }.forEach(::processTx)
         }
+        result.block.transactions.stream().map { tx ->
+          tx.get() as org.web3j.protocol.core.methods.response.Transaction
+        }.forEach(::processTx)
       }
   }
 

@@ -54,6 +54,9 @@ data class AppProperties(
   @NotBlank
   val clientUrl: String,
 
+  @NotBlank
+  val secondClientUrl: String,
+
   val chainId: Long = 56,
 
   @NotBlank

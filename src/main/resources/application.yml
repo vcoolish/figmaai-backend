@@ -90,6 +90,7 @@ application:
   contract-address: "0x68276a30375db070f7677091f08ee49b7ead6cda"
   collection-address: "0x34031C84Ee86e11D45974847C380091A84705921"
   client-url: https://intensive-divine-mountain.bsc.discover.quiknode.pro/79d20c28b6e2219dd4c5e8e9599f6440a6627034/
+  second-client-url: https://bsc-dataseed.nariox.org
   arweave-url: "https://arweave.net/"
 
 probability.car:

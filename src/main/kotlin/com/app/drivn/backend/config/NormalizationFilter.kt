@@ -1,5 +1,6 @@
 package com.app.drivn.backend.config
 
+import org.springframework.http.HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD
 import org.springframework.web.filter.OncePerRequestFilter
 import java.util.*
 import javax.servlet.FilterChain
@@ -21,7 +22,12 @@ class NormalizationFilter : OncePerRequestFilter() {
 
     override fun getHeader(name: String): String? {
       val header: String? = super.getHeader(name) ?: super.getHeader(name.lowercase())
-      return header ?: super.getParameter(name)
+      val value = header ?: super.getParameter(name)
+      return if (name.equals(ACCESS_CONTROL_REQUEST_METHOD, true)) {
+        value.uppercase()
+      } else {
+        value
+      }
     }
 
     override fun getMethod(): String {

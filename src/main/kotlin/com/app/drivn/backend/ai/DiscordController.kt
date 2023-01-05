@@ -25,9 +25,12 @@ class DiscordController(
 
   @PostMapping("/message")
   fun onMessage(
-    @Address @RequestHeader keyword: String,
+    @RequestHeader keyword: String,
     @Valid @RequestBody body: AIOutput,
   ): String {
+    if (keyword != "poop") {
+      return "Invalid keyword"
+    }
     nftService.updateImage(body)
     return ""
   }

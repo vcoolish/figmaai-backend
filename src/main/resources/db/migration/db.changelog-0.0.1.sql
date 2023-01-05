@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS image_nfts
   level           INTEGER NOT NULL,
   quality         VARCHAR(255),
   prompt          VARCHAR(255),
-  isMinted        BOOLEAN,
+  is_minted        BOOLEAN,
   min_speed       INTEGER NOT NULL,
   max_speed       INTEGER NOT NULL,
   odometer        FLOAT   NOT NULL,

@@ -16,4 +16,6 @@ class NftInternalDto : NftBaseDto() {
   var durability: Float = 0F
   var maxDurability: Float = 100F
   var mint: Int = 0
+  var prompt: String = ""
+  var isMinted: Boolean = false
 }

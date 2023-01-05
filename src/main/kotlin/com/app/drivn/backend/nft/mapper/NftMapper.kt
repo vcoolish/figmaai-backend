@@ -69,7 +69,7 @@ object NftMapper {
     return dto
   }
 
-  fun toInternalDto(imageNft: ImageNft, arweaveUrl: String): NftInternalDto {
+  fun toInternalDto(imageNft: ImageNft): NftInternalDto {
     val dto = fillBaseDto(imageNft, NftInternalDto())
 
     dto.level = imageNft.level
@@ -84,6 +84,8 @@ object NftMapper {
     dto.durability = imageNft.durability
     dto.maxDurability = imageNft.maxDurability
     dto.mint = imageNft.mint
+    dto.prompt = imageNft.prompt
+    dto.isMinted = imageNft.isMinted
 
     return dto
   }

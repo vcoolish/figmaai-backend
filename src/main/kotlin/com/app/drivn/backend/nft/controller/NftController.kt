@@ -37,7 +37,7 @@ class NftController(
       sort = ["id"]
     ) pageable: Pageable
   ): Page<NftInternalDto> = nftService.getAll(pageable)
-    .map { NftMapper.toInternalDto(it, appProperties.arweaveUrl) }
+    .map { NftMapper.toInternalDto(it) }
 
   @GetMapping("/nft/{collectionId}/{id}")
   fun getNftExternalInfo(@PathVariable collectionId: Long, @PathVariable id: Long): NftExternalDto =
@@ -45,7 +45,7 @@ class NftController(
 
   @GetMapping("/nft/{collectionId}/{id}/internals")
   fun getNftInternalInfo(@PathVariable collectionId: Long, @PathVariable id: Long): NftInternalDto =
-    NftMapper.toInternalDto(nftService.get(id, collectionId), appProperties.arweaveUrl)
+    NftMapper.toInternalDto(nftService.get(id, collectionId))
 
   @GetMapping("/nft/{collectionId}/{id}/repair")
   fun getRepairCost(
@@ -61,8 +61,7 @@ class NftController(
     @Address @RequestHeader address: String,
     @Valid @RequestBody request: RepairCarRequest,
   ): NftInternalDto = NftMapper.toInternalDto(
-    nftService.repair(id, collectionId, address, request.newDurability),
-    appProperties.arweaveUrl
+    nftService.repair(id, collectionId, address, request.newDurability)
   )
 
   @GetMapping("/nft/{collectionId}/{id}/level-up")
@@ -78,8 +77,7 @@ class NftController(
     @PathVariable id: Long,
     @Address @RequestHeader address: String,
   ): NftInternalDto = NftMapper.toInternalDto(
-    nftService.levelUp(id, collectionId, address),
-    appProperties.arweaveUrl
+    nftService.levelUp(id, collectionId, address)
   )
 
   @PatchMapping("/nft/{collectionId}/purchase")
@@ -88,8 +86,7 @@ class NftController(
     @Address @RequestHeader address: String,
     @Valid @RequestBody request: PurchaseImageRequest,
   ): NftInternalDto = NftMapper.toInternalDto(
-    nftService.create(address, collectionId, request.prompt),
-    appProperties.arweaveUrl
+    nftService.create(address, collectionId, request.prompt)
   )
 
   @PatchMapping("/nft/{collectionId}/purchase/{id}")

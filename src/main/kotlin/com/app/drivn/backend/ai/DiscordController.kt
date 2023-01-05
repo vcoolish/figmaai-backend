@@ -2,6 +2,7 @@ package com.app.drivn.backend.ai
 
 import com.app.drivn.backend.blockchain.service.BlockchainService
 import com.app.drivn.backend.constraint.Address
+import com.app.drivn.backend.nft.mapper.NftMapper
 import com.app.drivn.backend.nft.service.NftService
 import com.app.drivn.backend.user.dto.UserExtendedDto
 import com.app.drivn.backend.user.dto.UserRegistrationEntryDto
@@ -27,12 +28,14 @@ class DiscordController(
   fun onMessage(
     @RequestHeader keyword: String,
     @Valid @RequestBody body: AIOutput,
-  ): String {
+  ): Any {
     if (keyword != "poop") {
       return "Invalid keyword"
     }
-    nftService.updateImage(body)
-    return ""
+    val nft = nftService.updateImage(body)
+      ?: return "NFT not found"
+
+    return NftMapper.toExternalDto(nft)
   }
 
 

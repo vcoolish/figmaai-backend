@@ -27,6 +27,7 @@ class ImageCreationService(
     car.quality = properties.quality.getNextRandom()
     car.efficiency = properties.efficiency.getNextValue().toShort()
     car.user = user
+    car.image = ""
 
     return car
   }

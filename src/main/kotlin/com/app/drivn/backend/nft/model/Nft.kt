@@ -39,9 +39,9 @@ open class Nft : AbstractJpaPersistable<Long>() {
   @Column(length = 512)
   lateinit var description: String
 
-  @OneToOne
-  @JoinColumn(name = "image_id")
-  lateinit var image: Image
+//  @OneToOne
+//  @JoinColumn(name = "image_id")
+  lateinit var image: String
 
   @Column(length = 2048)
   lateinit var externalUrl: String

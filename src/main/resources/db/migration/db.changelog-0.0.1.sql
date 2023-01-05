@@ -171,3 +171,20 @@ ALTER TABLE IF EXISTS transactions
   ALTER direction TYPE VARCHAR(20),
   ADD block_id VARCHAR(255) NOT NULL REFERENCES blockchain_state(last_processed_block);
 --rollback
+
+--changeset vcoolish:20221028184326
+ALTER TABLE image_nfts
+  ADD user_address VARCHAR(255) NOT NULL REFERENCES users(address);
+--rollback ALTER TABLE image_nfts DROP COLUMN user_address;
+
+--changeset yemets:20221102220511
+CREATE SEQUENCE IF NOT EXISTS image_nfts_id_sequence START WITH 1000000 INCREMENT BY 1;
+
+ALTER TABLE image_nfts
+  ALTER id SET DEFAULT nextval('image_nfts_id_sequence');
+
+ALTER SEQUENCE image_nfts_id_sequence OWNED BY image_nfts.id;
+
+--rollback ALTER TABLE image_nfts
+--rollback   ALTER id DROP DEFAULT;
+--rollback DROP SEQUENCE IF EXISTS image_nfts_id_sequence;

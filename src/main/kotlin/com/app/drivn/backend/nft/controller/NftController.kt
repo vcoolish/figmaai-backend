@@ -41,7 +41,7 @@ class NftController(
 
   @GetMapping("/nft/{collectionId}/{id}")
   fun getNftExternalInfo(@PathVariable collectionId: Long, @PathVariable id: Long): NftExternalDto =
-    NftMapper.toExternalDto(nftService.get(id, collectionId), appProperties.arweaveUrl)
+    NftMapper.toExternalDto(nftService.get(id, collectionId))
 
   @GetMapping("/nft/{collectionId}/{id}/internals")
   fun getNftInternalInfo(@PathVariable collectionId: Long, @PathVariable id: Long): NftInternalDto =

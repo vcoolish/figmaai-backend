@@ -6,11 +6,9 @@ import com.app.drivn.backend.blockchain.service.BlockchainService
 import com.app.drivn.backend.common.util.logger
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.exception.BadRequestException
-import com.app.drivn.backend.exception.NotFoundException
 import com.app.drivn.backend.nft.data.CarRepairInfo
 import com.app.drivn.backend.nft.dto.CarLevelUpCostResponse
 import com.app.drivn.backend.nft.entity.ImageCollection
-import com.app.drivn.backend.nft.model.Image
 import com.app.drivn.backend.nft.model.ImageNft
 import com.app.drivn.backend.nft.model.NftId
 import com.app.drivn.backend.nft.repository.ImageNftRepository
@@ -19,6 +17,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.client.RestTemplate
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.regex.Pattern
@@ -31,7 +30,6 @@ class NftService(
   private val imageNftRepository: ImageNftRepository,
   private val userService: UserService,
   private val appProperties: AppProperties,
-  private val imageService: ImageService,
   private val imageCreationService: ImageCreationService,
   private val blockchainService: BlockchainService,
 ) {
@@ -42,27 +40,21 @@ class NftService(
     return imageNftRepository.findAll(pageable)
   }
 
-  private fun getNextFreeImage(): Image {
-    return imageService.findFreeImage()
-      ?: throw NotFoundException("Free image for NFT not found")
-  }
-
   fun create(address: String, collectionId: Long, prompt: String): ImageNft {
     val user = userService.getOrCreate(address)
     val carType = ImageCollection.values().first { it.collectionId == collectionId }
 //    if (user.balance < carType.price.toBigDecimal()) {
 //      throw BadRequestException("Insufficient balance")
 //    }
-//    RestTemplate().postForEntity(
-//      "https://surnft-ai.herokuapp.com/task",
-//      mapOf(
-//        "prompt" to prompt,
-//      ),
-//      String::class.java,
-//    )
+    RestTemplate().postForEntity(
+      "https://surnft-ai.herokuapp.com/task",
+      mapOf(
+        "prompt" to prompt,
+      ),
+      String::class.java,
+    )
 
     val nft = imageCreationService.create(user, collectionId)
-//      .apply { this.image = Image() }
       .let(imageNftRepository::saveAndFlush)
 
     val id: Long = nft.id!!
@@ -105,23 +97,24 @@ class NftService(
     return imageNftRepository.save(nft)
   }
 
-  fun updateImage(output: AIOutput) {
+  fun updateImage(output: AIOutput): ImageNft? {
     val keywords = output.filename.split("_")
     val lastIndex = keywords.indexOfLast { it.endsWith(".png") }
-    val prompt = keywords.subList(2, lastIndex).joinToString("").trim()
+    val prompt = keywords.subList(2, lastIndex)
     val nfts = imageNftRepository.findAll()
-      .filter { it.image.dataTxId.isEmpty() }
-    val pattern = prompt.chars()
-      .mapToObj { ch: Int -> "(?=.*" + ch.toChar() + ")" }
-      .collect(Collectors.joining())
+      .filter { it.image.isEmpty() }
 
     val nft = nfts.first {
-      Pattern.compile(".*$pattern.*")
-        .matcher(it.prompt)
-        .matches()
+      for (i in prompt) {
+        if (!it.prompt.contains(i)) {
+          return@first false
+        }
+      }
+      true
     }
-    nft.image.dataTxId = output.url.substring(output.url.lastIndexOf("/") + 1)
+    nft.image = output.url
     imageNftRepository.save(nft)
+    return nft
   }
 
   fun upgradeCar(id: Long, collectionId: Long, input: AIInput) {

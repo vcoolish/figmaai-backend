@@ -66,10 +66,10 @@ web-security:
       paths:
         - /address/energy
         - /address/withdraw
-    - methods: PATCH
-      paths:
-        - /nft/**
-        - /address/**
+#    - methods: PATCH
+#      paths:
+#        - /nft/**
+#        - /address/**
 
 application:
   sig-key: ${SIG_KEY}

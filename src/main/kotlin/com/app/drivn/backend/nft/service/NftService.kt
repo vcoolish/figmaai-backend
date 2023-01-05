@@ -110,6 +110,7 @@ class NftService(
       }
       true
     }//https://arweave.net/QMhaxE36fHfLsaLi82ZDCC2LDa6_8sy-xVuD_CbUp4Q
+    logger().info(output.url)
     nft.image = "https" + output.url.substringAfter("https").substring(0, 58)
     imageNftRepository.save(nft)
     return nft

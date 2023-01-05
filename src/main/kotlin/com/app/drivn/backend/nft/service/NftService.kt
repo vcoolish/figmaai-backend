@@ -105,7 +105,7 @@ class NftService(
 
   fun updateImage(output: AIOutput) {
     val keywords = output.filename.split("_")
-    val lastIndex = keywords.indexOfLast { it == ".png" }
+    val lastIndex = keywords.indexOfLast { it.endsWith(".png") }
     val prompt = keywords.subList(2, lastIndex).joinToString(" ").trim()
     val nft = imageNftRepository.findImageByPrompt(prompt)
       ?: throw NotFoundException("NFT with prompt $prompt not found")

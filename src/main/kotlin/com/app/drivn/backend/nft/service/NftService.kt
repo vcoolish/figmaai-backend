@@ -3,6 +3,7 @@ package com.app.drivn.backend.nft.service
 import com.app.drivn.backend.ai.AIInput
 import com.app.drivn.backend.ai.AIOutput
 import com.app.drivn.backend.blockchain.service.BlockchainService
+import com.app.drivn.backend.common.util.bannedWords
 import com.app.drivn.backend.common.util.logger
 import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.exception.BadRequestException
@@ -44,10 +45,19 @@ class NftService(
 //    if (user.balance < carType.price.toBigDecimal()) {
 //      throw BadRequestException("Insufficient balance")
 //    }
+    val cleanPrompt = prompt.trim()
+    if (cleanPrompt.isEmpty()) {
+      throw BadRequestException("Empty prompt")
+    }
+    for (jerk in bannedWords) {
+      if (prompt.contains(jerk)) {
+        throw BadRequestException("Banned word: $jerk")
+      }
+    }
     RestTemplate().postForEntity(
       "https://surnft-ai.herokuapp.com/task",
       mapOf(
-        "prompt" to prompt,
+        "prompt" to cleanPrompt,
       ),
       String::class.java,
     )
@@ -58,7 +68,7 @@ class NftService(
     val id: Long = nft.id!!
 
     nft.name = "${carType.title} #$id"
-    nft.prompt = prompt.trim()
+    nft.prompt = cleanPrompt
     nft.externalUrl = "https://tofunft.com/nft/bsc/0x34031C84Ee86e11D45974847C380091A84705921/$id"
 
 //    user.balance = user.balance - carType.price.toBigDecimal()

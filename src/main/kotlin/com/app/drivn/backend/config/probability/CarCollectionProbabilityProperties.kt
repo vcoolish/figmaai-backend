@@ -1,6 +1,6 @@
 package com.app.drivn.backend.config.probability
 
-import com.app.drivn.backend.nft.entity.CarCollection
+import com.app.drivn.backend.nft.entity.ImageCollection
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.validation.annotation.Validated
@@ -9,12 +9,11 @@ import org.springframework.validation.annotation.Validated
 @ConfigurationProperties("probability")
 class CarCollectionProbabilityProperties {
 
-  lateinit var car: Map<CarCollection, CarProbabilityProperties>
+  lateinit var car: Map<ImageCollection, CarProbabilityProperties>
 
   @ConstructorBinding
   data class CarProbabilityProperties(
     val quality: CarQualityProbabilityProperties,
-    val body: CarBodyProbabilityProperties,
     val efficiency: CarEfficiencyProbabilityProperties,
   )
 }

@@ -1,13 +1,12 @@
 package com.app.drivn.backend.nft.entity
 
-import com.app.drivn.backend.nft.model.CarBody
 import com.app.drivn.backend.nft.model.Quality
 
-enum class CarCollection(
+enum class ImageCollection(
   val collectionId: Long,
   val price: Double,
+  val mintPrice: Double,
   val title: String,
-  val body: CarBody,
   val quality: Quality,
   val minSpeed: Int,
   val maxSpeed: Int,
@@ -16,11 +15,11 @@ enum class CarCollection(
   val comfortability: Int,
   val maxDurability: Int,
 ) {
-  PORSCHE(
+  SUR(
     collectionId = 0,
-    price = 0.1,
-    title = "Porsche",
-    body = CarBody.BASIC,
+    price = 0.005,
+    mintPrice = 0.05,
+    title = "Sur",
     quality = Quality.COMMON,
     minSpeed = 20,
     maxSpeed = 120,

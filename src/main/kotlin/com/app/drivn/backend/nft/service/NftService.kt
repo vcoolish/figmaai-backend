@@ -1,5 +1,7 @@
 package com.app.drivn.backend.nft.service
 
+import com.app.drivn.backend.ai.AIInput
+import com.app.drivn.backend.ai.AIOutput
 import com.app.drivn.backend.blockchain.service.BlockchainService
 import com.app.drivn.backend.common.util.logger
 import com.app.drivn.backend.config.properties.AppProperties
@@ -7,34 +9,35 @@ import com.app.drivn.backend.exception.BadRequestException
 import com.app.drivn.backend.exception.NotFoundException
 import com.app.drivn.backend.nft.data.CarRepairInfo
 import com.app.drivn.backend.nft.dto.CarLevelUpCostResponse
-import com.app.drivn.backend.nft.entity.CarCollection
-import com.app.drivn.backend.nft.model.CarNft
+import com.app.drivn.backend.nft.entity.ImageCollection
+import com.app.drivn.backend.nft.model.ImageNft
 import com.app.drivn.backend.nft.model.Image
 import com.app.drivn.backend.nft.model.NftId
-import com.app.drivn.backend.nft.repository.CarNftRepository
+import com.app.drivn.backend.nft.repository.ImageNftRepository
 import com.app.drivn.backend.user.service.UserService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.client.RestTemplate
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.math.min
 
 @Service
 class NftService(
-  private val carNftRepository: CarNftRepository,
+  private val imageNftRepository: ImageNftRepository,
   private val userService: UserService,
   private val appProperties: AppProperties,
   private val imageService: ImageService,
-  private val carCreationService: CarCreationService,
+  private val imageCreationService: ImageCreationService,
   private val blockchainService: BlockchainService,
 ) {
 
   private val logger = logger()
 
-  fun getAll(pageable: Pageable): Page<CarNft> {
-    return carNftRepository.findAll(pageable)
+  fun getAll(pageable: Pageable): Page<ImageNft> {
+    return imageNftRepository.findAll(pageable)
   }
 
   private fun getNextFreeImage(): Image {
@@ -42,21 +45,45 @@ class NftService(
       ?: throw NotFoundException("Free image for NFT not found")
   }
 
-  fun create(address: String, collectionId: Long): CarNft {
+  fun create(address: String, collectionId: Long, prompt: String): ImageNft {
     val user = userService.get(address)
-    val carType = CarCollection.values().first { it.collectionId == collectionId }
+    val carType = ImageCollection.values().first { it.collectionId == collectionId }
     if (user.balance < carType.price.toBigDecimal()) {
       throw BadRequestException("Insufficient balance")
     }
+    RestTemplate().postForEntity(
+      "https://drivn-ai.herokuapp.com/task",
+      mapOf(
+        "prompt" to prompt,
+      ),
+      String::class.java,
+    )
 
-    val nft = carCreationService.create(user, collectionId)
+    val nft = imageCreationService.create(user, collectionId)
       .apply { this.image = getNextFreeImage() }
-      .let(carNftRepository::saveAndFlush)
+      .let(imageNftRepository::saveAndFlush)
 
     val id: Long = nft.id!!
 
     nft.name = "${carType.title} #$id"
+    nft.prompt = prompt.trim()
     nft.externalUrl = "https://tofunft.com/nft/bsc/0x34031C84Ee86e11D45974847C380091A84705921/$id"
+
+    user.balance = user.balance - carType.price.toBigDecimal()
+    userService.save(user)
+
+    return imageNftRepository.save(nft)
+  }
+
+  fun mint(address: String, collectionId: Long, id: Long): ImageNft {
+    val user = userService.get(address)
+    val carType = ImageCollection.values().first { it.collectionId == collectionId }
+    if (user.balance < carType.mintPrice.toBigDecimal()) {
+      throw BadRequestException("Insufficient balance")
+    }
+
+    val nft = imageNftRepository.findById(NftId(collectionId, id))
+      .orElseThrow()
 
     try {
       blockchainService.mint(
@@ -65,29 +92,44 @@ class NftService(
         tokenId = BigInteger.valueOf(id),
       )
     } catch (e: Exception) {
-      logger.error("Failed to mint car $collectionId-$id")
-      carNftRepository.delete(nft)
+      logger.error("Failed to mint $collectionId-$id")
       throw e
     }
+    nft.isMinted = true
 
-    user.balance = user.balance - carType.price.toBigDecimal()
+    user.balance = user.balance - carType.mintPrice.toBigDecimal()
     userService.save(user)
 
-    return carNftRepository.save(nft)
+    return imageNftRepository.save(nft)
   }
 
-  fun get(id: Long, collectionId: Long): CarNft {
-    return carNftRepository.findById(NftId(id, collectionId)).orElseThrow()
+  fun updateImage(output: AIOutput) {
+    val keywords = output.filename.split("_")
+    val lastIndex = keywords.indexOfLast { it == ".png" }
+    val prompt = keywords.subList(2, lastIndex).joinToString(" ").trim()
+    val nft = imageNftRepository.findImageByPrompt(prompt)
+      ?: throw NotFoundException("NFT with prompt $prompt not found")
+    nft.image.dataTxId = output.url.substring(output.url.lastIndexOf("/") + 1)
+    imageNftRepository.save(nft)
   }
 
-  fun save(carNft: CarNft) {
-    carNftRepository.save(carNft)
+  fun upgradeCar(id: Long, collectionId: Long, input: AIInput) {
+    val nft = imageNftRepository.findById(NftId(id, collectionId))
+    nft.get().image
   }
 
-  fun getRepairCost(car: CarNft) =
+  fun get(id: Long, collectionId: Long): ImageNft {
+    return imageNftRepository.findById(NftId(id, collectionId)).orElseThrow()
+  }
+
+  fun save(imageNft: ImageNft) {
+    imageNftRepository.save(imageNft)
+  }
+
+  fun getRepairCost(car: ImageNft) =
     appProperties.durabilityRepairCost
 
-  fun getRepairableCost(car: CarNft, newDurability: Float): CarRepairInfo {
+  fun getRepairableCost(car: ImageNft, newDurability: Float): CarRepairInfo {
     if (newDurability < car.durability) {
       throw BadRequestException("New durability can't be less than current durability!")
     }
@@ -104,7 +146,7 @@ class NftService(
   }
 
   @Transactional
-  fun repair(id: Long, collectionId: Long, address: String, newDurability: Float): CarNft {
+  fun repair(id: Long, collectionId: Long, address: String, newDurability: Float): ImageNft {
     val car = get(id, collectionId)
 
     val (repairableAmount, repairableCost) = getRepairableCost(car, newDurability)
@@ -119,13 +161,13 @@ class NftService(
       car.durability += repairableAmount
 
       userService.save(user)
-      carNftRepository.save(car)
+      imageNftRepository.save(car)
     }
 
     return car
   }
 
-  fun getLevelUpCost(car: CarNft): CarLevelUpCostResponse {
+  fun getLevelUpCost(car: ImageNft): CarLevelUpCostResponse {
     val newLevel: Short = car.level.inc()
 
     val requiredDistance: Int = appProperties.carLevelDistanceRequirement[newLevel]
@@ -139,7 +181,7 @@ class NftService(
   }
 
   @Transactional
-  fun levelUp(id: Long, collectionId: Long, initiatorAddress: String): CarNft {
+  fun levelUp(id: Long, collectionId: Long, initiatorAddress: String): ImageNft {
     val car = get(id, collectionId)
 
     val (cost, newLevel, requiredDistance) = getLevelUpCost(car)
@@ -158,6 +200,6 @@ class NftService(
     car.level = newLevel
 
     userService.save(user)
-    return carNftRepository.save(car)
+    return imageNftRepository.save(car)
   }
 }

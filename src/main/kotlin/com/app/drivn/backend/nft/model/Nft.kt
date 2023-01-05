@@ -18,10 +18,10 @@ import javax.persistence.SequenceGenerator
 open class Nft : AbstractJpaPersistable<Long>() {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "car_nfts_id_sequence_gen")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "image_nfts_id_sequence_gen")
   @SequenceGenerator(
-    name = "car_nfts_id_sequence_gen",
-    sequenceName = "car_nfts_id_sequence",
+    name = "image_nfts_id_sequence_gen",
+    sequenceName = "image_nfts_id_sequence",
     initialValue = 1_000_000,
     allocationSize = 1,
   )
@@ -46,6 +46,7 @@ open class Nft : AbstractJpaPersistable<Long>() {
   @Column(length = 2048)
   lateinit var externalUrl: String
   lateinit var creatorAddress: String
+  var isMinted: Boolean = false
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

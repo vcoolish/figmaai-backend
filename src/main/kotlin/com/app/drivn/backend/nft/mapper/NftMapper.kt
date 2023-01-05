@@ -3,60 +3,57 @@ package com.app.drivn.backend.nft.mapper
 import com.app.drivn.backend.nft.dto.NftBaseDto
 import com.app.drivn.backend.nft.dto.NftExternalDto
 import com.app.drivn.backend.nft.dto.NftInternalDto
-import com.app.drivn.backend.nft.entity.CarCollection
-import com.app.drivn.backend.nft.model.CarBody
-import com.app.drivn.backend.nft.model.CarNft
+import com.app.drivn.backend.nft.entity.ImageCollection
+import com.app.drivn.backend.nft.model.ImageNft
 import com.app.drivn.backend.nft.model.Nft
 import com.app.drivn.backend.nft.model.Quality
 
 object NftMapper {
 
-  fun generateRandomCar(id: Long, collectionId: Long): CarNft {
-    val carNft = CarNft()
-    carNft.collectionId = collectionId
+  fun generateRandomCar(id: Long, collectionId: Long): ImageNft {
+    val imageNft = ImageNft()
+    imageNft.collectionId = collectionId
 
-    carNft.name = "Car #$id"
-    carNft.description = "NFT Car, drive it in DRIVN to earn"
-    carNft.externalUrl = "https://tofunft.com/nft/bsc/0x34031C84Ee86e11D45974847C380091A84705921/$id"
-    carNft.creatorAddress = "0xF36f148D6FdEaCD6c765F8f59D4074109E311f0c"
+    imageNft.name = "Car #$id"
+    imageNft.description = "NFT Car, drive it in DRIVN to earn"
+    imageNft.externalUrl = "https://tofunft.com/nft/bsc/0x34031C84Ee86e11D45974847C380091A84705921/$id"
+    imageNft.creatorAddress = "0xF36f148D6FdEaCD6c765F8f59D4074109E311f0c"
 
-    carNft.level = 0
-    carNft.body = CarBody.values().random()
-    carNft.quality = Quality.values().random()
-    carNft.efficiency = (1..100).random().toShort()
-    carNft.luck = (1..100).random().toShort()
-    carNft.comfortability = (1..100).random().toShort()
-    carNft.maxDurability = (100..200).random().toFloat()
-    carNft.minSpeed = (1..49).random()
-    carNft.maxSpeed = (50..100).random()
-    carNft.mint = (0..3).random()
+    imageNft.level = 0
+    imageNft.quality = Quality.values().random()
+    imageNft.efficiency = (1..100).random().toShort()
+    imageNft.luck = (1..100).random().toShort()
+    imageNft.comfortability = (1..100).random().toShort()
+    imageNft.maxDurability = (100..200).random().toFloat()
+    imageNft.minSpeed = (1..49).random()
+    imageNft.maxSpeed = (50..100).random()
+    imageNft.mint = (0..3).random()
 
-    return carNft
+    return imageNft
   }
 
   fun generateCar(
     collectionId: Long,
-  ): CarNft {
-    val carType = CarCollection.values().first { it.collectionId == collectionId }
-    val carNft = CarNft()
-    carNft.collectionId = collectionId
+  ): ImageNft {
+    val carType = ImageCollection.values().first { it.collectionId == collectionId }
+    val imageNft = ImageNft()
+    imageNft.collectionId = collectionId
 
-    carNft.description = "NFT Car, use it in DRIVN to earn while driving"
-    carNft.creatorAddress = "0xe418eE8ec1Bca66FFa7E088e4656Cc628661043d"
+    imageNft.description = "NFT Car, use it in DRIVN to earn while driving"
+    imageNft.creatorAddress = "0xe418eE8ec1Bca66FFa7E088e4656Cc628661043d"
 
-    carNft.level = 0
-    carNft.body = carType.body
-    carNft.quality = carType.quality
-    carNft.efficiency = (1..carType.efficiency).random().toShort()
-    carNft.luck = (1..carType.luck).random().toShort()
-    carNft.comfortability = (1..carType.comfortability).random().toShort()
-    carNft.durability = carType.maxDurability.toFloat()
-    carNft.maxDurability = carType.maxDurability.toFloat()
-    carNft.minSpeed = carType.minSpeed
-    carNft.maxSpeed = carType.maxSpeed
-    carNft.mint = 0
+    imageNft.level = 0
+    imageNft.quality = carType.quality
+    imageNft.efficiency = (1..carType.efficiency).random().toShort()
+    imageNft.luck = (1..carType.luck).random().toShort()
+    imageNft.comfortability = (1..carType.comfortability).random().toShort()
+    imageNft.durability = carType.maxDurability.toFloat()
+    imageNft.maxDurability = carType.maxDurability.toFloat()
+    imageNft.minSpeed = carType.minSpeed
+    imageNft.maxSpeed = carType.maxSpeed
+    imageNft.mint = 0
 
-    return carNft
+    return imageNft
   }
 
   private fun <T : NftBaseDto> fillBaseDto(nft: Nft, dto: T, arweaveUrl: String): T {
@@ -72,65 +69,48 @@ object NftMapper {
     return dto
   }
 
-  fun toInternalDto(carNft: CarNft, arweaveUrl: String): NftInternalDto {
-    val dto = fillBaseDto(carNft, NftInternalDto(), arweaveUrl)
+  fun toInternalDto(imageNft: ImageNft, arweaveUrl: String): NftInternalDto {
+    val dto = fillBaseDto(imageNft, NftInternalDto(), arweaveUrl)
 
-    dto.level = carNft.level
-    dto.quality = carNft.quality
-    dto.body = carNft.body
-    dto.minSpeed = carNft.minSpeed
-    dto.maxSpeed = carNft.maxSpeed
-    dto.odometer = carNft.odometer
-    dto.efficiency = carNft.efficiency
-    dto.luck = carNft.luck
-    dto.comfortability = carNft.comfortability
-    dto.economy = carNft.economy
-    dto.durability = carNft.durability
-    dto.maxDurability = carNft.maxDurability
-    dto.mint = carNft.mint
+    dto.level = imageNft.level
+    dto.quality = imageNft.quality
+    dto.minSpeed = imageNft.minSpeed
+    dto.maxSpeed = imageNft.maxSpeed
+    dto.odometer = imageNft.odometer
+    dto.efficiency = imageNft.efficiency
+    dto.luck = imageNft.luck
+    dto.comfortability = imageNft.comfortability
+    dto.economy = imageNft.economy
+    dto.durability = imageNft.durability
+    dto.maxDurability = imageNft.maxDurability
+    dto.mint = imageNft.mint
 
     return dto
   }
 
-  fun toExternalDto(carNft: CarNft, arweaveUrl: String): NftExternalDto {
-    val dto = fillBaseDto(carNft, NftExternalDto(), arweaveUrl)
+  fun toExternalDto(imageNft: ImageNft, arweaveUrl: String): NftExternalDto {
+    val dto = fillBaseDto(imageNft, NftExternalDto(), arweaveUrl)
 
     dto.attributes = listOf(
       NftExternalDto.Attribute(
-        trait_type = "efficiency",
-        value = carNft.efficiency.toString(),
+        trait_type = "Seed",
+        value = imageNft.prompt,
       ),
       NftExternalDto.Attribute(
         trait_type = "luck",
-        value = carNft.luck.toString(),
-      ),
-      NftExternalDto.Attribute(
-        trait_type = "comfort",
-        value = carNft.comfortability.toString(),
+        value = imageNft.luck.toString(),
       ),
       NftExternalDto.Attribute(
         trait_type = "durability",
-        value = carNft.durability.toString(),
+        value = imageNft.durability.toString(),
       ),
       NftExternalDto.Attribute(
-        trait_type = "Optimal Speed",
-        value = "${carNft.minSpeed}-${carNft.maxSpeed} km/h",
-      ),
-      NftExternalDto.Attribute(
-        trait_type = "Car-minting Count",
-        value = carNft.mint.toString(),
-      ),
-      NftExternalDto.Attribute(
-        trait_type = "Car type",
-        value = carNft.body.name,
-      ),
-      NftExternalDto.Attribute(
-        trait_type = "Car quality",
-        value = carNft.quality.name,
+        trait_type = "Quality",
+        value = imageNft.quality.name,
       ),
       NftExternalDto.Attribute(
         trait_type = "Level",
-        value = carNft.level.toString(),
+        value = imageNft.level.toString(),
       ),
     )
 

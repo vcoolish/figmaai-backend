@@ -11,7 +11,7 @@ interface ImageRepository : JpaRepository<Image, Long> {
     value = """
       SELECT i.*
       FROM images i TABLESAMPLE bernoulli(:percentage) REPEATABLE ( 200 )
-         LEFT JOIN car_nfts car on i.id = car.image_id
+         LEFT JOIN image_nfts car on i.id = car.image_id
       WHERE car.image_id is null
       LIMIT 1
     """,

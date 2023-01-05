@@ -4,8 +4,8 @@ import com.app.drivn.backend.user.model.User
 import javax.persistence.*
 
 @Entity
-@Table(name = "car_nfts")
-class CarNft : Nft() {
+@Table(name = "image_nfts")
+class ImageNft : Nft() {
 
   @ManyToOne
   @JoinColumn(name = "user_address")
@@ -15,8 +15,7 @@ class CarNft : Nft() {
   @Enumerated(EnumType.STRING)
   lateinit var quality: Quality
 
-  @Enumerated(EnumType.STRING)
-  lateinit var body: CarBody
+  lateinit var prompt: String
 
   var minSpeed: Int = 0
   var maxSpeed: Int = 0

@@ -1,7 +1,7 @@
 package com.app.drivn.backend.user.mapper
 
 import com.app.drivn.backend.nft.dto.NftInfoDto
-import com.app.drivn.backend.nft.model.CarNft
+import com.app.drivn.backend.nft.model.ImageNft
 import com.app.drivn.backend.user.dto.UserExtendedDto
 import com.app.drivn.backend.user.dto.UserInfoDto
 import com.app.drivn.backend.user.model.User
@@ -14,7 +14,7 @@ object UserMapper {
 
   fun toDto(user: User): UserInfoDto = toExtendedDto(user, UserInfoDto())
 
-  fun toDto(nfts: List<CarNft>, tokensEarnedForDay: BigDecimal): UserExtendedDto = UserExtendedDto(
+  fun toDto(nfts: List<ImageNft>, tokensEarnedForDay: BigDecimal): UserExtendedDto = UserExtendedDto(
     nfts.map { NftInfoDto(it.id.toString(), it.collectionId.toString()) },
     tokensEarnedForDay
   )

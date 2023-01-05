@@ -7,6 +7,7 @@ import com.app.drivn.backend.nft.dto.NftExternalDto
 import com.app.drivn.backend.nft.dto.NftInternalDto
 import com.app.drivn.backend.nft.mapper.NftMapper
 import com.app.drivn.backend.nft.service.NftService
+import com.app.drivn.backend.user.dto.PurchaseImageRequest
 import com.app.drivn.backend.user.dto.RepairCarRequest
 import org.springdoc.api.annotations.ParameterObject
 import org.springframework.data.domain.Page
@@ -65,14 +66,14 @@ class NftController(
   )
 
   @GetMapping("/nft/{collectionId}/{id}/level-up")
-  fun getLevelUpCarCost(
+  fun getLevelUpCost(
     @PathVariable collectionId: Long,
     @PathVariable id: Long
   ): CarLevelUpCostResponse =
     nftService.getLevelUpCost(nftService.get(id, collectionId))
 
   @PatchMapping("/nft/{collectionId}/{id}/level-up")
-  fun levelUpCar(
+  fun levelUp(
     @PathVariable collectionId: Long,
     @PathVariable id: Long,
     @Address @RequestHeader address: String,
@@ -82,11 +83,22 @@ class NftController(
   )
 
   @PatchMapping("/nft/{collectionId}/purchase")
-  fun purchaseCar(
+  fun purchase(
     @PathVariable collectionId: Long,
-    @Address @RequestHeader address: String
+    @Address @RequestHeader address: String,
+    @Valid @RequestBody request: PurchaseImageRequest,
   ): NftInternalDto = NftMapper.toInternalDto(
-    nftService.create(address, collectionId),
+    nftService.create(address, collectionId, request.prompt),
     appProperties.arweaveUrl
   )
+
+  @PatchMapping("/nft/{collectionId}/purchase/{id}")
+  fun mint(
+    @PathVariable collectionId: Long,
+    @PathVariable id: Long,
+    @Address @RequestHeader address: String,
+  ): Boolean {
+    val nft = nftService.mint(address, collectionId, id)
+    return nft.isMinted
+  }
 }

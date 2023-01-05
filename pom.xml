@@ -192,6 +192,11 @@
             <artifactId>kotlin-maven-noarg</artifactId>
             <version>${kotlin.version}</version>
           </dependency>
+          <dependency>
+            <groupId>co.upvest</groupId>
+            <artifactId>arweave4s-core_2.12</artifactId>
+            <version>0.21.0</version>
+          </dependency>
         </dependencies>
       </plugin>
 

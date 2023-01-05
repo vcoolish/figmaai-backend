@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users
 
 
 --changeset yemets:20220831123804
-CREATE TABLE IF NOT EXISTS car_nfts
+CREATE TABLE IF NOT EXISTS image_nfts
 (
   id              BIGINT  NOT NULL,
   collection_id   BIGINT  NOT NULL,
@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS car_nfts
   creator_address VARCHAR(255),
   level           INTEGER NOT NULL,
   quality         VARCHAR(255),
-  body            VARCHAR(255),
+  prompt          VARCHAR(255),
+  isMinted        BOOLEAN,
   min_speed       INTEGER NOT NULL,
   max_speed       INTEGER NOT NULL,
   odometer        FLOAT   NOT NULL,
@@ -33,9 +34,9 @@ CREATE TABLE IF NOT EXISTS car_nfts
   resilience      FLOAT   NOT NULL,
   durability      FLOAT   NOT NULL,
   max_durability  FLOAT   NOT NULL,
-  CONSTRAINT pk_car_nfts PRIMARY KEY (id, collection_id)
+  CONSTRAINT pk_image_nfts PRIMARY KEY (id, collection_id)
 );
---rollback DROP TABLE car_nfts;
+--rollback DROP TABLE image_nfts;
 
 --changeset yemets:20220831161927
 ALTER TABLE users
@@ -47,23 +48,23 @@ ALTER TABLE users
   ADD COLUMN max_energy FLOAT DEFAULT 30,
   ALTER tokens_to_claim SET NOT NULL;
 
-ALTER TABLE car_nfts
+ALTER TABLE image_nfts
   ALTER efficiency TYPE SMALLINT,
   ALTER luck TYPE SMALLINT,
   ALTER comfortability TYPE SMALLINT,
   ALTER resilience TYPE SMALLINT;
 
-ALTER TABLE car_nfts
+ALTER TABLE image_nfts
   RENAME resilience TO economy;
 
 -- yes, there's no rollback
 --rollback
 
 --changeset yemets:20220831203122
-ALTER TABLE car_nfts
+ALTER TABLE image_nfts
   ADD mint INTEGER NOT NULL DEFAULT 0;
 
---rollback ALTER TABLE car_nfts DROP mint;
+--rollback ALTER TABLE image_nfts DROP mint;
 
 
 --changeset yemets:20220904163107
@@ -113,9 +114,9 @@ ALTER TABLE users
 
 
 --changeset yemets:20220928152606
-ALTER TABLE car_nfts
+ALTER TABLE image_nfts
   ALTER level TYPE SMALLINT;
---rollback ALTER TABLE car_nfts ALTER level TYPE INT;
+--rollback ALTER TABLE image_nfts ALTER level TYPE INT;
 
 --changeset vcoolish:20221017100000
 ALTER TABLE users

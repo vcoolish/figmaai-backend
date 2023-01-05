@@ -6,7 +6,7 @@ import com.app.drivn.backend.config.properties.AppProperties
 import com.app.drivn.backend.drive.dto.DriveInfoDto
 import com.app.drivn.backend.drive.mapper.DriveMapper
 import com.app.drivn.backend.exception.BadRequestException
-import com.app.drivn.backend.nft.model.CarNft
+import com.app.drivn.backend.nft.model.ImageNft
 import com.app.drivn.backend.nft.service.NftService
 import com.app.drivn.backend.user.service.EarnedTokenRecordService
 import com.app.drivn.backend.user.service.UserEnergyService
@@ -58,7 +58,7 @@ class DriveService(
       return DriveMapper.toDto(user, tokenRecordService.getEarnedTokensForDay(user.address))
     }
 
-    val car: CarNft = nftService.get(carId, collectionId)
+    val car: ImageNft = nftService.get(carId, collectionId)
     if (car.durability <= 0) {
       log.warn("The car $collectionId-$carId of user $address is broken!")
       return DriveMapper.toDto(user, tokenRecordService.getEarnedTokensForDay(user.address))
@@ -74,7 +74,6 @@ class DriveService(
 
     val reward = consumedEnergy
       .divide(BigDecimal.TEN, MathContext.DECIMAL128)
-      .multiply(car.body.earnEfficiency)
       .multiply(car.quality.efficiency.toBigDecimal())
       .multiply(BigDecimal.valueOf((car.efficiency / 200.0) + 1))
 
@@ -99,7 +98,6 @@ class DriveService(
     }
 
     val finalConsumedEnergy = realConsumedEnergy
-      .let { it + (it * car.body.fuelEfficiency) }
       .let { it - (it * BigDecimal.valueOf(car.economy / 200.0)) }
 
     userEnergyService.spendEnergy(user, finalConsumedEnergy)
@@ -108,7 +106,6 @@ class DriveService(
     car.odometer += realDistance.toFloat()
 
     val newDurability = car.durability.toBigDecimal()
-      .subtract((distance / FIVE) / car.body.durabilityCoefficient)
       .subtract((1 - (car.comfortability / 200.0)).toBigDecimal())
       .max(BigDecimal.ZERO)
 

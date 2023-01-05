@@ -51,16 +51,16 @@ class NftService(
 //    if (user.balance < carType.price.toBigDecimal()) {
 //      throw BadRequestException("Insufficient balance")
 //    }
-    RestTemplate().postForEntity(
-      "https://surnft-ai.herokuapp.com/task",
-      mapOf(
-        "prompt" to prompt,
-      ),
-      String::class.java,
-    )
+//    RestTemplate().postForEntity(
+//      "https://surnft-ai.herokuapp.com/task",
+//      mapOf(
+//        "prompt" to prompt,
+//      ),
+//      String::class.java,
+//    )
 
     val nft = imageCreationService.create(user, collectionId)
-      .apply { this.image = getNextFreeImage() }
+//      .apply { this.image = Image() }
       .let(imageNftRepository::saveAndFlush)
 
     val id: Long = nft.id!!
@@ -107,8 +107,8 @@ class NftService(
     val keywords = output.filename.split("_")
     val lastIndex = keywords.indexOfLast { it.endsWith(".png") }
     val prompt = keywords.subList(2, lastIndex).joinToString(" ").trim()
-    val nft = imageNftRepository.findImageByPrompt(prompt)
-      ?: throw NotFoundException("NFT with prompt $prompt not found")
+    val nfts = imageNftRepository.findAll()
+    val nft = nfts.find { it.prompt.replace(",", ""). }
     nft.image.dataTxId = output.url.substring(output.url.lastIndexOf("/") + 1)
     imageNftRepository.save(nft)
   }

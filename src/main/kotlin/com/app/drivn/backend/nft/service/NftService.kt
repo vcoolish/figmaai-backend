@@ -48,9 +48,9 @@ class NftService(
   fun create(address: String, collectionId: Long, prompt: String): ImageNft {
     val user = userService.get(address)
     val carType = ImageCollection.values().first { it.collectionId == collectionId }
-    if (user.balance < carType.price.toBigDecimal()) {
-      throw BadRequestException("Insufficient balance")
-    }
+//    if (user.balance < carType.price.toBigDecimal()) {
+//      throw BadRequestException("Insufficient balance")
+//    }
     RestTemplate().postForEntity(
       "https://drivn-ai.herokuapp.com/task",
       mapOf(
@@ -69,7 +69,7 @@ class NftService(
     nft.prompt = prompt.trim()
     nft.externalUrl = "https://tofunft.com/nft/bsc/0x34031C84Ee86e11D45974847C380091A84705921/$id"
 
-    user.balance = user.balance - carType.price.toBigDecimal()
+//    user.balance = user.balance - carType.price.toBigDecimal()
     userService.save(user)
 
     return imageNftRepository.save(nft)

@@ -69,7 +69,7 @@ class NftService(
 
     nft.name = "${carType.title} #$id"
     nft.prompt = cleanPrompt
-    nft.externalUrl = "https://tofunft.com/nft/bsc/0x34031C84Ee86e11D45974847C380091A84705921/$id"
+    nft.externalUrl = "https://tofunft.com/nft/bsc/0xe73711e8331aD93ca115A2AE4D1AFAc74E15D644/$id"
 
 //    user.balance = user.balance - carType.price.toBigDecimal()
     userService.save(user)

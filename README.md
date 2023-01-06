@@ -1,6 +1,6 @@
-# Drivn Backend
+# SurNFT Backend
 
-The Spring Boot application as backend for the Drivn.
+The Spring Boot application as backend for the SurNFT.
 
 ## Prerequisites
 

@@ -10,17 +10,17 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
-  <groupId>com.app.drivn</groupId>
+  <groupId>com.app.surnft</groupId>
   <artifactId>backend</artifactId>
   <version>0.0.3-SNAPSHOT</version>
 
-  <name>Drivn Backend</name>
-  <description>The Spring Boot application as backend for the Drivn.</description>
+  <name>SurNFT Backend</name>
+  <description>The Spring Boot application as backend for the SurNFT.</description>
 
   <scm>
-    <url>https://github.com/drivnapp/backend/</url>
-    <connection>scm:git:git@github.com:drivnapp/backend.git</connection>
-    <developerConnection>scm:git:git@github.com:drivnapp/backend.git</developerConnection>
+    <url>https://github.com/vcoolish/surnft-backend/</url>
+    <connection>scm:git:git@github.com:vcoolish/surnft-backend.git</connection>
+    <developerConnection>scm:git:git@github.com:vcoolish/surnft-backend.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 

@@ -1,7 +1,5 @@
 package com.app.surnft.backend.nft.service
 
-import com.app.surnft.backend.ai.AIInput
-import com.app.surnft.backend.ai.AIOutput
 import com.app.surnft.backend.blockchain.service.BlockchainService
 import com.app.surnft.backend.common.util.bannedWords
 import com.app.surnft.backend.common.util.logger
@@ -84,7 +82,7 @@ class NftService(
       throw BadRequestException("Insufficient balance")
     }
 
-    val nft = imageNftRepository.findById(NftId(collectionId, id))
+    val nft = imageNftRepository.findById(NftId(id, collectionId))
       .orElseThrow()
 
     try {

@@ -1,6 +1,7 @@
 package com.app.surnft.backend.common.util
 
 val bannedWords = listOf(
+  "ass",
   "acrotomophilia",
   "adult art",
   "adult industry",

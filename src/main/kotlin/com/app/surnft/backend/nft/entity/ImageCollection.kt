@@ -17,8 +17,8 @@ enum class ImageCollection(
 ) {
   SUR(
     collectionId = 0,
-    price = 0.005,
-    mintPrice = 0.05,
+    price = 0.001,
+    mintPrice = 0.01,
     title = "Sur",
     quality = Quality.COMMON,
     minSpeed = 20,

@@ -38,7 +38,7 @@ springdoc:
 
 server:
   cors:
-    enabled: false
+    enabled: true
     configurations:
       - path: /**
         configuration:

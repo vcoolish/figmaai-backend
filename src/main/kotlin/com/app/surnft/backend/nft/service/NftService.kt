@@ -1,6 +1,7 @@
 package com.app.surnft.backend.nft.service
 
 import com.app.surnft.backend.blockchain.service.BlockchainService
+import com.app.surnft.backend.common.util.bannedPhrases
 import com.app.surnft.backend.common.util.bannedWords
 import com.app.surnft.backend.common.util.logger
 import com.app.surnft.backend.config.properties.AppProperties
@@ -44,12 +45,18 @@ class NftService(
 //      throw BadRequestException("Insufficient balance")
 //    }
     val cleanPrompt = prompt.trim()
+    val keywords = cleanPrompt.lowercase().split(" ")
     if (cleanPrompt.isEmpty()) {
       throw BadRequestException("Empty prompt")
     }
     for (jerk in bannedWords) {
-      if (prompt.contains(jerk)) {
+      if (keywords.contains(jerk)) {
         throw BadRequestException("Banned word: $jerk")
+      }
+    }
+    for (jerk in bannedPhrases) {
+      if (cleanPrompt.contains(jerk)) {
+        throw BadRequestException("Banned phrase: $jerk")
       }
     }
     RestTemplate().postForEntity(

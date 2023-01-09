@@ -553,6 +553,8 @@ val bannedWords = listOf(
   "shrimping",
   "skeet",
   "slanteye",
+  "slave",
+  "slavery",
   "slut",
   "s&m",
   "smut",

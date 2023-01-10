@@ -4,8 +4,8 @@ import com.app.surnft.backend.nft.model.Quality
 
 class NftInternalDto : NftBaseDto() {
 
-  var id: Long = 0
-  var collectionId: Long = 0
+  var id: String = ""
+  var collectionId: String = ""
   var level: Short = 0
   lateinit var quality: Quality
   var efficiency: Short = 0

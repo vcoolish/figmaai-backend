@@ -73,8 +73,8 @@ object NftMapper {
   fun toInternalDto(imageNft: ImageNft): NftInternalDto {
     val dto = fillBaseDto(imageNft, NftInternalDto())
 
-    dto.id = imageNft.id!!
-    dto.collectionId = imageNft.collectionId!!
+    dto.id = imageNft.id.toString()
+    dto.collectionId = imageNft.collectionId.toString()
     dto.level = imageNft.level
     dto.quality = imageNft.quality
     dto.efficiency = imageNft.efficiency

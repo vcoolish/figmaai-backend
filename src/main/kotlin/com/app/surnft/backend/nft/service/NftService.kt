@@ -120,21 +120,8 @@ class NftService(
     return imageNftRepository.save(nft)
   }
 
-  fun updateImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft? {
-    val keywords = output.filename.split("_")
-    val lastIndex = keywords.indexOfLast { it.endsWith(".png") }
-    val prompt = keywords.subList(2, lastIndex)
-    val nfts = imageNftRepository.findAll()
-      .filter { it.image.isEmpty() }
-
-    val nft = nfts.first {
-      for (i in prompt) {
-        if (!it.prompt.contains(i)) {
-          return@first false
-        }
-      }
-      true
-    }//https://arweave.net/QMhaxE36fHfLsaLi82ZDCC2LDa6_8sy-xVuD_CbUp4Q
+  fun updateImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {
+    val nft = imageNftRepository.findNftByPrompt(output.prompt).get()
     logger().info(output.url)
     nft.image = "https" + output.url.substringAfter("https").substring(0, 58)
     imageNftRepository.save(nft)

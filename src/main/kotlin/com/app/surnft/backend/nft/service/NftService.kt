@@ -8,13 +8,16 @@ import com.app.surnft.backend.config.properties.AppProperties
 import com.app.surnft.backend.exception.BadRequestException
 import com.app.surnft.backend.nft.data.CarRepairInfo
 import com.app.surnft.backend.nft.dto.CarLevelUpCostResponse
+import com.app.surnft.backend.nft.dto.GetAllNftRequest
 import com.app.surnft.backend.nft.entity.ImageCollection
 import com.app.surnft.backend.nft.model.ImageNft
 import com.app.surnft.backend.nft.model.NftId
 import com.app.surnft.backend.nft.repository.ImageNftRepository
+import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.userEqual
 import com.app.surnft.backend.user.service.UserService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestTemplate
@@ -33,36 +36,26 @@ class NftService(
 ) {
 
   private val logger = logger()
+  private val restTemplate = RestTemplate()
 
-  fun getAll(pageable: Pageable): Page<ImageNft> {
-    return imageNftRepository.findAll(pageable)
+  fun getAll(pageable: Pageable, request: GetAllNftRequest): Page<ImageNft> {
+    val spec: Specification<ImageNft> = userEqual(request.address)
+    return imageNftRepository.findAll(spec, pageable)
   }
 
   fun create(address: String, collectionId: Long, prompt: String): ImageNft {
+    validatePrompt(prompt)
+
     val user = userService.getOrCreate(address)
     val carType = ImageCollection.values().first { it.collectionId == collectionId }
 //    if (user.balance < carType.price.toBigDecimal()) {
 //      throw BadRequestException("Insufficient balance")
 //    }
-    val cleanPrompt = prompt.trim()
-    val keywords = cleanPrompt.lowercase().split(" ")
-    if (cleanPrompt.isEmpty()) {
-      throw BadRequestException("Empty prompt")
-    }
-    for (jerk in bannedWords) {
-      if (keywords.contains(jerk)) {
-        throw BadRequestException("Banned word: $jerk")
-      }
-    }
-    for (jerk in bannedPhrases) {
-      if (cleanPrompt.contains(jerk)) {
-        throw BadRequestException("Banned phrase: $jerk")
-      }
-    }
-    RestTemplate().postForEntity(
+
+    restTemplate.postForEntity(
       "https://surnft-ai.herokuapp.com/task",
       mapOf(
-        "prompt" to cleanPrompt,
+        "prompt" to prompt,
       ),
       String::class.java,
     )
@@ -73,13 +66,30 @@ class NftService(
     val id: Long = nft.id!!
 
     nft.name = "${carType.title} #$id"
-    nft.prompt = cleanPrompt
+    nft.prompt = prompt
     nft.externalUrl = "https://tofunft.com/nft/bsc/0xe73711e8331aD93ca115A2AE4D1AFAc74E15D644/$id"
 
 //    user.balance = user.balance - carType.price.toBigDecimal()
     userService.save(user)
 
     return imageNftRepository.save(nft)
+  }
+
+  private fun validatePrompt(prompt: String) {
+    val keywords = prompt.lowercase().split(" ")
+    if (prompt.isEmpty()) {
+      throw BadRequestException("Empty prompt")
+    }
+    for (jerk in bannedWords) {
+      if (keywords.contains(jerk)) {
+        throw BadRequestException("Banned word: $jerk")
+      }
+    }
+    for (jerk in bannedPhrases) {
+      if (prompt.contains(jerk)) {
+        throw BadRequestException("Banned phrase: $jerk")
+      }
+    }
   }
 
   fun mint(address: String, collectionId: Long, id: Long): ImageNft {

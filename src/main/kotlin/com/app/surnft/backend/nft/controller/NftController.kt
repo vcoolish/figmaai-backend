@@ -2,6 +2,7 @@ package com.app.surnft.backend.nft.controller
 
 import com.app.surnft.backend.constraint.Address
 import com.app.surnft.backend.nft.dto.CarLevelUpCostResponse
+import com.app.surnft.backend.nft.dto.GetAllNftRequest
 import com.app.surnft.backend.nft.dto.NftExternalDto
 import com.app.surnft.backend.nft.dto.NftInternalDto
 import com.app.surnft.backend.nft.mapper.NftMapper
@@ -36,8 +37,9 @@ class NftController(
       page = 0,
       sort = ["id"],
       direction = Sort.Direction.DESC
-    ) pageable: Pageable
-  ): Page<NftInternalDto> = nftService.getAll(pageable)
+    ) pageable: Pageable,
+    @ParameterObject request: GetAllNftRequest
+  ): Page<NftInternalDto> = nftService.getAll(pageable, request)
     .map { NftMapper.toInternalDto(it) }
 
   @GetMapping("/nft/{collectionId}/{id}")
@@ -87,7 +89,7 @@ class NftController(
     @Address @RequestHeader address: String,
     @Valid @RequestBody request: PurchaseImageRequest,
   ): NftInternalDto = NftMapper.toInternalDto(
-    nftService.create(address, collectionId, request.prompt)
+    nftService.create(address, collectionId, request.prompt.trim())
   )
 
   @PatchMapping("/nft/{collectionId}/purchase/{id}")

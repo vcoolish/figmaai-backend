@@ -58,7 +58,7 @@ ALTER TABLE image_nfts
   RENAME resilience TO economy;
 
 -- yes, there's no rollback
---rollback
+--rollback select 'N/A';
 
 --changeset yemets:20220831203122
 ALTER TABLE image_nfts
@@ -105,7 +105,7 @@ ALTER TABLE users
 
 ALTER TABLE users
   ALTER COLUMN distance SET DEFAULT 0;
---rollback
+--rollback select 'N/A';
 
 --changeset yemets:20220928150421
 ALTER TABLE users
@@ -170,7 +170,7 @@ ALTER TABLE IF EXISTS transactions
   ALTER tx_type TYPE VARCHAR(20),
   ALTER direction TYPE VARCHAR(20),
   ADD block_id VARCHAR(255) NOT NULL REFERENCES blockchain_state(last_processed_block);
---rollback
+--rollback select 'N/A';
 
 --changeset vcoolish:20221028184326
 ALTER TABLE image_nfts
@@ -188,3 +188,13 @@ ALTER SEQUENCE image_nfts_id_sequence OWNED BY image_nfts.id;
 --rollback ALTER TABLE image_nfts
 --rollback   ALTER id DROP DEFAULT;
 --rollback DROP SEQUENCE IF EXISTS image_nfts_id_sequence;
+
+
+--changeset yemets:20230110182140
+ALTER TABLE IF EXISTS image_nfts
+  ADD created_at TIMESTAMP with time zone NOT NULL DEFAULT now() AT TIME ZONE 'UTC',
+  ADD updated_at TIMESTAMP with time zone;
+
+--rollback ALTER TABLE IF EXISTS image_nfts
+--rollback   DROP created_at,
+--rollback   DROP updated_at;

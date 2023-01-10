@@ -10,6 +10,7 @@ import com.app.surnft.backend.nft.model.Quality
 
 object NftMapper {
 
+  @Deprecated("It's too random. Use NftMapper.generateCar.")
   fun generateRandomCar(id: Long, collectionId: Long): ImageNft {
     val imageNft = ImageNft()
     imageNft.collectionId = collectionId

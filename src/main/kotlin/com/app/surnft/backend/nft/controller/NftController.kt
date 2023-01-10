@@ -1,6 +1,5 @@
 package com.app.surnft.backend.nft.controller
 
-import com.app.surnft.backend.config.properties.AppProperties
 import com.app.surnft.backend.constraint.Address
 import com.app.surnft.backend.nft.dto.CarLevelUpCostResponse
 import com.app.surnft.backend.nft.dto.NftExternalDto
@@ -12,6 +11,7 @@ import com.app.surnft.backend.user.dto.RepairCarRequest
 import org.springdoc.api.annotations.ParameterObject
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,15 +26,16 @@ import javax.validation.Valid
 @RestController
 class NftController(
   private val nftService: NftService,
-  private val appProperties: AppProperties,
 ) {
+
   @GetMapping("/nft")
   fun getAll(
     @ParameterObject
     @PageableDefault(
       size = 15,
       page = 0,
-      sort = ["id"]
+      sort = ["id"],
+      direction = Sort.Direction.DESC
     ) pageable: Pageable
   ): Page<NftInternalDto> = nftService.getAll(pageable)
     .map { NftMapper.toInternalDto(it) }

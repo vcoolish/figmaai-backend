@@ -93,18 +93,18 @@ object NftMapper {
     val dto = fillBaseDto(imageNft, NftExternalDto())
 
     dto.attributes = listOf(
-      NftExternalDto.Attribute(
-        trait_type = "Seed",
-        value = imageNft.prompt,
-      ),
+//      NftExternalDto.Attribute(
+//        trait_type = "Seed",
+//        value = imageNft.prompt,
+//      ),
       NftExternalDto.Attribute(
         trait_type = "Luck",
         value = imageNft.luck.toString(),
       ),
-      NftExternalDto.Attribute(
-        trait_type = "Durability",
-        value = imageNft.durability.toString(),
-      ),
+//      NftExternalDto.Attribute(
+//        trait_type = "Durability",
+//        value = imageNft.durability.toString(),
+//      ),
       NftExternalDto.Attribute(
         trait_type = "Quality",
         value = imageNft.quality.name,

@@ -192,7 +192,7 @@ ALTER SEQUENCE image_nfts_id_sequence OWNED BY image_nfts.id;
 
 --changeset yemets:20230110182140
 ALTER TABLE IF EXISTS image_nfts
-  ADD created_at TIMESTAMP with time zone NOT NULL DEFAULT now() AT TIME ZONE 'UTC',
+  ADD created_at TIMESTAMP with time zone NOT NULL DEFAULT now() WITH TIME ZONE 'UTC',
   ADD updated_at TIMESTAMP with time zone;
 
 --rollback ALTER TABLE IF EXISTS image_nfts

@@ -51,6 +51,7 @@ class NftService(
 //    if (user.balance < carType.price.toBigDecimal()) {
 //      throw BadRequestException("Insufficient balance")
 //    }
+    logger().info("{${prompt}}")
 
     restTemplate.postForEntity(
       "https://surnft-ai.herokuapp.com/task",
@@ -121,8 +122,8 @@ class NftService(
   }
 
   fun updateImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {
+    logger().info("{${output.prompt}}")
     val nft = imageNftRepository.findNftByPrompt(output.prompt).get()
-    logger().info(output.url)
     nft.image = "https" + output.url.substringAfter("https").substring(0, 58)
     imageNftRepository.save(nft)
     return nft

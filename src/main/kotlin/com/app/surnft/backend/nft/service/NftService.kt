@@ -55,7 +55,7 @@ class NftService(
     val inProgress = nfts.find {
       it.image.isEmpty() && it.createdAt.plusMinutes(2) > ZonedDateTime.now(Clock.systemUTC())
     } != null
-    println(nfts.find { it.image.isEmpty() }?.createdAt?.plusMinutes(2))
+    println(nfts.joinToString { it.id.toString() + "\n" + it.createdAt.toString() + "\n" })
     println(ZonedDateTime.now(Clock.systemUTC()))
     println(inProgress)
     if (inProgress) {

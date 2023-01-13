@@ -55,8 +55,9 @@ class NftService(
     val inProgress = nfts.find {
       it.image.isEmpty() && it.createdAt.plusMinutes(2) > ZonedDateTime.now(Clock.systemUTC())
     } != null
-    println(nfts.first { it.image.isEmpty() }.createdAt.plusMinutes(2))
+    println(nfts.find { it.image.isEmpty() }?.createdAt?.plusMinutes(2))
     println(ZonedDateTime.now(Clock.systemUTC()))
+    println(inProgress)
     if (inProgress) {
       throw BadRequestException("You already have an image in progress")
     }

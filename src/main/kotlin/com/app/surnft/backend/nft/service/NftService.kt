@@ -23,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestTemplate
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.time.Clock
+import java.time.ZonedDateTime
 import kotlin.math.min
 
 
@@ -48,6 +50,14 @@ class NftService(
 
     val user = userService.getOrCreate(address)
     val carType = ImageCollection.values().first { it.collectionId == collectionId }
+    val spec: Specification<ImageNft> = userEqual(address)
+    val nfts = imageNftRepository.findAll(spec)
+    val inProgress = nfts.find {
+      it.image.isEmpty() && it.createdAt.plusMinutes(2) > ZonedDateTime.now(Clock.systemUTC())
+    } != null
+    if (inProgress) {
+      throw BadRequestException("You already have an image in progress")
+    }
 //    if (user.balance < carType.price.toBigDecimal()) {
 //      throw BadRequestException("Insufficient balance")
 //    }

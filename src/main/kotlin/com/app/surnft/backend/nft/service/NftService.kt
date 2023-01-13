@@ -136,6 +136,7 @@ class NftService(
   fun updateImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {
     logger().info("{${output.prompt}}")
     val nft = imageNftRepository.findNftByPrompt(output.prompt).get()
+    logger().info("nftprompt{${nft.prompt}}")
     nft.image = "https" + output.url.substringAfter("https").substring(0, 58)
     imageNftRepository.save(nft)
     return nft

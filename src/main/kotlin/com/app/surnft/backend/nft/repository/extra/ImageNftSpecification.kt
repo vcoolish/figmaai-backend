@@ -16,17 +16,6 @@ object ImageNftSpecification {
 
     val userJoin: Join<ImageNft, User> = root.join(ImageNft::user)
 
-    return@Specification builder.equal(userJoin.get(User::address), address)
-  }
-
-  fun userEqualInProgress(address: String?): Specification<ImageNft> = Specification { root, _, builder ->
-    if (address == null) {
-      return@Specification null
-    }
-
-    val userJoin: Join<ImageNft, User> = root.join(ImageNft::user)
-
-    return@Specification builder
-      .equal(userJoin.get(User::address), address)
+    return@Specification builder.equal(userJoin.get(User::address), address.lowercase())
   }
 }

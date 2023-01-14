@@ -1,6 +1,7 @@
 package com.app.surnft.backend.nft.service
 
 import com.app.surnft.backend.ai.AiProvider
+import com.app.surnft.backend.ai.DalleRequest
 import com.app.surnft.backend.ai.DalleResponse
 import com.app.surnft.backend.blockchain.service.BlockchainService
 import com.app.surnft.backend.common.util.bannedPhrases
@@ -52,9 +53,7 @@ class NftService(
     return imageNftRepository.findAll(spec, pageable)
   }
 
-  fun create(address: String, collectionId: Long, prompt: String, provider: String): ImageNft {
-    val provider = AiProvider.values().find { it.name.equals(provider, true) }
-      ?:AiProvider.MIDJOURNEY
+  fun create(address: String, collectionId: Long, prompt: String, provider: AiProvider): ImageNft {
 
     validatePrompt(prompt)
 
@@ -84,8 +83,7 @@ class NftService(
       imageCreationService.create(user, collectionId)
         .let(imageNftRepository::saveAndFlush)
     } else {
-      val body = LinkedMultiValueMap<String, String>()
-      body.add("prompt", prompt)
+      val body = DalleRequest(prompt)
       val headers = LinkedMultiValueMap<String, String>()
       headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
       headers.add("Content-Type", "application/json")

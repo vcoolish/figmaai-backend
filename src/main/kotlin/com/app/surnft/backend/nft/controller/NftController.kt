@@ -1,5 +1,6 @@
 package com.app.surnft.backend.nft.controller
 
+import com.app.surnft.backend.ai.AiProvider
 import com.app.surnft.backend.constraint.Address
 import com.app.surnft.backend.nft.dto.CarLevelUpCostResponse
 import com.app.surnft.backend.nft.dto.GetAllNftRequest
@@ -88,14 +89,19 @@ class NftController(
     @PathVariable collectionId: Long,
     @Address @RequestHeader address: String,
     @Valid @RequestBody request: PurchaseImageRequest,
-  ): NftInternalDto = NftMapper.toInternalDto(
-    nftService.create(
-      address = address,
-      collectionId = collectionId,
-      prompt = request.prompt.trim(),
-      provider = request.provider,
+  ): NftInternalDto {
+    val provider = AiProvider.values().find {
+      it.name.equals(request.provider, true)
+    } ?: AiProvider.MIDJOURNEY
+    return NftMapper.toInternalDto(
+      nftService.create(
+        address = address,
+        collectionId = collectionId,
+        prompt = request.prompt.trim(),
+        provider = provider,
+      )
     )
-  )
+  }
 
   @PatchMapping("/nft/{collectionId}/purchase/{id}")
   fun mint(

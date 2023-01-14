@@ -89,7 +89,12 @@ class NftController(
     @Address @RequestHeader address: String,
     @Valid @RequestBody request: PurchaseImageRequest,
   ): NftInternalDto = NftMapper.toInternalDto(
-    nftService.create(address, collectionId, request.prompt.trim())
+    nftService.create(
+      address = address,
+      collectionId = collectionId,
+      prompt = request.prompt.trim(),
+      provider = request.provider,
+    )
   )
 
   @PatchMapping("/nft/{collectionId}/purchase/{id}")

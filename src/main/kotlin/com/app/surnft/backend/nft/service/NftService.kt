@@ -17,17 +17,16 @@ import com.app.surnft.backend.nft.model.ImageNft
 import com.app.surnft.backend.nft.model.NftId
 import com.app.surnft.backend.nft.repository.ImageNftRepository
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.userEqual
+import com.app.surnft.backend.user.model.User
 import com.app.surnft.backend.user.service.UserService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.LinkedMultiValueMap
-import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -54,7 +53,6 @@ class NftService(
   }
 
   fun create(address: String, collectionId: Long, prompt: String, provider: AiProvider): ImageNft {
-
     validatePrompt(prompt)
 
     val user = userService.getOrCreate(address)
@@ -73,34 +71,9 @@ class NftService(
     logger().info("{${prompt}}")
 
     val nft = if (provider == AiProvider.MIDJOURNEY) {
-      restTemplate.postForEntity(
-        "https://surnft-ai.herokuapp.com/task",
-        mapOf(
-          "prompt" to prompt,
-        ),
-        String::class.java,
-      )
-      imageCreationService.create(user, collectionId)
-        .let(imageNftRepository::saveAndFlush)
+      requestMidjourneyImage(prompt, user, collectionId)
     } else {
-      val body = DalleRequest(prompt)
-      val headers = LinkedMultiValueMap<String, String>()
-      headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
-      headers.add("Content-Type", "application/json")
-      val httpEntity: HttpEntity<*> = HttpEntity<Any>(body, headers)
-
-      val response = restTemplate.exchange(
-        "https://api.openai.com/v1/images/generations",
-        HttpMethod.POST,
-        httpEntity,
-        DalleResponse::class.java
-      )
-      imageCreationService.create(user, collectionId)
-        .let(imageNftRepository::saveAndFlush).apply {
-          response.body?.data?.firstOrNull()?.url?.let {
-            image = it
-          } ?: throw BadRequestException("Image generation failed")
-        }
+      createDalleImage(prompt, user, collectionId)
     }
 
     val id: Long = nft.id!!
@@ -113,6 +86,39 @@ class NftService(
     userService.save(user)
 
     return imageNftRepository.save(nft)
+  }
+
+  private fun requestMidjourneyImage(prompt: String, user: User, collectionId: Long): ImageNft {
+    restTemplate.postForEntity(
+      "https://surnft-ai.herokuapp.com/task",
+      mapOf(
+        "prompt" to prompt,
+      ),
+      String::class.java,
+    )
+    return imageCreationService.create(user, collectionId)
+      .let(imageNftRepository::saveAndFlush)
+  }
+
+  private fun createDalleImage(prompt: String, user: User, collectionId: Long): ImageNft {
+    val body = DalleRequest(prompt)
+    val headers = LinkedMultiValueMap<String, String>()
+    headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
+    headers.add("Content-Type", "application/json")
+    val httpEntity: HttpEntity<*> = HttpEntity<Any>(body, headers)
+
+    val response = restTemplate.exchange(
+      "https://api.openai.com/v1/images/generations",
+      HttpMethod.POST,
+      httpEntity,
+      DalleResponse::class.java
+    )
+    return imageCreationService.create(user, collectionId)
+      .let(imageNftRepository::saveAndFlush).apply {
+        response.body?.data?.firstOrNull()?.url?.let {
+          image = it
+        } ?: throw BadRequestException("Image generation failed")
+      }
   }
 
   private fun validatePrompt(prompt: String) {

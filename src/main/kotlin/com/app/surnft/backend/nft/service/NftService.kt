@@ -1,5 +1,7 @@
 package com.app.surnft.backend.nft.service
 
+import com.app.surnft.backend.ai.AiProvider
+import com.app.surnft.backend.ai.DalleResponse
 import com.app.surnft.backend.blockchain.service.BlockchainService
 import com.app.surnft.backend.common.util.bannedPhrases
 import com.app.surnft.backend.common.util.bannedWords
@@ -18,8 +20,13 @@ import com.app.surnft.backend.user.service.UserService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -45,7 +52,10 @@ class NftService(
     return imageNftRepository.findAll(spec, pageable)
   }
 
-  fun create(address: String, collectionId: Long, prompt: String): ImageNft {
+  fun create(address: String, collectionId: Long, prompt: String, provider: String): ImageNft {
+    val provider = AiProvider.values().find { it.name.equals(provider, true) }
+      ?:AiProvider.MIDJOURNEY
+
     validatePrompt(prompt)
 
     val user = userService.getOrCreate(address)
@@ -55,9 +65,6 @@ class NftService(
     val inProgress = nfts.find {
       it.image.isEmpty() && it.createdAt.plusMinutes(2) > ZonedDateTime.now(Clock.systemUTC())
     } != null
-    println(nfts.joinToString { it.id.toString() + "\n" + it.createdAt.toString() + "\n" })
-    println(ZonedDateTime.now(Clock.systemUTC()))
-    println(inProgress)
     if (inProgress) {
       throw BadRequestException("You already have an image in progress")
     }
@@ -66,16 +73,37 @@ class NftService(
 //    }
     logger().info("{${prompt}}")
 
-    restTemplate.postForEntity(
-      "https://surnft-ai.herokuapp.com/task",
-      mapOf(
-        "prompt" to prompt,
-      ),
-      String::class.java,
-    )
+    val nft = if (provider == AiProvider.MIDJOURNEY) {
+      restTemplate.postForEntity(
+        "https://surnft-ai.herokuapp.com/task",
+        mapOf(
+          "prompt" to prompt,
+        ),
+        String::class.java,
+      )
+      imageCreationService.create(user, collectionId)
+        .let(imageNftRepository::saveAndFlush)
+    } else {
+      val body = LinkedMultiValueMap<String, String>()
+      body.add("prompt", prompt)
+      val headers = LinkedMultiValueMap<String, String>()
+      headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
+      headers.add("Content-Type", "application/json")
+      val httpEntity: HttpEntity<*> = HttpEntity<Any>(body, headers)
 
-    val nft = imageCreationService.create(user, collectionId)
-      .let(imageNftRepository::saveAndFlush)
+      val response = restTemplate.exchange(
+        "https://api.openai.com/v1/images/generations",
+        HttpMethod.POST,
+        httpEntity,
+        DalleResponse::class.java
+      )
+      imageCreationService.create(user, collectionId)
+        .let(imageNftRepository::saveAndFlush).apply {
+          response.body?.data?.firstOrNull()?.url?.let {
+            image = it
+          } ?: throw BadRequestException("Image generation failed")
+        }
+    }
 
     val id: Long = nft.id!!
 

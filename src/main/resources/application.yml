@@ -74,6 +74,7 @@ web-security:
 application:
   sig-key: ${SIG_KEY}
   key: ${KEY}
+  dalle-key: ${DALLE_KEY}
   default-user-energy-limit: 30
   default-user-tokens-limit-per-day: 10
   energy-renew-rate: PT6H

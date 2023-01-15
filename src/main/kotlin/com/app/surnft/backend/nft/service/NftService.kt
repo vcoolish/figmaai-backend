@@ -122,8 +122,8 @@ class NftService(
               "url" to it,
             ),
             String::class.java,
-          )
-          image = url.body ?: throw BadRequestException("Image not uploaded")
+          ).body ?: throw BadRequestException("Image not uploaded")
+          image = "https" + url.substringAfter("https").substring(0, 58)
         } ?: throw BadRequestException("Image generation failed")
       }
   }

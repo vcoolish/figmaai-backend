@@ -116,7 +116,14 @@ class NftService(
     return imageCreationService.create(user, collectionId)
       .let(imageNftRepository::saveAndFlush).apply {
         response.body?.data?.firstOrNull()?.url?.let {
-          image = it
+          val url = restTemplate.postForEntity(
+            "https://surnft-ai.herokuapp.com/upload",
+            mapOf(
+              "url" to it,
+            ),
+            String::class.java,
+          )
+          image = url.body ?: throw BadRequestException("Image not uploaded")
         } ?: throw BadRequestException("Image generation failed")
       }
   }

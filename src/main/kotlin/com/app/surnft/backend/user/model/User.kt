@@ -2,6 +2,8 @@ package com.app.surnft.backend.user.model
 
 import com.app.surnft.backend.common.model.AbstractJpaPersistable
 import com.app.surnft.backend.nft.model.ImageNft
+import org.hibernate.annotations.CreationTimestamp
+import org.springframework.data.annotation.CreatedDate
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 import javax.persistence.*
@@ -44,6 +46,11 @@ class User() : AbstractJpaPersistable<String>() {
    */
   @Column(nullable = false)
   var donation: Short = 5
+
+  @CreatedDate
+  @CreationTimestamp
+  @Column(nullable = false)
+  lateinit var createdAt: ZonedDateTime
 
   constructor(address: String, tokensLimitPerDay: BigDecimal, maxEnergy: BigDecimal) : this() {
     this.address = address

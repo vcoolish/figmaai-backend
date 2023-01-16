@@ -198,3 +198,10 @@ ALTER TABLE IF EXISTS image_nfts
 --rollback ALTER TABLE IF EXISTS image_nfts
 --rollback   DROP created_at,
 --rollback   DROP updated_at;
+
+
+--changeset yemets:20230116134021
+ALTER TABLE IF EXISTS users
+  ADD created_at TIMESTAMP with time zone NOT NULL DEFAULT (now() AT TIME ZONE 'UTC');
+--rollback ALTER TABLE IF EXISTS users
+--rollback   DROP created_at;

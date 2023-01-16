@@ -34,7 +34,7 @@ open class Nft : AbstractJpaPersistable<Long>() {
   @Column(nullable = false)
   var collectionId: Long? = null
 
-  lateinit var name: String
+  var name: String? = null
 
   @Column(length = 512)
   lateinit var description: String

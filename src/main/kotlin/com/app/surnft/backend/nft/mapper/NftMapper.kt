@@ -58,7 +58,7 @@ object NftMapper {
   }
 
   private fun <T : NftBaseDto> fillBaseDto(nft: Nft, dto: T): T {
-    dto.name = nft.name
+    dto.name = nft.name ?: ""
     dto.description = nft.description
     dto.image = nft.image
     dto.externalUrl = nft.externalUrl

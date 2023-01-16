@@ -52,6 +52,7 @@ class NftService(
     return imageNftRepository.findAll(spec, pageable)
   }
 
+  @Transactional
   fun create(address: String, collectionId: Long, prompt: String, provider: AiProvider): ImageNft {
     validatePrompt(prompt)
 
@@ -68,7 +69,7 @@ class NftService(
 //    if (user.balance < carType.price.toBigDecimal()) {
 //      throw BadRequestException("Insufficient balance")
 //    }
-    logger().info("{${prompt}}")
+    logger.info("{${prompt}}")
 
     val nft = if (provider == AiProvider.MIDJOURNEY) {
       requestMidjourneyImage(prompt, user, collectionId)

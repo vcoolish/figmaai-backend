@@ -113,17 +113,20 @@ class NftService(
       httpEntity,
       DalleResponse::class.java
     )
+    val createdPicUrl = response.body?.data?.firstOrNull()?.url
+      ?: throw BadRequestException("Failed to create image")
+    val url = restTemplate.postForEntity(
+      "https://surnft-ai.herokuapp.com/upload",
+      mapOf(
+        "url" to createdPicUrl,
+      ),
+      String::class.java,
+    ).body?.substringAfter("https")?.substring(0, 58)
+      ?: throw BadRequestException("Image not uploaded")
     return imageCreationService.create(user, collectionId)
       .let(imageNftRepository::saveAndFlush).apply {
         response.body?.data?.firstOrNull()?.url?.let {
-          val url = restTemplate.postForEntity(
-            "https://surnft-ai.herokuapp.com/upload",
-            mapOf(
-              "url" to it,
-            ),
-            String::class.java,
-          ).body ?: throw BadRequestException("Image not uploaded")
-          image = "https" + url.substringAfter("https").substring(0, 58)
+          image = "https$url"
         } ?: throw BadRequestException("Image generation failed")
       }
   }

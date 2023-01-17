@@ -8,6 +8,7 @@ import com.app.surnft.backend.nft.dto.GetAllNftRequest
 import com.app.surnft.backend.nft.dto.NftExternalDto
 import com.app.surnft.backend.nft.dto.NftInternalDto
 import com.app.surnft.backend.nft.mapper.NftMapper
+import com.app.surnft.backend.nft.model.UploadResult
 import com.app.surnft.backend.nft.service.AwsS3Service
 import com.app.surnft.backend.nft.service.NftService
 import com.app.surnft.backend.user.dto.PurchaseImageRequest
@@ -25,11 +26,10 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.multipart.MultipartFile
 import java.io.InputStream
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import java.util.UUID
+import java.util.*
 import javax.validation.Valid
 
 @Validated
@@ -126,12 +126,14 @@ class NftController(
   fun upload(
     @Address @RequestHeader address: String,
     @PathVariable filename: String,
-  ): String {
-    return awsS3Service.generatePreSignedUrl(
-      filePath = UUID.randomUUID().toString() + filename,
+  ): UploadResult {
+    val s3File = UUID.randomUUID().toString() + filename
+    val url = awsS3Service.generatePreSignedUrl(
+      filePath = s3File,
       bucketName = "surpics",
       httpMethod = HttpMethod.PUT,
     )
+    return UploadResult(url = url, filename = s3File)
   }
 
   @Operation(summary = "Download asset")

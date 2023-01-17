@@ -90,6 +90,7 @@ val bannedWords = listOf(
   "entrails",
   "erogenous",
   "erotic",
+  "erotica",
   "ew",
   "execution",
   "exhibitionism",

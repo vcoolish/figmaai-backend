@@ -1,7 +1,6 @@
 package com.app.surnft.backend.nft.controller
 
 import com.app.surnft.backend.ai.AiProvider
-import com.app.surnft.backend.ai.UploadRequest
 import com.app.surnft.backend.constraint.Address
 import com.app.surnft.backend.nft.dto.CarLevelUpCostResponse
 import com.app.surnft.backend.nft.dto.GetAllNftRequest
@@ -16,8 +15,10 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
+import org.springframework.http.MediaType
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import javax.validation.Valid
 
 @Validated
@@ -109,10 +110,10 @@ class NftController(
     return nft.isMinted
   }
 
-  @PostMapping("/upload")
+  @PostMapping("/upload", MediaType.MULTIPART_FORM_DATA_VALUE)
   fun upload(
     @Address @RequestHeader address: String,
-    @RequestBody @Valid file: UploadRequest,
+    @RequestParam(value = "file", required = true) file: MultipartFile,
   ): String {
     return "https://5c657dfydrq5ehdwiuwls3lx76gkxxs4c46dgb7ks5wr6ceeoycq.arweave.net/6L3fjLgcYdIcdkUsuW13_4yr3lwXPDMH6pdtHwiEdgU"
   }

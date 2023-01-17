@@ -1,5 +1,6 @@
 package com.app.surnft.backend.nft.controller
 
+import com.amazonaws.HttpMethod
 import com.app.surnft.backend.ai.AiProvider
 import com.app.surnft.backend.constraint.Address
 import com.app.surnft.backend.nft.dto.CarLevelUpCostResponse
@@ -7,6 +8,7 @@ import com.app.surnft.backend.nft.dto.GetAllNftRequest
 import com.app.surnft.backend.nft.dto.NftExternalDto
 import com.app.surnft.backend.nft.dto.NftInternalDto
 import com.app.surnft.backend.nft.mapper.NftMapper
+import com.app.surnft.backend.nft.service.AwsS3Service
 import com.app.surnft.backend.nft.service.NftService
 import com.app.surnft.backend.user.dto.PurchaseImageRequest
 import com.app.surnft.backend.user.dto.RepairCarRequest
@@ -27,12 +29,14 @@ import org.springframework.web.multipart.MultipartFile
 import java.io.InputStream
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.util.UUID
 import javax.validation.Valid
 
 @Validated
 @RestController
 class NftController(
   private val nftService: NftService,
+  private val awsS3Service: AwsS3Service,
 ) {
 
   @GetMapping("/nft")
@@ -118,12 +122,16 @@ class NftController(
     return nft.isMinted
   }
 
-  @PostMapping("/upload", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+  @PostMapping("/upload/{filename}")
   fun upload(
     @Address @RequestHeader address: String,
-    @RequestPart(value = "file") file: MultipartFile,
+    @PathVariable filename: String,
   ): String {
-    return "https://5c657dfydrq5ehdwiuwls3lx76gkxxs4c46dgb7ks5wr6ceeoycq.arweave.net/6L3fjLgcYdIcdkUsuW13_4yr3lwXPDMH6pdtHwiEdgU"
+    return awsS3Service.generatePreSignedUrl(
+      filePath = UUID.randomUUID().toString() + filename,
+      bucketName = "surpics",
+      httpMethod = HttpMethod.PUT,
+    )
   }
 
   @Operation(summary = "Download asset")

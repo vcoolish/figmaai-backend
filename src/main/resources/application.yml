@@ -124,3 +124,9 @@ probability.car:
 logging:
   level:
     com.app.surnft: debug
+
+amazon:
+  aws:
+    secret-key: ${AWS_SECRET_KEY}
+    access-key: ${AWS_ACCESS_KEY}
+    region: us-east-1

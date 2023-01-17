@@ -137,6 +137,11 @@
       <artifactId>evm-abi-decoder</artifactId>
       <version>0.0.6</version>
     </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-s3</artifactId>
+      <version>1.11.64</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -191,11 +196,6 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-maven-noarg</artifactId>
             <version>${kotlin.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>co.upvest</groupId>
-            <artifactId>arweave4s-core_2.12</artifactId>
-            <version>0.21.0</version>
           </dependency>
         </dependencies>
       </plugin>

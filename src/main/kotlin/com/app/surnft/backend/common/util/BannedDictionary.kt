@@ -633,6 +633,7 @@ val bannedPhrases = listOf(
   "big ass",
   "big black",
   "big bust",
+  "birthday suit",
   "blood, bloody",
   "blow job",
   "body horror",

@@ -10,15 +10,23 @@ import com.app.surnft.backend.nft.mapper.NftMapper
 import com.app.surnft.backend.nft.service.NftService
 import com.app.surnft.backend.user.dto.PurchaseImageRequest
 import com.app.surnft.backend.user.dto.RepairCarRequest
+import io.swagger.v3.oas.annotations.Operation
 import org.springdoc.api.annotations.ParameterObject
+import org.springframework.core.io.InputStreamResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.io.InputStream
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import javax.validation.Valid
 
 @Validated
@@ -110,11 +118,28 @@ class NftController(
     return nft.isMinted
   }
 
-  @PostMapping("/upload", MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping("/upload", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
   fun upload(
     @Address @RequestHeader address: String,
-    @RequestParam(value = "file", required = true) file: MultipartFile,
+    @RequestPart(value = "file") file: MultipartFile,
   ): String {
     return "https://5c657dfydrq5ehdwiuwls3lx76gkxxs4c46dgb7ks5wr6ceeoycq.arweave.net/6L3fjLgcYdIcdkUsuW13_4yr3lwXPDMH6pdtHwiEdgU"
   }
+
+  @Operation(summary = "Download asset")
+  @GetMapping(
+    "/download/{assetId}",
+    produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE, MediaType.APPLICATION_JSON_VALUE]
+  )
+  fun download(@PathVariable assetId: Long): ResponseEntity<InputStreamResource> {
+    val stream: InputStream = InputStream.nullInputStream()
+    return ResponseEntity.status(HttpStatus.OK)
+      .contentType(MediaType.APPLICATION_OCTET_STREAM)
+      .header(
+        HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" +
+            URLEncoder.encode("empty_file", StandardCharsets.UTF_8)
+      )
+      .body(InputStreamResource(stream))
+  }
+
 }

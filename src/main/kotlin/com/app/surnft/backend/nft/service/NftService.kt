@@ -179,7 +179,7 @@ class NftService(
 
   fun updateImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {
     logger().info("{${output.prompt}}")
-    val cleanPrompt = if (output.prompt.startsWith("https://")) {
+    val cleanPrompt = if (output.prompt.startsWith("<https://")) {
       output.prompt.substringAfter(" ")
     } else {
       output.prompt

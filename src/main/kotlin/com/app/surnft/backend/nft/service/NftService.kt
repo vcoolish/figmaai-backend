@@ -80,7 +80,7 @@ class NftService(
     val id: Long = nft.id!!
 
     nft.name = "${carType.title} #$id"
-    nft.prompt = prompt
+    nft.prompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
     nft.externalUrl = "https://tofunft.com/nft/bsc/0xe73711e8331aD93ca115A2AE4D1AFAc74E15D644/$id"
 
 //    user.balance = user.balance - carType.price.toBigDecimal()
@@ -179,7 +179,12 @@ class NftService(
 
   fun updateImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {
     logger().info("{${output.prompt}}")
-    val nft = imageNftRepository.findNftByPrompt(output.prompt).get()
+    val cleanPrompt = if (output.prompt.startsWith("https://")) {
+      output.prompt.substringAfter(" ")
+    } else {
+      output.prompt
+    }
+    val nft = imageNftRepository.findNftByPrompt(cleanPrompt).get()
     logger().info("nftprompt{${nft.prompt}}")
     nft.image = "https" + output.url.substringAfter("https").substring(0, 58)
     imageNftRepository.save(nft)

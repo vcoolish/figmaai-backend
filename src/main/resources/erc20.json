@@ -369,7 +369,7 @@
       },
       {
         "internalType":"uint256",
-        "name":"amount",
+        "name":"tokenId",
         "type":"uint256"
       }
     ],
@@ -398,7 +398,7 @@
       },
       {
         "internalType":"uint256",
-        "name":"amount",
+        "name":"tokenId",
         "type":"uint256"
       }
     ],

@@ -237,7 +237,7 @@ class BlockchainService(
   private fun transferCarOwnership(from: String, to: String, tokenId: String) {
     val sender = userService.getOrCreate(from)
     val recipient = userService.getOrCreate(to)
-    val nft = sender.nfts.first { it.id == tokenId.toLong(16) }
+    val nft = sender.nfts.first { it.id == tokenId.toLong() }
     val senderNfts = sender.nfts.toMutableList()
     val recipientNfts = recipient.nfts.toMutableList()
     senderNfts.remove(nft)

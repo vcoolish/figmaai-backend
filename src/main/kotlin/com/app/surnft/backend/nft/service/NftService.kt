@@ -20,6 +20,7 @@ import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.created
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.imageIsEmpty
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.hasMintedEntries
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.userEqual
+import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.withBalance
 import com.app.surnft.backend.user.model.User
 import com.app.surnft.backend.user.service.UserService
 import org.springframework.data.domain.Page
@@ -173,6 +174,7 @@ class NftService(
       throw e
     }
     nft.isMinted = true
+    user.energy = user.maxEnergy
 
     if (hasMinted) {
       user.balance = user.balance - carType.mintPrice.toBigDecimal()
@@ -185,6 +187,7 @@ class NftService(
   fun hasMinted(address: String): Boolean {
     val spec: Specification<ImageNft> = hasMintedEntries()
       .and(userEqual(address))
+      .and(withBalance())
     return imageNftRepository.exists(spec)
   }
 

@@ -5,6 +5,7 @@ import com.app.surnft.backend.common.util.SpecificationUtil.join
 import com.app.surnft.backend.nft.model.ImageNft
 import com.app.surnft.backend.user.model.User
 import org.springframework.data.jpa.domain.Specification
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 import javax.persistence.criteria.Join
 
@@ -18,6 +19,12 @@ object ImageNftSpecification {
     val userJoin: Join<ImageNft, User> = root.join(ImageNft::user)
 
     return@Specification builder.equal(userJoin.get(User::address), address.lowercase())
+  }
+
+  fun withBalance(): Specification<ImageNft> = Specification { root, _, builder ->
+    val userJoin: Join<ImageNft, User> = root.join(ImageNft::user)
+
+    return@Specification builder.notEqual(userJoin.get(User::balance), BigDecimal.ZERO)
   }
 
   fun imageIsEmpty(): Specification<ImageNft> = Specification { root, _, builder ->

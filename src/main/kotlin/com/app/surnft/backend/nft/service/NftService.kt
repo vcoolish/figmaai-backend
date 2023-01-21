@@ -68,9 +68,9 @@ class NftService(
     if (inProgress) {
       throw BadRequestException("You already have an image in progress")
     }
-//    if (user.balance < carType.price.toBigDecimal()) {
-//      throw BadRequestException("Insufficient balance")
-//    }
+    if (user.energy < provider.energy.toBigDecimal()) {
+      throw BadRequestException("Energy too low. Try to mint or wait for energy to regenerate")
+    }
     logger.info("{${prompt}}")
 
     val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
@@ -86,7 +86,7 @@ class NftService(
     nft.prompt = cleanPrompt
     nft.externalUrl = "https://tofunft.com/nft/bsc/0xe73711e8331aD93ca115A2AE4D1AFAc74E15D644/$id"
 
-//    user.balance = user.balance - carType.price.toBigDecimal()
+    user.energy = user.energy - provider.energy.toBigDecimal()
     userService.save(user)
 
     return imageNftRepository.save(nft)

@@ -122,11 +122,11 @@ class NftController(
     return nft.isMinted
   }
 
-  @GetMapping("/nft/hasMinted")
-  fun hasMinted(
+  @GetMapping("/nft/freeMint")
+  fun hasFreeMint(
     @Address @RequestHeader address: String,
   ): Boolean {
-    return nftService.hasMinted(address)
+    return nftService.hasFreeMint(address)
   }
 
   @PostMapping("/upload/{filename}")

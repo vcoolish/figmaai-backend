@@ -20,7 +20,6 @@ import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.created
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.imageIsEmpty
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.hasMintedEntries
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.userEqual
-import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.withBalance
 import com.app.surnft.backend.user.model.User
 import com.app.surnft.backend.user.service.UserService
 import org.springframework.data.domain.Page
@@ -155,8 +154,8 @@ class NftService(
   fun mint(address: String, collectionId: Long, id: Long): ImageNft {
     val user = userService.get(address)
     val carType = ImageCollection.values().first { it.collectionId == collectionId }
-    val hasMinted = hasMinted(address)
-    if (user.balance < carType.mintPrice.toBigDecimal() && hasMinted) {
+    val hasFreeMint = hasFreeMint(address)
+    if (user.balance < carType.mintPrice.toBigDecimal() && !hasFreeMint) {
       throw BadRequestException("Insufficient balance")
     }
 
@@ -176,7 +175,7 @@ class NftService(
     nft.isMinted = true
     user.energy = user.maxEnergy
 
-    if (hasMinted) {
+    if (!hasFreeMint) {
       user.balance = user.balance - carType.mintPrice.toBigDecimal()
     }
     userService.save(user)
@@ -184,11 +183,15 @@ class NftService(
     return imageNftRepository.save(nft)
   }
 
-  fun hasMinted(address: String): Boolean {
+  fun hasFreeMint(address: String): Boolean {
     val spec: Specification<ImageNft> = hasMintedEntries()
       .and(userEqual(address))
-      .and(withBalance())
-    return imageNftRepository.exists(spec)
+    val hasMinted = imageNftRepository.exists(spec)
+    if (hasMinted) {
+      return false
+    }
+    val user = userService.get(address)
+    return user.balance > BigDecimal.ZERO
   }
 
   fun updateImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {

@@ -21,10 +21,10 @@ object ImageNftSpecification {
     return@Specification builder.equal(userJoin.get(User::address), address.lowercase())
   }
 
-  fun withBalance(): Specification<ImageNft> = Specification { root, _, builder ->
+  fun withZeroBalance(): Specification<ImageNft> = Specification { root, _, builder ->
     val userJoin: Join<ImageNft, User> = root.join(ImageNft::user)
 
-    return@Specification builder.notEqual(userJoin.get(User::balance), BigDecimal.ZERO)
+    return@Specification builder.equal(userJoin.get(User::balance), BigDecimal.ZERO)
   }
 
   fun imageIsEmpty(): Specification<ImageNft> = Specification { root, _, builder ->

@@ -18,6 +18,7 @@ import com.app.surnft.backend.nft.model.NftId
 import com.app.surnft.backend.nft.repository.ImageNftRepository
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.createdAtGreaterOrEqual
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.imageIsEmpty
+import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.hasMintedEntries
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.userEqual
 import com.app.surnft.backend.user.model.User
 import com.app.surnft.backend.user.service.UserService
@@ -71,16 +72,17 @@ class NftService(
 //    }
     logger.info("{${prompt}}")
 
+    val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
     val nft = if (provider == AiProvider.MIDJOURNEY) {
       requestMidjourneyImage(prompt, user, collectionId)
     } else {
-      createDalleImage(prompt, user, collectionId)
+      createDalleImage(cleanPrompt, user, collectionId)
     }
 
     val id: Long = nft.id!!
 
     nft.name = "${carType.title} #$id"
-    nft.prompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
+    nft.prompt = cleanPrompt
     nft.externalUrl = "https://tofunft.com/nft/bsc/0xe73711e8331aD93ca115A2AE4D1AFAc74E15D644/$id"
 
 //    user.balance = user.balance - carType.price.toBigDecimal()
@@ -152,7 +154,8 @@ class NftService(
   fun mint(address: String, collectionId: Long, id: Long): ImageNft {
     val user = userService.get(address)
     val carType = ImageCollection.values().first { it.collectionId == collectionId }
-    if (user.balance < carType.mintPrice.toBigDecimal()) {
+    val hasMinted = hasMinted(address)
+    if (user.balance < carType.mintPrice.toBigDecimal() && hasMinted) {
       throw BadRequestException("Insufficient balance")
     }
 
@@ -171,10 +174,18 @@ class NftService(
     }
     nft.isMinted = true
 
-    user.balance = user.balance - carType.mintPrice.toBigDecimal()
+    if (hasMinted) {
+      user.balance = user.balance - carType.mintPrice.toBigDecimal()
+    }
     userService.save(user)
 
     return imageNftRepository.save(nft)
+  }
+
+  fun hasMinted(address: String): Boolean {
+    val spec: Specification<ImageNft> = hasMintedEntries()
+      .and(userEqual(address))
+    return imageNftRepository.exists(spec)
   }
 
   fun updateImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {

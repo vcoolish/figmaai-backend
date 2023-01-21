@@ -24,6 +24,10 @@ object ImageNftSpecification {
     return@Specification builder.equal(root.get(ImageNft::image), "")
   }
 
+  fun hasMintedEntries(): Specification<ImageNft> = Specification { root, _, builder ->
+    return@Specification builder.isTrue(root.get(ImageNft::isMinted))
+  }
+
   fun createdAtGreaterOrEqual(dateTime: ZonedDateTime?): Specification<ImageNft> =
     Specification { root, _, builder ->
       if (dateTime == null) {

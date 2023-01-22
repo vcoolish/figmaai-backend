@@ -21,6 +21,7 @@ import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.imageIs
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.hasMintedEntries
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.userEqual
 import com.app.surnft.backend.user.model.User
+import com.app.surnft.backend.user.service.UserEnergyService
 import com.app.surnft.backend.user.service.UserService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -44,6 +45,7 @@ class NftService(
   private val appProperties: AppProperties,
   private val imageCreationService: ImageCreationService,
   private val blockchainService: BlockchainService,
+  private val userEnergyService: UserEnergyService,
 ) {
 
   private val logger = logger()
@@ -85,7 +87,7 @@ class NftService(
     nft.prompt = cleanPrompt
     nft.externalUrl = "https://tofunft.com/nft/bsc/0xe73711e8331aD93ca115A2AE4D1AFAc74E15D644/$id"
 
-    user.energy = user.energy - provider.energy.toBigDecimal()
+    userEnergyService.spendEnergy(user, provider.energy.toBigDecimal())
     userService.save(user)
 
     return imageNftRepository.save(nft)

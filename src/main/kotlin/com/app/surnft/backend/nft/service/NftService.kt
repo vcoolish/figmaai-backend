@@ -182,6 +182,11 @@ class NftService(
     }
     userService.save(user)
 
+    val updatedUser = userService.get(address)
+    if (updatedUser.nfts.size == 3) {
+      userEnergyService.increaseMaxEnergy(updatedUser)
+    }
+
     return imageNftRepository.save(nft)
   }
 

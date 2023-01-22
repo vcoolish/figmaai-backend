@@ -246,7 +246,7 @@ class BlockchainService(
     if (sender.nfts.size == 3 && senderNfts.size < 3) {
       userEnergyService.decreaseMaxEnergy(sender)
     }
-    if (recipient.nfts.size < 3 && senderNfts.size == 3) {
+    if (recipient.nfts.size < 3 && recipientNfts.size == 3) {
       userEnergyService.increaseMaxEnergy(sender)
     }
 

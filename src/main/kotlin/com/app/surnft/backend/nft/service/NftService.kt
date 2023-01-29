@@ -304,4 +304,7 @@ class NftService(
     userService.save(user)
     return imageNftRepository.save(car)
   }
+
+  fun getMintPrice(collectionId: Long) =
+    ImageCollection.values().first { it.collectionId == collectionId }.mintPrice
 }

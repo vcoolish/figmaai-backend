@@ -129,6 +129,13 @@ class NftController(
     return nftService.hasFreeMint(address)
   }
 
+  @GetMapping("/nft/price/{collectionId}")
+  fun getMintPrice(
+    @PathVariable collectionId: Long,
+  ): Double {
+    return nftService.getMintPrice(collectionId)
+  }
+
   @PostMapping("/upload/{filename}")
   fun upload(
     @Address @RequestHeader address: String,

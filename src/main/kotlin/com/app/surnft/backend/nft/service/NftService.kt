@@ -78,7 +78,11 @@ class NftService(
     val nft = if (provider == AiProvider.MIDJOURNEY) {
       requestMidjourneyImage(prompt, user, collectionId)
     } else {
-      createDalleImage(cleanPrompt, user, collectionId)
+      try {
+        createDalleImage(cleanPrompt, user, collectionId)
+      } catch (t: Throwable) {
+        throw BadRequestException("Instant mode is temproary unavailable. Try with slow mode.")
+      }
     }
 
     val id: Long = nft.id!!

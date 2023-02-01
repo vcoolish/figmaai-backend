@@ -113,6 +113,7 @@ class NftService(
     val body = DalleRequest(prompt)
     val headers = LinkedMultiValueMap<String, String>()
     headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
+    headers.add("OpenAI-Organization", "org-PPCMBOiIcK9DBzlYoBqyNeFJ")
     headers.add("Content-Type", "application/json")
     val httpEntity: HttpEntity<*> = HttpEntity<Any>(body, headers)
 

@@ -9,6 +9,7 @@ import com.app.surnft.backend.common.util.bannedWords
 import com.app.surnft.backend.common.util.logger
 import com.app.surnft.backend.config.properties.AppProperties
 import com.app.surnft.backend.exception.BadRequestException
+import com.app.surnft.backend.exception.InsufficientBalanceException
 import com.app.surnft.backend.nft.data.CarRepairInfo
 import com.app.surnft.backend.nft.dto.CarLevelUpCostResponse
 import com.app.surnft.backend.nft.dto.GetAllNftRequest
@@ -69,8 +70,9 @@ class NftService(
     if (inProgress) {
       throw BadRequestException("You already have an image in progress")
     }
-    if (user.energy < provider.energy.toBigDecimal()) {
-      throw BadRequestException("Energy too low. Try to mint or wait for energy to regenerate")
+
+    if (user.energy < provider.energy.toBigDecimal() && user.balance < carType.price.toBigDecimal()) {
+      throw InsufficientBalanceException("Energy too low. Try to mint, wait for energy to regenerate or top up at least 0.002 SUR BNB.")
     }
     logger.info("{${prompt}}")
 
@@ -91,7 +93,11 @@ class NftService(
     nft.prompt = cleanPrompt
     nft.externalUrl = "https://tofunft.com/nft/bsc/0xe73711e8331aD93ca115A2AE4D1AFAc74E15D644/$id"
 
-    userEnergyService.spendEnergy(user, provider.energy.toBigDecimal())
+    if (user.energy < provider.energy.toBigDecimal()) {
+      user.balance -= carType.price.toBigDecimal()
+    } else {
+      userEnergyService.spendEnergy(user, provider.energy.toBigDecimal())
+    }
     userService.save(user)
 
     return imageNftRepository.save(nft)

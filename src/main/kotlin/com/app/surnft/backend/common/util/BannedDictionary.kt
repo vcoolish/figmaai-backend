@@ -679,6 +679,7 @@ val bannedPhrases = listOf(
   "legs spread",
   "lemon party",
   "lena paul",
+  "less clothes",
   "Luna Star",
   "making love",
   "male body",

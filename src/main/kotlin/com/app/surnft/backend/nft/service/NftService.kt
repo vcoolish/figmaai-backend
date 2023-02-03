@@ -66,10 +66,10 @@ class NftService(
     val spec: Specification<ImageNft> = imageIsEmpty()
       .and(userEqual(address))
       .and(createdAtGreaterOrEqual(ZonedDateTime.now(Clock.systemUTC()).minusMinutes(2)))
-    val inProgress = imageNftRepository.exists(spec)
-    if (inProgress) {
-      throw BadRequestException("You already have an image in progress")
-    }
+//    val inProgress = imageNftRepository.exists(spec)
+//    if (inProgress) {
+//      throw BadRequestException("You already have an image in progress")
+//    }
 
     if (user.energy < provider.energy.toBigDecimal() && user.balance < carType.price.toBigDecimal()) {
       throw InsufficientBalanceException("Energy too low. Try to mint, wait for energy to regenerate or top up at least 0.002 SUR BNB.")

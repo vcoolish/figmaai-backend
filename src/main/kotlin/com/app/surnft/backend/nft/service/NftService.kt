@@ -218,7 +218,7 @@ class NftService(
     if (nft.isMinted) {
       return false
     }
-    imageNftRepository.delete(nft)
+    imageNftRepository.deleteById(NftId(id, collectionId))
     return true
   }
 

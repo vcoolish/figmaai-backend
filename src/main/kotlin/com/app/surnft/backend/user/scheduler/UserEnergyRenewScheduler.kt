@@ -45,7 +45,6 @@ class UserEnergyRenewScheduler(
       .also { currentNextExecutionTime = it }
 
   override fun run() {
-    logger.debug("Started user energy renew scheduler!")
     userEnergyService.getUsersByNextEnergyRenew(ZonedDateTime.now())
       .forEach { userEnergyService.tryToRenew(it) }
   }

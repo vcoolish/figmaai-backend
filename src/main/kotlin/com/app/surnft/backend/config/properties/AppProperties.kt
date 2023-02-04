@@ -35,7 +35,7 @@ data class AppProperties(
   val energyRenewRate: Duration,
 
   @Positive
-  val energyRenewPercent: BigDecimal = BigDecimal.valueOf(0.1),
+  val energyRenewPercent: BigDecimal = BigDecimal.valueOf(0.2),
 
   @Positive
   val durabilityRepairCost: Double = 0.625,

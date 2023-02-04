@@ -858,4 +858,5 @@ val bannedPhrases = listOf(
   "wrapping men",
   "wrinkled starfish",
   "yellow showers",
+  "impreg",
 )

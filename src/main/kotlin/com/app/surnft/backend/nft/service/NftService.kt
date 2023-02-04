@@ -212,6 +212,15 @@ class NftService(
     return user.balance > BigDecimal.ZERO
   }
 
+  fun delete(collectionId: Long, id: Long): Boolean {
+    val nft = imageNftRepository.findById(NftId(id, collectionId)).get()
+    if (nft.isMinted) {
+      return false
+    }
+    imageNftRepository.delete(nft)
+    return true
+  }
+
   fun updateImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {
     logger().info("{${output.prompt}}")
     val cleanPrompt = if (output.prompt.startsWith("<https://")) {

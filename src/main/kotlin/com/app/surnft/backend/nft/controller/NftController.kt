@@ -136,6 +136,14 @@ class NftController(
     return nftService.getMintPrice(collectionId)
   }
 
+  @DeleteMapping("/nft/{collectionId}/{id}")
+  fun delete(
+    @PathVariable collectionId: Long,
+    @PathVariable id: Long,
+  ): Boolean {
+    return nftService.delete(collectionId, id)
+  }
+
   @PostMapping("/upload/{filename}")
   fun upload(
     @Address @RequestHeader address: String,

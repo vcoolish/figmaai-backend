@@ -140,8 +140,9 @@ class NftController(
   fun delete(
     @PathVariable collectionId: Long,
     @PathVariable id: Long,
+    @Address @RequestHeader address: String,
   ): Boolean {
-    return nftService.delete(collectionId, id)
+    return nftService.delete(address, collectionId, id)
   }
 
   @PostMapping("/upload/{filename}")

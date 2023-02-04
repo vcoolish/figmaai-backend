@@ -5,7 +5,7 @@ spring:
     change-log: classpath:db/changelog.xml
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://ec2-44-194-4-127.compute-1.amazonaws.com:5432/dkgepl3iopjeg?user=oukyntwilythjs&password=ad12ef570bb612b042634801cc0d7abf1a3740bcf7307c63c2de4ac3f1e59fb4
+    url: jdbc:postgresql://ec2-44-194-4-127.compute-1.amazonaws.com:5432/dkgepl3iopjeg
     username: postgres
     password: postgres
   sql:
@@ -75,6 +75,9 @@ web-security:
       paths:
         - /nft/**
         - /address/**
+    - methods: DELETE
+      paths:
+        - /nft/**
 
 application:
   sig-key: ${SIG_KEY}

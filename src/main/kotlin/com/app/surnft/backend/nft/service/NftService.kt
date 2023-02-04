@@ -213,7 +213,7 @@ class NftService(
   }
 
   fun delete(address: String, collectionId: Long, id: Long): Boolean {
-    val nft = imageNftRepository.findById(NftId(id, collectionId)).get()
+    val nft = imageNftRepository.findById(NftId(id, collectionId)).orElseThrow()
     require(nft.user.address.equals(address, true)) { "Not your nft" }
     if (nft.isMinted) {
       return false

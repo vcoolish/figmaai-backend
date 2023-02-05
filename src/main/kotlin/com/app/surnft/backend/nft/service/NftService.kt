@@ -1,6 +1,7 @@
 package com.app.surnft.backend.nft.service
 
 import com.app.surnft.backend.ai.AiProvider
+import com.app.surnft.backend.ai.DalleImageRequest
 import com.app.surnft.backend.ai.DalleRequest
 import com.app.surnft.backend.ai.DalleResponse
 import com.app.surnft.backend.blockchain.service.BlockchainService
@@ -54,7 +55,12 @@ class NftService(
   }
 
   @Transactional
-  fun create(address: String, collectionId: Long, prompt: String, provider: AiProvider): ImageNft {
+  fun create(
+    address: String,
+    collectionId: Long,
+    prompt: String,
+    provider: AiProvider,
+  ): ImageNft {
     validatePrompt(prompt)
 
     val user = userService.getOrCreate(address)
@@ -76,11 +82,7 @@ class NftService(
     val nft = if (provider == AiProvider.MIDJOURNEY) {
       requestMidjourneyImage(prompt, user, collectionId)
     } else {
-      try {
-        createDalleImage(cleanPrompt, user, collectionId)
-      } catch (t: Throwable) {
-        throw BadRequestException("Instant mode is temproary unavailable. Try with slow mode.")
-      }
+      createDalleImage(prompt, user, collectionId)
     }
 
     val id: Long = nft.getSafeId().id!!
@@ -112,15 +114,25 @@ class NftService(
   }
 
   private fun createDalleImage(prompt: String, user: User, collectionId: Long): ImageNft {
-    val body = DalleRequest(prompt)
+    val (body, path) = if (prompt.startsWith("https://")) {
+      Pair(
+        DalleImageRequest(prompt.substringAfter(" "), prompt.substringBefore(" ")),
+        "edits"
+      )
+    } else {
+      Pair(
+        DalleRequest(prompt.substringAfter(" ")),
+        "generations",
+      )
+    }
     val headers = LinkedMultiValueMap<String, String>()
     headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
     headers.add("OpenAI-Organization", "org-PPCMBOiIcK9DBzlYoBqyNeFJ")
     headers.add("Content-Type", "application/json")
-    val httpEntity = HttpEntity<DalleRequest>(body, headers)
+    val httpEntity: HttpEntity<*> = HttpEntity<Any>(body, headers)
 
     val response = restTemplate.exchange(
-      "https://api.openai.com/v1/images/generations",
+      "https://api.openai.com/v1/images/$path",
       HttpMethod.POST,
       httpEntity,
       DalleResponse::class.java

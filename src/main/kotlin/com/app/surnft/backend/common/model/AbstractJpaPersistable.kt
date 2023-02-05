@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.data.domain.Persistable
 import org.springframework.data.util.ProxyUtils
 import java.io.Serializable
+import java.lang.IllegalStateException
 import javax.persistence.MappedSuperclass
 import javax.persistence.Transient
 
@@ -13,6 +14,8 @@ abstract class AbstractJpaPersistable<PK : Serializable> : Persistable<PK>, Seri
   companion object {
     private const val serialVersionUID = -5554308939380869754L
   }
+
+  fun getSafeId(): PK = id ?: throw IllegalStateException("Id not set!")
 
   @Transient
   @JsonIgnore
@@ -40,5 +43,5 @@ abstract class AbstractJpaPersistable<PK : Serializable> : Persistable<PK>, Seri
     return hashCode
   }
 
-  override fun toString() = "Entity of type ${this.javaClass.name} with id: ${id}"
+  override fun toString() = "Entity of type ${this.javaClass.name} with id: $id"
 }

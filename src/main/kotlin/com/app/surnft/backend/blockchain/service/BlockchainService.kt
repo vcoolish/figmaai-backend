@@ -1,6 +1,5 @@
 package com.app.surnft.backend.blockchain.service
 
-import com.app.surnft.backend.blockchain.entity.TransactionUnprocessed
 import com.app.surnft.backend.blockchain.entity.Unit
 import com.app.surnft.backend.blockchain.model.BalanceType
 import com.app.surnft.backend.blockchain.model.BlockchainState
@@ -34,7 +33,6 @@ import org.web3j.protocol.core.methods.response.EthBlock.TransactionResult
 import org.web3j.protocol.http.HttpService
 import org.web3j.tx.FastRawTransactionManager
 import org.web3j.utils.Async
-import org.web3j.utils.Numeric
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.net.http.WebSocket
@@ -57,8 +55,8 @@ class BlockchainService(
   private var started: Boolean = false
   private val client: Web3j = Web3j.build(HttpService(appProperties.clientUrl))
   private val fallbackClient: Web3j = Web3j.build(HttpService(appProperties.secondClientUrl))
-  private val tokenUnit = com.app.surnft.backend.blockchain.entity.Unit(8, "DRIVE", "DRIVE")
-  private val coinUnit = com.app.surnft.backend.blockchain.entity.Unit(18, "BNB", "BNB")
+  private val tokenUnit = Unit(8, "DRIVE", "DRIVE")
+  private val coinUnit = Unit(18, "BNB", "BNB")
 
   //todo: add scheduler and process time to time
   private val queue = CopyOnWriteArrayList<com.app.surnft.backend.blockchain.entity.TransactionUnprocessed>()
@@ -237,7 +235,7 @@ class BlockchainService(
   private fun transferCarOwnership(from: String, to: String, tokenId: String) {
     val sender = userService.getOrCreate(from)
     val recipient = userService.getOrCreate(to)
-    val nft = sender.nfts.first { it.id == tokenId.toLong() }
+    val nft = sender.nfts.first { it.getSafeId().id == tokenId.toLong() }
     val senderNfts = sender.nfts.toMutableList()
     val recipientNfts = recipient.nfts.toMutableList()
     senderNfts.remove(nft)

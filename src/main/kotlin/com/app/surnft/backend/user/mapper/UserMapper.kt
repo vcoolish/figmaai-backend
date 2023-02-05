@@ -15,7 +15,7 @@ object UserMapper {
   fun toDto(user: User): UserInfoDto = toExtendedDto(user, UserInfoDto())
 
   fun toDto(nfts: List<ImageNft>, tokensEarnedForDay: BigDecimal): UserExtendedDto = UserExtendedDto(
-    nfts.map { NftInfoDto(it.id.toString(), it.collectionId.toString()) },
+    nfts.map(ImageNft::getSafeId).map { NftInfoDto(it.id.toString(), it.collectionId.toString()) },
     tokensEarnedForDay
   )
 

@@ -3,19 +3,11 @@ package com.app.surnft.backend.nft.model
 import com.app.surnft.backend.common.model.AbstractJpaPersistable
 import org.hibernate.Hibernate
 import java.util.*
-import javax.persistence.Column
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.IdClass
-import javax.persistence.JoinColumn
-import javax.persistence.MappedSuperclass
-import javax.persistence.OneToOne
-import javax.persistence.SequenceGenerator
+import javax.persistence.*
 
 @IdClass(NftId::class)
 @MappedSuperclass
-open class Nft : AbstractJpaPersistable<Long>() {
+open class Nft : AbstractJpaPersistable<NftId>() {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "image_nfts_id_sequence_gen")
@@ -28,7 +20,11 @@ open class Nft : AbstractJpaPersistable<Long>() {
   @Column(name = "id", nullable = false)
   private var id: Long? = null
 
-  override fun getId(): Long? = id
+  override fun getId(): NftId? {
+    val id = id
+    val collectionId = collectionId
+    return if (id == null || collectionId == null) null else NftId(id, collectionId)
+  }
 
   @Id
   @Column(nullable = false)

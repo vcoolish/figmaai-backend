@@ -17,8 +17,6 @@ import com.app.surnft.backend.nft.entity.ImageCollection
 import com.app.surnft.backend.nft.model.ImageNft
 import com.app.surnft.backend.nft.model.NftId
 import com.app.surnft.backend.nft.repository.ImageNftRepository
-import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.createdAtGreaterOrEqual
-import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.imageIsEmpty
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.hasMintedEntries
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.userEqual
 import com.app.surnft.backend.user.model.User
@@ -35,8 +33,6 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.time.Clock
-import java.time.ZonedDateTime
 import kotlin.math.min
 
 @Service
@@ -63,9 +59,9 @@ class NftService(
 
     val user = userService.getOrCreate(address)
     val carType = ImageCollection.values().first { it.collectionId == collectionId }
-    val spec: Specification<ImageNft> = imageIsEmpty()
-      .and(userEqual(address))
-      .and(createdAtGreaterOrEqual(ZonedDateTime.now(Clock.systemUTC()).minusMinutes(2)))
+//    val spec: Specification<ImageNft> = imageIsEmpty()
+//      .and(userEqual(address))
+//      .and(createdAtGreaterOrEqual(ZonedDateTime.now(Clock.systemUTC()).minusMinutes(2)))
 //    val inProgress = imageNftRepository.exists(spec)
 //    if (inProgress) {
 //      throw BadRequestException("You already have an image in progress")
@@ -87,7 +83,7 @@ class NftService(
       }
     }
 
-    val id: Long = nft.id!!
+    val id: Long = nft.getSafeId().id!!
 
     nft.name = "${carType.title} #$id"
     nft.prompt = cleanPrompt
@@ -121,7 +117,7 @@ class NftService(
     headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
     headers.add("OpenAI-Organization", "org-PPCMBOiIcK9DBzlYoBqyNeFJ")
     headers.add("Content-Type", "application/json")
-    val httpEntity: HttpEntity<*> = HttpEntity<Any>(body, headers)
+    val httpEntity = HttpEntity<DalleRequest>(body, headers)
 
     val response = restTemplate.exchange(
       "https://api.openai.com/v1/images/generations",

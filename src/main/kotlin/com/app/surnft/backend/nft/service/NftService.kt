@@ -122,7 +122,7 @@ class NftService(
     val (body, path) = if (prompt.startsWith("https://")) {
       headers.add("Content-Type", "multipart/form-data")
       val params = LinkedMultiValueMap<String, Any>()
-      params.add("image", InputStreamResource(URL(prompt.substringBefore(" ")).openStream()))
+      params.add("image", InputStreamResource(URL(prompt.substringBefore(" ")).openStream(), "image.png"))
       params.add("prompt", prompt.substringAfter(" "))
       Pair(
         params,

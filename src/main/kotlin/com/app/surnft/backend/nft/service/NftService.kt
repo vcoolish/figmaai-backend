@@ -1,7 +1,6 @@
 package com.app.surnft.backend.nft.service
 
 import com.app.surnft.backend.ai.AiProvider
-import com.app.surnft.backend.ai.DalleImageRequest
 import com.app.surnft.backend.ai.DalleRequest
 import com.app.surnft.backend.ai.DalleResponse
 import com.app.surnft.backend.blockchain.service.BlockchainService
@@ -23,6 +22,7 @@ import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.userEqu
 import com.app.surnft.backend.user.model.User
 import com.app.surnft.backend.user.service.UserEnergyService
 import com.app.surnft.backend.user.service.UserService
+import org.springframework.core.io.InputStreamResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
@@ -34,7 +34,9 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.net.URL
 import kotlin.math.min
+
 
 @Service
 class NftService(
@@ -114,21 +116,25 @@ class NftService(
   }
 
   private fun createDalleImage(prompt: String, user: User, collectionId: Long): ImageNft {
+    val headers = LinkedMultiValueMap<String, String>()
+    headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
+    headers.add("OpenAI-Organization", "org-PPCMBOiIcK9DBzlYoBqyNeFJ")
     val (body, path) = if (prompt.startsWith("https://")) {
+      headers.add("Content-Type", "multipart/form-data")
+      val params = LinkedMultiValueMap<String, Any>()
+      params.add("file", InputStreamResource(URL(prompt.substringBefore(" ")).openStream()))
+      params.add("prompt", prompt.substringAfter(" "))
       Pair(
-        DalleImageRequest(prompt.substringAfter(" "), prompt.substringBefore(" ")),
+        params,
         "edits"
       )
     } else {
+      headers.add("Content-Type", "application/json")
       Pair(
         DalleRequest(prompt.substringAfter(" ")),
         "generations",
       )
     }
-    val headers = LinkedMultiValueMap<String, String>()
-    headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
-    headers.add("OpenAI-Organization", "org-PPCMBOiIcK9DBzlYoBqyNeFJ")
-    headers.add("Content-Type", "application/json")
     val httpEntity: HttpEntity<*> = HttpEntity<Any>(body, headers)
 
     val response = restTemplate.exchange(

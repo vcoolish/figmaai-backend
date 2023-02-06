@@ -26,11 +26,14 @@ import org.springframework.core.io.InputStreamResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
+import org.springframework.http.ContentDisposition
 import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -120,12 +123,28 @@ class NftService(
     headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
     headers.add("OpenAI-Organization", "org-PPCMBOiIcK9DBzlYoBqyNeFJ")
     val (body, path) = if (prompt.startsWith("https://")) {
+      val fileContent = URL(prompt.substringBefore(" ")).openStream().readAllBytes()
+
+      val fileMap: MultiValueMap<String, String> = LinkedMultiValueMap()
+      val contentDisposition = ContentDisposition
+        .builder("form-data")
+        .name("image")
+        .filename("image.png")
+        .build()
+
+      fileMap.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
+      val fileEntity = HttpEntity(fileContent, fileMap)
+
+      val body: MultiValueMap<String, Any> = LinkedMultiValueMap()
+      body.add("image", fileEntity)
+      body.add("prompt", prompt.substringAfter(" "))
+
       headers.add("Content-Type", "multipart/form-data")
-      val params = LinkedMultiValueMap<String, Any>()
-      params.add("image", InputStreamResource(URL(prompt.substringBefore(" ")).openStream(), "image.png"))
-      params.add("prompt", prompt.substringAfter(" "))
+//      val params = LinkedMultiValueMap<String, Any>()
+//      params.add("image", InputStreamResource(URL(prompt.substringBefore(" ")).openStream(), "image.png"))
+//      params.add("prompt", prompt.substringAfter(" "))
       Pair(
-        params,
+        body,
         "edits"
       )
     } else {

@@ -235,14 +235,14 @@ class NftService(
   }
 
   fun hasFreeMint(address: String): Boolean {
-    val spec: Specification<ImageNft> = hasMintedEntries()
-      .and(userEqual(address))
-    val hasMinted = imageNftRepository.exists(spec)
-    if (hasMinted) {
+//    val spec: Specification<ImageNft> = hasMintedEntries()
+//      .and(userEqual(address))
+//    val hasMinted = imageNftRepository.exists(spec)
+//    if (hasMinted) {
       return false
-    }
-    val user = userService.get(address)
-    return user.balance > BigDecimal.ZERO
+//    }
+//    val user = userService.get(address)
+//    return user.balance > BigDecimal.ZERO
   }
 
   fun delete(address: String, collectionId: Long, id: Long): Boolean {

@@ -339,6 +339,9 @@ class NftService(
     return true
   }
 
+  fun getCollectionPrices() =
+    appProperties.collectionPrices.values
+
   fun updateImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {
     logger().info("{${output.prompt}}")
     val cleanPrompt = if (output.prompt.startsWith("<https://")) {
@@ -364,6 +367,10 @@ class NftService(
 
   fun getCollectionNfts(collectionId: Long): List<ImageNft> {
     return imageNftRepository.findNftByCollection(collectionId)
+  }
+
+  fun isCollectionInProgress(collectionId: Long): Boolean {
+    return imageNftRepository.findEmptyImageInCollection(collectionId).isNotEmpty()
   }
 
   fun getCollection(collectionId: Long): Collection {

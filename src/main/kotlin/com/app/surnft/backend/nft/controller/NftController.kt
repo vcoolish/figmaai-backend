@@ -61,7 +61,7 @@ class NftController(
   @GetMapping("/nft/{collectionId}/internals")
   fun getCollectionInfo(@PathVariable collectionId: Long): CollectionDto {
     val collection = nftService.getCollection(collectionId)
-    val inProgress = nftService.getCollectionNfts(collectionId).any { it.image == "" }
+    val inProgress = nftService.isCollectionInProgress(collectionId)
     return CollectionDto(
       id = collectionId,
       address = collection.address,
@@ -148,8 +148,8 @@ class NftController(
   }
 
   @GetMapping("/nft/prices")
-  fun getMintPrice(): Array<Double> {
-    return arrayOf(0.5, 1.5, 2.5)
+  fun getMintPrice(): Collection<Double> {
+    return nftService.getCollectionPrices()
   }
 
   @DeleteMapping("/nft/{collectionId}/{id}")

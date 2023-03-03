@@ -1,6 +1,6 @@
 package com.app.surnft.backend.blockchain.service
 
-import com.app.surnft.backend.blockchain.entity.SurNFTCollection
+import com.app.surnft.backend.blockchain.contracts.SurNFTCollection
 import com.app.surnft.backend.blockchain.entity.Unit
 import com.app.surnft.backend.blockchain.model.BalanceType
 import com.app.surnft.backend.blockchain.model.BlockchainState

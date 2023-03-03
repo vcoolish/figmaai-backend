@@ -10,7 +10,7 @@ import java.math.BigDecimal
 object UserMapper {
 
   fun toExtendedDto(user: User, tokensEarnedForDay: BigDecimal): UserExtendedDto =
-    toExtendedDto(user, toDto(user.nfts, tokensEarnedForDay))
+    toExtendedDto(user, toDto(user.nfts.filter { it.collectionId == 0L }, tokensEarnedForDay))
 
   fun toDto(user: User): UserInfoDto = toExtendedDto(user, UserInfoDto())
 

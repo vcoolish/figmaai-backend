@@ -28,6 +28,7 @@ object UserMapper {
     dto.nextEnergyRenew = user.nextEnergyRenew
     dto.donation = user.donation
     dto.balance = user.balance
+    dto.collections = user.collections.map { it.id }
 
     return dto
   }

@@ -10,6 +10,7 @@ import javax.persistence.*
 open class Nft : AbstractJpaPersistable<NftId>() {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "image_nfts_id_sequence_gen")
   @SequenceGenerator(
     name = "image_nfts_id_sequence_gen",
     sequenceName = "image_nfts_id_sequence",

@@ -14,7 +14,6 @@ enum class ImageCollection(
   val luck: Int,
   val comfortability: Int,
   val maxDurability: Int,
-  val optionPrices: List<Double>,
 ) {
   SUR(
     collectionId = 0,
@@ -28,6 +27,5 @@ enum class ImageCollection(
     luck = 10,
     comfortability = 20,
     maxDurability = 100,
-    optionPrices = listOf(0.5, 1.5, 2.5)
   ),
 }

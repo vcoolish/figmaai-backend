@@ -119,9 +119,8 @@ class NftService(
     validatePrompt(prompt)
 
     val user = userService.getOrCreate(address)
-    val carType = ImageCollection.SUR
 
-    val price = carType.optionPrices[option].toBigDecimal()
+    val price = getCollectionPrices().toList()[option].toBigDecimal()
     if (user.balance < price) {
       throw InsufficientBalanceException("Insufficient balance")
     }

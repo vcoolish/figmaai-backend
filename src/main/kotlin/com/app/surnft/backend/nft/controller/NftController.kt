@@ -3,14 +3,12 @@ package com.app.surnft.backend.nft.controller
 import com.amazonaws.HttpMethod
 import com.app.surnft.backend.ai.AiProvider
 import com.app.surnft.backend.constraint.Address
-import com.app.surnft.backend.nft.dto.CarLevelUpCostResponse
-import com.app.surnft.backend.nft.dto.GetAllNftRequest
-import com.app.surnft.backend.nft.dto.NftExternalDto
-import com.app.surnft.backend.nft.dto.NftInternalDto
+import com.app.surnft.backend.nft.dto.*
 import com.app.surnft.backend.nft.mapper.NftMapper
 import com.app.surnft.backend.nft.model.UploadResult
 import com.app.surnft.backend.nft.service.AwsS3Service
 import com.app.surnft.backend.nft.service.NftService
+import com.app.surnft.backend.user.dto.PurchaseCollectionRequest
 import com.app.surnft.backend.user.dto.PurchaseImageRequest
 import com.app.surnft.backend.user.dto.RepairCarRequest
 import io.swagger.v3.oas.annotations.Operation
@@ -59,6 +57,19 @@ class NftController(
   @GetMapping("/nft/{collectionId}/{id}/internals")
   fun getNftInternalInfo(@PathVariable collectionId: Long, @PathVariable id: Long): NftInternalDto =
     NftMapper.toInternalDto(nftService.get(id, collectionId))
+
+  @GetMapping("/nft/{collectionId}/internals")
+  fun getCollectionInfo(@PathVariable collectionId: Long): CollectionDto {
+    val collection = nftService.getCollection(collectionId)
+    val inProgressCount = nftService.collectionInProgressCount(collectionId)
+    return CollectionDto(
+      id = collectionId,
+      address = collection.address,
+      count = collection.count,
+      name = collection.name,
+      inProgressCount = inProgressCount,
+    )
+  }
 
   @GetMapping("/nft/{collectionId}/{id}/repair")
   fun getRepairCost(
@@ -136,6 +147,11 @@ class NftController(
     return nftService.getMintPrice(collectionId)
   }
 
+  @GetMapping("/nft/prices")
+  fun getMintPrice(): Collection<Double> {
+    return nftService.getCollectionPrices()
+  }
+
   @DeleteMapping("/nft/{collectionId}/{id}")
   fun delete(
     @PathVariable collectionId: Long,
@@ -173,6 +189,25 @@ class NftController(
             URLEncoder.encode("empty_file", StandardCharsets.UTF_8)
       )
       .body(InputStreamResource(stream))
+  }
+
+  @PatchMapping("/nft/purchase")
+  fun purchaseCollection(
+    @Address @RequestHeader address: String,
+    @Valid @RequestBody request: PurchaseCollectionRequest,
+  ): Boolean {
+    val provider = AiProvider.values().find {
+      it.name.equals(request.provider, true)
+    } ?: AiProvider.MIDJOURNEY
+    nftService.deployCollection(
+      address = address,
+      prompt = request.prompt.trim(),
+      provider = provider,
+      option = request.option,
+      name = request.name,
+      symbol = request.symbol,
+    )
+    return true
   }
 
 }

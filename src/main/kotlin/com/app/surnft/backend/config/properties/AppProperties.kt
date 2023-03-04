@@ -45,6 +45,8 @@ data class AppProperties(
 
   val carLevelDistanceRequirement: Map<@Positive Short, @Positive Int> = emptyMap(),
 
+  val collectionPrices: Map<@Positive Short, @Positive Double> = emptyMap(),
+
   @NotBlank
   val adminAddress: String,
 

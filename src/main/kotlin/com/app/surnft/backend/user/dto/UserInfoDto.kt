@@ -10,6 +10,7 @@ open class UserInfoDto {
   lateinit var energy: BigDecimal
   lateinit var maxEnergy: BigDecimal
   lateinit var balance: BigDecimal
+  lateinit var collections: List<Long>
   lateinit var tokenClaimable: BigDecimal
   lateinit var tokensLimitPerDay: BigDecimal
   var nextEnergyRenew: ZonedDateTime? = null

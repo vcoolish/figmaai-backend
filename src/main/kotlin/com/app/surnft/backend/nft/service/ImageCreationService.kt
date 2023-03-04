@@ -18,7 +18,8 @@ class ImageCreationService(
 ) {
 
   fun create(user: User, collectionId: Long): ImageNft {
-    val car = NftMapper.generateCar(collectionId)
+    val creator = if (collectionId == 0L) null else user.address
+    val car = NftMapper.generateCar(collectionId, creator)
 
     val collection = ImageCollection.SUR // TODO: select? generate?
     val properties = carCollectionProbabilityProperties.car[collection]

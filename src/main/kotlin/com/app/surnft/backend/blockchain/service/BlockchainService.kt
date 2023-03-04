@@ -1,5 +1,6 @@
 package com.app.surnft.backend.blockchain.service
 
+import com.app.surnft.backend.blockchain.contracts.SurNFTCollection
 import com.app.surnft.backend.blockchain.entity.Unit
 import com.app.surnft.backend.blockchain.model.BalanceType
 import com.app.surnft.backend.blockchain.model.BlockchainState
@@ -32,6 +33,7 @@ import org.web3j.protocol.core.methods.request.Transaction
 import org.web3j.protocol.core.methods.response.EthBlock.TransactionResult
 import org.web3j.protocol.http.HttpService
 import org.web3j.tx.FastRawTransactionManager
+import org.web3j.tx.gas.DefaultGasProvider
 import org.web3j.utils.Async
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -375,6 +377,28 @@ class BlockchainService(
         encodedFunction,
         BigInteger.ZERO,
       ).transactionHash
+  }
+
+  fun deployCollection(
+    name: String,
+    symbol: String,
+    uri: String,
+    owner: String,
+    count: Int,
+  ): String {
+    val txManager = FastRawTransactionManager(client, loadCreds(), appProperties.chainId)
+
+    return SurNFTCollection
+      .deploy(
+        client,
+        txManager,
+        DefaultGasProvider(),
+        name,
+        symbol,
+        uri,
+        owner,
+        count.toBigInteger(),
+      ).send().contractAddress
   }
 }
 

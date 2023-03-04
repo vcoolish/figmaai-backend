@@ -95,6 +95,10 @@ application:
     3: 500
     4: 1000
     5: 2000
+  collection-prices:
+    0: 0.5
+    1: 1.5
+    2: 2.5
   admin-address: "0x691E1C66A852C5830d7Ba9a9e8C080F826D5ED01"
   contract-address: "0x68276a30375db070f7677091f08ee49b7ead6cda"
   collection-address: "0xe73711e8331aD93ca115A2AE4D1AFAc74E15D644"

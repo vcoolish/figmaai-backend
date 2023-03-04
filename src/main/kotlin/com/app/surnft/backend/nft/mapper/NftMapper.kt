@@ -35,13 +35,14 @@ object NftMapper {
 
   fun generateCar(
     collectionId: Long,
+    creator: String? = null
   ): ImageNft {
     val carType = ImageCollection.values().first { it.collectionId == collectionId }
     val imageNft = ImageNft()
     imageNft.collectionId = collectionId
 
     imageNft.description = "AI powered NFT picture created from description prompt"
-    imageNft.creatorAddress = "0x691E1C66A852C5830d7Ba9a9e8C080F826D5ED01"
+    imageNft.creatorAddress = creator ?: "0x691E1C66A852C5830d7Ba9a9e8C080F826D5ED01"
 
     imageNft.level = 0
     imageNft.quality = carType.quality

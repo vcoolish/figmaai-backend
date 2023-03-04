@@ -205,3 +205,16 @@ ALTER TABLE IF EXISTS users
   ADD created_at TIMESTAMP with time zone NOT NULL DEFAULT (now() AT TIME ZONE 'UTC');
 --rollback ALTER TABLE IF EXISTS users
 --rollback   DROP created_at;
+
+--changeset vcoolish:20230301134021
+CREATE TABLE IF NOT EXISTS collections
+(
+  id              BIGINT PRIMARY KEY,
+  address         VARCHAR(255),
+  created_at      TIMESTAMP with time zone NOT NULL DEFAULT (now() AT TIME ZONE 'UTC'),
+  user_address    VARCHAR(255) NOT NULL REFERENCES users(address),
+  count           INT NOT NULL DEFAULT 0,
+  name            VARCHAR(255),
+  symbol          VARCHAR(255)
+);
+--rollback DROP TABLE collections;

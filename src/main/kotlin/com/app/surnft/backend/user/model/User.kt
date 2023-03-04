@@ -1,6 +1,7 @@
 package com.app.surnft.backend.user.model
 
 import com.app.surnft.backend.common.model.AbstractJpaPersistable
+import com.app.surnft.backend.nft.model.Collection
 import com.app.surnft.backend.nft.model.ImageNft
 import org.hibernate.annotations.CreationTimestamp
 import org.springframework.data.annotation.CreatedDate
@@ -18,6 +19,9 @@ class User() : AbstractJpaPersistable<String>() {
 
   @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "user")
   var nfts: List<ImageNft> = listOf()
+
+  @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "user")
+  var collections: List<Collection> = listOf()
 
   @Column(nullable = false, precision = 12, scale = 2)
   var distance: BigDecimal = BigDecimal.ZERO

@@ -14,15 +14,15 @@ import com.app.surnft.backend.nft.data.CarRepairInfo
 import com.app.surnft.backend.nft.dto.CarLevelUpCostResponse
 import com.app.surnft.backend.nft.dto.GetAllNftRequest
 import com.app.surnft.backend.nft.entity.ImageCollection
+import com.app.surnft.backend.nft.model.Collection
 import com.app.surnft.backend.nft.model.ImageNft
 import com.app.surnft.backend.nft.model.NftId
+import com.app.surnft.backend.nft.repository.CollectionRepository
 import com.app.surnft.backend.nft.repository.ImageNftRepository
-import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.hasMintedEntries
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.userEqual
 import com.app.surnft.backend.user.model.User
 import com.app.surnft.backend.user.service.UserEnergyService
 import com.app.surnft.backend.user.service.UserService
-import org.springframework.core.io.InputStreamResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
@@ -30,6 +30,7 @@ import org.springframework.http.ContentDisposition
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.LinkedMultiValueMap
@@ -49,6 +50,7 @@ class NftService(
   private val imageCreationService: ImageCreationService,
   private val blockchainService: BlockchainService,
   private val userEnergyService: UserEnergyService,
+  private val collectionRepository: CollectionRepository,
 ) {
 
   private val logger = logger()
@@ -106,6 +108,91 @@ class NftService(
     return imageNftRepository.save(nft)
   }
 
+  fun deployCollection(
+    address: String,
+    prompt: String,
+    provider: AiProvider,
+    option: Int,
+    name: String,
+    symbol: String,
+  ) {
+    validatePrompt(prompt)
+
+    val user = userService.getOrCreate(address)
+    val carType = ImageCollection.SUR
+
+    val price = carType.optionPrices[option].toBigDecimal()
+    if (user.balance < price) {
+      throw InsufficientBalanceException("Insufficient balance")
+    }
+    val collection = Collection()
+    val count = getCountByOption(option)
+    val contract = blockchainService.deployCollection(
+      name = name,
+      symbol = symbol,
+      uri = "https://api.surnft.com/nft/${collection.id}/",
+      owner = address,
+      count = count,
+    )
+    user.balance -= price
+    collectionRepository.save(
+      collection.apply {
+        this.address = contract
+        this.user = user
+        this.count = count
+        this.name = name
+        this.symbol = symbol
+      }
+    )
+    userService.save(user)
+
+    createCollection(
+      collectionId = collection.id,
+      prompt = prompt,
+      count = count,
+      name = name,
+      user = user,
+      contract = contract,
+    )
+  }
+  @Async
+  fun createCollection(
+    collectionId: Long,
+    prompt: String,
+    count: Int,
+    name: String,
+    user: User,
+    contract: String,
+  ) {
+    val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
+    (0 until count).map { id ->
+      restTemplate.postForEntity(
+        "https://surnft-ai.herokuapp.com/task",
+        mapOf(
+          "prompt" to prompt,
+        ),
+        String::class.java,
+      )
+      val nft = imageCreationService.create(user, collectionId)
+        .let(imageNftRepository::saveAndFlush)
+
+      nft.id = id.toLong()
+      nft.name = "$name #$id"
+      nft.prompt = cleanPrompt
+      nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
+      imageNftRepository.save(nft)
+      Thread.sleep(120000)
+    }
+  }
+
+  private fun getCountByOption(option: Int): Int =
+    when (option) {
+      0 -> 100
+      1 -> 500
+      2 -> 1000
+      else -> throw IllegalArgumentException("Unkown option: $option")
+    }
+
   private fun requestMidjourneyImage(prompt: String, user: User, collectionId: Long): ImageNft {
     restTemplate.postForEntity(
       "https://surnft-ai.herokuapp.com/task",
@@ -140,9 +227,6 @@ class NftService(
       body.add("prompt", prompt.substringAfter(" "))
 
       headers.add("Content-Type", "multipart/form-data")
-//      val params = LinkedMultiValueMap<String, Any>()
-//      params.add("image", InputStreamResource(URL(prompt.substringBefore(" ")).openStream(), "image.png"))
-//      params.add("prompt", prompt.substringAfter(" "))
       Pair(
         body,
         "edits"
@@ -255,6 +339,9 @@ class NftService(
     return true
   }
 
+  fun getCollectionPrices() =
+    appProperties.collectionPrices.values
+
   fun updateImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {
     logger().info("{${output.prompt}}")
     val cleanPrompt = if (output.prompt.startsWith("<https://")) {
@@ -276,6 +363,18 @@ class NftService(
 
   fun get(id: Long, collectionId: Long): ImageNft {
     return imageNftRepository.findById(NftId(id, collectionId)).orElseThrow()
+  }
+
+  fun getCollectionNfts(collectionId: Long): List<ImageNft> {
+    return imageNftRepository.findNftByCollection(collectionId)
+  }
+
+  fun collectionInProgressCount(collectionId: Long): Int {
+    return imageNftRepository.findEmptyImageInCollection(collectionId).size
+  }
+
+  fun getCollection(collectionId: Long): Collection {
+    return collectionRepository.findById(collectionId).orElseThrow()
   }
 
   fun save(imageNft: ImageNft) {

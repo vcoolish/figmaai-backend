@@ -12,4 +12,11 @@ interface ImageNftRepository : JpaRepository<ImageNft, NftId>, JpaSpecificationE
 
   @Query("select n from ImageNft n where n.image = ?2 and n.prompt = ?1")
   fun findNftByPrompt(prompt: String, image: String = ""): Optional<ImageNft>
+
+  @Query("select n from ImageNft n where n.collectionId = ?1")
+  fun findNftByCollection(collection: Long): List<ImageNft>
+
+
+  @Query("select n from ImageNft n where n.collectionId = ?1 and n.image = ''")
+  fun findEmptyImageInCollection(collection: Long): List<ImageNft>
 }

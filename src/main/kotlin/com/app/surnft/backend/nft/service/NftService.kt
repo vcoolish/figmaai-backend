@@ -359,7 +359,7 @@ class NftService(
     } else {
       output.prompt
     }
-    val nft = imageNftRepository.findNftByPrompt(cleanPrompt).get()
+    val nft = imageNftRepository.findNftByPrompt(cleanPrompt).first()
     logger().info("nftprompt{${nft.prompt}}")
     nft.image = "https" + output.url.substringAfter("https").substring(0, 58)
     imageNftRepository.save(nft)

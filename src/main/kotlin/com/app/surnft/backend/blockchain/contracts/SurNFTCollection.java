@@ -1,4 +1,4 @@
-package com.surnft;
+package com.app.surnft.backend.blockchain.contracts;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Function;

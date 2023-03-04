@@ -369,8 +369,8 @@ class NftService(
     return imageNftRepository.findNftByCollection(collectionId)
   }
 
-  fun isCollectionInProgress(collectionId: Long): Boolean {
-    return imageNftRepository.findEmptyImageInCollection(collectionId).isNotEmpty()
+  fun collectionInProgressCount(collectionId: Long): Int {
+    return imageNftRepository.findEmptyImageInCollection(collectionId).size
   }
 
   fun getCollection(collectionId: Long): Collection {

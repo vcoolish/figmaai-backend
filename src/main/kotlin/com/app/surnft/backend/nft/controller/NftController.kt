@@ -61,13 +61,13 @@ class NftController(
   @GetMapping("/nft/{collectionId}/internals")
   fun getCollectionInfo(@PathVariable collectionId: Long): CollectionDto {
     val collection = nftService.getCollection(collectionId)
-    val inProgress = nftService.isCollectionInProgress(collectionId)
+    val inProgressCount = nftService.collectionInProgressCount(collectionId)
     return CollectionDto(
       id = collectionId,
       address = collection.address,
       count = collection.count,
       name = collection.name,
-      inProgress = inProgress,
+      inProgressCount = inProgressCount,
     )
   }
 

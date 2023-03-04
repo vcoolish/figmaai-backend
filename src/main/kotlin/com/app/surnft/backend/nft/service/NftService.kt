@@ -173,7 +173,7 @@ class NftService(
         nft.name = "$name #$id"
         nft.prompt = cleanPrompt
         nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
-        imageNftRepository.save(nft)
+        imageNftRepository.saveAndFlush(nft)
       }
       (0 until count).map { id ->
         restTemplate.postForEntity(

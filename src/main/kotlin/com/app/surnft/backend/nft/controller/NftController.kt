@@ -218,7 +218,7 @@ class NftController(
     @Valid @RequestBody request: RetryCollectionRequest,
   ): Boolean {
     nftService.createCollection(
-      collectionId = request.id,
+      collectionId = request.collectionId,
       prompt = request.prompt,
       count = request.count,
       name = request.name,

@@ -168,6 +168,14 @@ class NftService(
     try {
       val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
       (0 until count).map { id ->
+        val nft = imageCreationService.create(user, collectionId)
+        nft.id = id.toLong()
+        nft.name = "$name #$id"
+        nft.prompt = cleanPrompt
+        nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
+        imageNftRepository.save(nft)
+      }
+      (0 until count).map { id ->
         restTemplate.postForEntity(
           "https://surnft-ai.herokuapp.com/task",
           mapOf(
@@ -175,15 +183,7 @@ class NftService(
           ),
           String::class.java,
         )
-        val nft = imageCreationService.create(user, collectionId)
-          .let(imageNftRepository::saveAndFlush)
-
-        nft.id = id.toLong()
-        nft.name = "$name #$id"
-        nft.prompt = cleanPrompt
-        nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
-        imageNftRepository.save(nft)
-        Thread.sleep(120000)
+        Thread.sleep(300000)
       }
     } catch (t: Throwable) {
       if (attempt < 3) {
@@ -380,7 +380,7 @@ class NftService(
   }
 
   fun collectionInProgressCount(collectionId: Long): Int {
-    return imageNftRepository.findEmptyImageInCollection(collectionId).size
+    return imageNftRepository.findImageInCollection(collectionId).size
   }
 
   fun getCollection(collectionId: Long): Collection {

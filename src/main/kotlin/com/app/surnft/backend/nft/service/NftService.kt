@@ -150,7 +150,7 @@ class NftService(
       prompt = prompt,
       count = count,
       name = name,
-      user = user,
+      userAddress = user.address,
       contract = contract,
     )
   }
@@ -160,27 +160,38 @@ class NftService(
     prompt: String,
     count: Int,
     name: String,
-    user: User,
+    userAddress: String,
     contract: String,
+    attempt: Int = 0
   ) {
-    val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
-    (0 until count).map { id ->
-      restTemplate.postForEntity(
-        "https://surnft-ai.herokuapp.com/task",
-        mapOf(
-          "prompt" to prompt,
-        ),
-        String::class.java,
-      )
-      val nft = imageCreationService.create(user, collectionId)
-        .let(imageNftRepository::saveAndFlush)
+    val user = userService.getOrCreate(userAddress)
+    try {
+      val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
+      (0 until count).map { id ->
+        restTemplate.postForEntity(
+          "https://surnft-ai.herokuapp.com/task",
+          mapOf(
+            "prompt" to prompt,
+          ),
+          String::class.java,
+        )
+        val nft = imageCreationService.create(user, collectionId)
+          .let(imageNftRepository::saveAndFlush)
 
-      nft.id = id.toLong()
-      nft.name = "$name #$id"
-      nft.prompt = cleanPrompt
-      nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
-      imageNftRepository.save(nft)
-      Thread.sleep(120000)
+        nft.id = id.toLong()
+        nft.name = "$name #$id"
+        nft.prompt = cleanPrompt
+        nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
+        imageNftRepository.save(nft)
+        Thread.sleep(120000)
+      }
+    } catch (t: Throwable) {
+      if (attempt < 3) {
+        logger.error("Failed to create collection, retrying", t)
+        createCollection(collectionId, prompt, count, name, user.address, contract, attempt + 1)
+      } else {
+        logger.error("Failed to create collection, giving up", t)
+      }
     }
   }
 

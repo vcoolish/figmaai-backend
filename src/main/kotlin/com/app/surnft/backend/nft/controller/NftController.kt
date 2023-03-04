@@ -11,6 +11,7 @@ import com.app.surnft.backend.nft.service.NftService
 import com.app.surnft.backend.user.dto.PurchaseCollectionRequest
 import com.app.surnft.backend.user.dto.PurchaseImageRequest
 import com.app.surnft.backend.user.dto.RepairCarRequest
+import com.app.surnft.backend.user.dto.RetryCollectionRequest
 import io.swagger.v3.oas.annotations.Operation
 import org.springdoc.api.annotations.ParameterObject
 import org.springframework.core.io.InputStreamResource
@@ -67,6 +68,7 @@ class NftController(
       address = collection.address,
       count = collection.count,
       name = collection.name,
+      symbol = collection.symbol,
       inProgressCount = inProgressCount,
     )
   }
@@ -206,6 +208,22 @@ class NftController(
       option = request.option,
       name = request.name,
       symbol = request.symbol,
+    )
+    return true
+  }
+
+  @PatchMapping("/nft/retry")
+  fun retryCollection(
+    @Address @RequestHeader address: String,
+    @Valid @RequestBody request: RetryCollectionRequest,
+  ): Boolean {
+    nftService.createCollection(
+      collectionId = request.id,
+      prompt = request.prompt,
+      count = request.count,
+      name = request.name,
+      userAddress = request.address,
+      contract = request.contract,
     )
     return true
   }

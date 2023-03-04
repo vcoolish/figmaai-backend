@@ -5,5 +5,6 @@ data class CollectionDto(
   val address: String,
   val count: Int,
   val name: String,
+  val symbol: String,
   val inProgressCount: Int,
 )

@@ -37,7 +37,7 @@ object NftMapper {
     collectionId: Long,
     creator: String? = null
   ): ImageNft {
-    val carType = ImageCollection.values().first { it.collectionId == collectionId }
+    val carType = ImageCollection.values().first()
     val imageNft = ImageNft()
     imageNft.collectionId = collectionId
 

@@ -372,7 +372,11 @@ class NftService(
   }
 
   fun get(id: Long, collectionId: Long): ImageNft {
-    return imageNftRepository.findById(NftId(id, collectionId)).orElseThrow()
+    if (collectionId == 0L) {
+      return imageNftRepository.findById(NftId(id, collectionId)).orElseThrow()
+    } else {
+      return imageNftRepository.findNftByCollection(collectionId)[0]
+    }
   }
 
   fun getCollectionNfts(collectionId: Long): List<ImageNft> {

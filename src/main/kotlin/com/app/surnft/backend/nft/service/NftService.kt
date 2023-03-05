@@ -10,6 +10,7 @@ import com.app.surnft.backend.common.util.logger
 import com.app.surnft.backend.config.properties.AppProperties
 import com.app.surnft.backend.exception.BadRequestException
 import com.app.surnft.backend.exception.InsufficientBalanceException
+import com.app.surnft.backend.exception.NotFoundException
 import com.app.surnft.backend.nft.data.CarRepairInfo
 import com.app.surnft.backend.nft.dto.CarLevelUpCostResponse
 import com.app.surnft.backend.nft.dto.GetAllNftRequest
@@ -108,6 +109,7 @@ class NftService(
     return imageNftRepository.save(nft)
   }
 
+  @Async
   fun deployCollection(
     address: String,
     prompt: String,
@@ -134,7 +136,7 @@ class NftService(
       count = count,
     )
     user.balance -= price
-    collectionRepository.save(
+    collectionRepository.saveAndFlush(
       collection.apply {
         this.address = contract
         this.user = user
@@ -154,7 +156,7 @@ class NftService(
       contract = contract,
     )
   }
-  @Async
+
   fun createCollection(
     collectionId: Long,
     prompt: String,
@@ -162,20 +164,24 @@ class NftService(
     name: String,
     userAddress: String,
     contract: String,
-    attempt: Int = 0
+    attempt: Int = 0,
+    startIndex: Int = 0,
   ) {
+    collectionRepository.findById(collectionId).orElseThrow { NotFoundException("Collection not found") }
     val user = userService.getOrCreate(userAddress)
     try {
       val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
-      (0 until count).map { id ->
-        val nft = imageCreationService.create(user, collectionId)
-        nft.id = id.toLong()
-        nft.name = "$name #$id"
-        nft.prompt = cleanPrompt
-        nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
-        imageNftRepository.saveAndFlush(nft)
+      if (startIndex == 0) {
+        (0 until count).map { id ->
+          val nft = imageCreationService.create(user, collectionId)
+          nft.id = id.toLong()
+          nft.name = "$name #$id"
+          nft.prompt = cleanPrompt
+          nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
+          imageNftRepository.saveAndFlush(nft)
+        }
       }
-      (0 until count).map { id ->
+      (startIndex until count).map { id ->
         restTemplate.postForEntity(
           "https://surnft-ai.herokuapp.com/task",
           mapOf(
@@ -188,7 +194,16 @@ class NftService(
     } catch (t: Throwable) {
       if (attempt < 3) {
         logger.error("Failed to create collection, retrying", t)
-        createCollection(collectionId, prompt, count, name, user.address, contract, attempt + 1)
+        createCollection(
+          collectionId = collectionId,
+          prompt = prompt,
+          count = count,
+          name = name,
+          userAddress = user.address,
+          contract = contract,
+          attempt = attempt + 1,
+          startIndex = imageNftRepository.findImageInCollection(collectionId).size - 1,
+        )
       } else {
         logger.error("Failed to create collection, giving up", t)
       }

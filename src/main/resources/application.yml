@@ -5,7 +5,7 @@ spring:
     change-log: classpath:db/changelog.xml
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://ec2-44-194-4-127.compute-1.amazonaws.com:5432/dkgepl3iopjeg
+    url: jdbc:postgresql://localhost:5433/postgres
     username: postgres
     password: postgres
   sql:
@@ -96,9 +96,9 @@ application:
     4: 1000
     5: 2000
   collection-prices:
-    0: 0.1
-    1: 1.5
-    2: 2.5
+    0: 1.0
+    1: 3.0
+    2: 5.0
   admin-address: "0x691E1C66A852C5830d7Ba9a9e8C080F826D5ED01"
   contract-address: "0x68276a30375db070f7677091f08ee49b7ead6cda"
   collection-address: "0xe73711e8331aD93ca115A2AE4D1AFAc74E15D644"

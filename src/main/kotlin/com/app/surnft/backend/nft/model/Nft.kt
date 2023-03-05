@@ -2,10 +2,8 @@ package com.app.surnft.backend.nft.model
 
 import com.app.surnft.backend.common.model.AbstractJpaPersistable
 import org.hibernate.Hibernate
-import org.hibernate.annotations.GenericGenerator
 import org.hibernate.engine.spi.SharedSessionContractImplementor
 import org.hibernate.id.IdentifierGenerator
-import org.hibernate.id.enhanced.SequenceStyleGenerator
 import org.springframework.batch.core.Entity
 import java.io.Serializable
 import java.util.*
@@ -17,10 +15,12 @@ import javax.persistence.*
 open class Nft : AbstractJpaPersistable<NftId>() {
 
   @Id
-  @GeneratedValue(generator = "image_nfts_id_sequence_gen")
-  @GenericGenerator(
-    name = "image_nfts_id_sequence_gen",
-    strategy = "com.app.surnft.backend.nft.model.SetableSequenceGenerator",
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "image_nfts_id_sequence_gen")
+  @SequenceGenerator(
+      name = "image_nfts_id_sequence_gen",
+      sequenceName = "image_nfts_id_sequence",
+      initialValue = 1_000_000,
+      allocationSize = 1,
   )
   @Column(name = "id", nullable = false)
   var id: Long? = null

@@ -6,6 +6,7 @@ data class PurchaseCollectionRequest(
   val option: Int,
   val name: String,
   val symbol: String,
+  val styles: String,
 )
 
 data class RetryCollectionRequest(
@@ -16,5 +17,6 @@ data class RetryCollectionRequest(
   val symbol: String,
   val contract: String,
   val address: String,
-  val collectionId: Long
+  val collectionId: Long,
+  val styles: String,
 )

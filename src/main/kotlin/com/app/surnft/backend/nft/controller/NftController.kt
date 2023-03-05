@@ -208,6 +208,7 @@ class NftController(
       option = request.option,
       name = request.name,
       symbol = request.symbol,
+      styles = request.styles,
     )
     return true
   }
@@ -224,6 +225,7 @@ class NftController(
       name = request.name,
       userAddress = request.address,
       contract = request.contract,
+      styles = request.styles,
     )
     return true
   }

@@ -17,13 +17,12 @@ class DiscordController(
   @PostMapping("/message")
   fun onMessage(
     @RequestHeader keyword: String,
-    @Valid @RequestBody body: com.app.surnft.backend.ai.AIOutput,
+    @Valid @RequestBody body: AIOutput,
   ): Any {
     if (keyword != "poop") {
       return "Invalid keyword"
     }
     val nft = nftService.updateImage(body)
-      ?: return "NFT not found"
 
     return NftMapper.toExternalDto(nft)
   }

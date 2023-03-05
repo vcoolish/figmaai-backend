@@ -118,6 +118,7 @@ class NftService(
     option: Int,
     name: String,
     symbol: String,
+    styles: String,
   ) {
     validatePrompt(prompt)
 
@@ -155,6 +156,7 @@ class NftService(
       name = name,
       userAddress = user.address,
       contract = contract,
+      styles = styles,
     )
   }
 
@@ -167,27 +169,29 @@ class NftService(
     contract: String,
     attempt: Int = 0,
     startIndex: Long = 0,
+    styles: String,
   ) {
     if (!collectionRepository.existsById(collectionId)) {
       throw NotFoundException("Collection not found")
     }
     val user = userService.getOrCreate(userAddress)
-    val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
+    val styleList = styles.split(",")
     try {
-      if (startIndex == 0L) {
-        (0 until count).map(Int::toLong).map { id ->
+      (startIndex until count).map { id ->
+        // pick random style from styleList
+        val style = styleList.random()
+        val currentPrompt = "$prompt $style"
+        if (startIndex == 0L) {
           val nft = imageCreationService.create(user, collectionId, id)
           nft.name = "$name #$id"
-          nft.prompt = cleanPrompt
+          nft.prompt = currentPrompt
           nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
           imageNftRepository.saveAndFlush(nft)
         }
-      }
-      (startIndex until count).map { _ ->
         restTemplate.postForEntity(
           "https://surnft-ai.herokuapp.com/task",
           mapOf(
-            "prompt" to prompt,
+            "prompt" to currentPrompt,
           ),
           String::class.java,
         )
@@ -205,6 +209,7 @@ class NftService(
           contract = contract,
           attempt = attempt + 1,
           startIndex = imageNftRepository.countImageInCollection(collectionId) - 1,
+          styles = styles,
         )
       } else {
         logger.error("Failed to create collection, giving up", t)
@@ -372,6 +377,7 @@ class NftService(
   fun getCollectionPrices() =
     appProperties.collectionPrices
 
+  @Async
   fun updateImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {
     logger().info("{${output.prompt}}")
     val cleanPrompt = if (output.prompt.startsWith("<https://")) {
@@ -381,8 +387,18 @@ class NftService(
     }
     val nft = imageNftRepository.findNftByPrompt(cleanPrompt).first()
     logger().info("nftprompt{${nft.prompt}}")
-    nft.image = "https" + output.url.substringAfter("https").substring(0, 58)
-    imageNftRepository.save(nft)
+    Thread.sleep(20000)
+    val imageUrl = "https" + output.url.substringAfter("https").substring(0, 58)
+    val imageExists = restTemplate.getForEntity(
+      imageUrl,
+      Any::class.java,
+    ).statusCode.value() != 404
+    if (imageExists) {
+      nft.image = imageUrl
+      imageNftRepository.save(nft)
+    } else {
+      requestMidjourneyImage(output.prompt, nft.user, nft.collectionId!!)
+    }
     return nft
   }
 

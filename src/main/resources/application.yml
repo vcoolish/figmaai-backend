@@ -5,7 +5,7 @@ spring:
     change-log: classpath:db/changelog.xml
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://ec2-44-194-4-127.compute-1.amazonaws.com:5432/dkgepl3iopjeg
+    url: jdbc:postgresql://localhost:5433/postgres
     username: postgres
     password: postgres
   sql:
@@ -60,6 +60,24 @@ server:
     include-message: always
     include-binding-errors: always
 
+web-security:
+  role-access-restriction-paths:
+    - methods: PUT
+      paths:
+        - /address
+        - /address/*
+    - methods: POST
+      paths:
+        - /address/energy
+        - /address/withdraw
+        - /upload
+    - methods: PATCH
+      paths:
+        - /nft/**
+        - /address/**
+    - methods: DELETE
+      paths:
+        - /nft/**
 
 application:
   sig-key: ${SIG_KEY}

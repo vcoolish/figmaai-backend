@@ -390,22 +390,8 @@ class NftService(
     logger().info("nftprompt{${nft.prompt}}")
     Thread.sleep(20000)
     val imageUrl = "https" + output.url.substringAfter("https").substring(0, 58)
-    val imageExists = restTemplate.getForEntity(
-      imageUrl,
-      Any::class.java,
-    ).statusCode.value() != 404
-    if (imageExists) {
-      nft.image = imageUrl
-      imageNftRepository.save(nft)
-    } else {
-      restTemplate.postForEntity(
-        "https://surnft-ai.herokuapp.com/task",
-        mapOf(
-          "prompt" to output.prompt,
-        ),
-        String::class.java,
-      )
-    }
+    nft.image = imageUrl
+    imageNftRepository.save(nft)
     return nft
   }
 

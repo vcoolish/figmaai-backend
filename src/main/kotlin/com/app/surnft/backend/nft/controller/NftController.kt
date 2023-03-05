@@ -26,10 +26,12 @@ import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import java.io.InputStream
+import java.math.BigDecimal
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.*
 import javax.validation.Valid
+import javax.validation.constraints.Positive
 
 @Validated
 @RestController
@@ -150,9 +152,7 @@ class NftController(
   }
 
   @GetMapping("/nft/prices")
-  fun getMintPrice(): Collection<Double> {
-    return nftService.getCollectionPrices()
-  }
+  fun getMintPrice(): List<@Positive BigDecimal> = nftService.getCollectionPrices()
 
   @DeleteMapping("/nft/{collectionId}/{id}")
   fun delete(

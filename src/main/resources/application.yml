@@ -96,15 +96,16 @@ application:
     4: 1000
     5: 2000
   collection-prices:
-    0: 1.0
-    1: 3.0
-    2: 5.0
+    - 1.0
+    - 3.0
+    - 5.0
   admin-address: "0x691E1C66A852C5830d7Ba9a9e8C080F826D5ED01"
   contract-address: "0x68276a30375db070f7677091f08ee49b7ead6cda"
   collection-address: "0xe73711e8331aD93ca115A2AE4D1AFAc74E15D644"
   client-url: https://intensive-divine-mountain.bsc.discover.quiknode.pro/79d20c28b6e2219dd4c5e8e9599f6440a6627034/
   second-client-url: https://bsc-dataseed.nariox.org
   arweave-url: "https://arweave.net/"
+  free-mint-enabled: false
 
 probability.car:
   SUR:

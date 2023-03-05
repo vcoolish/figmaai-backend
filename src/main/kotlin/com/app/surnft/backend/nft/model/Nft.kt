@@ -9,18 +9,17 @@ import java.io.Serializable
 import java.util.*
 import javax.persistence.*
 
-
 @IdClass(NftId::class)
 @MappedSuperclass
-open class Nft : AbstractJpaPersistable<NftId>() {
+open class Nft : AbstractJpaPersistable<NftId> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "image_nfts_id_sequence_gen")
   @SequenceGenerator(
-      name = "image_nfts_id_sequence_gen",
-      sequenceName = "image_nfts_id_sequence",
-      initialValue = 1_000_000,
-      allocationSize = 1,
+    name = "image_nfts_id_sequence_gen",
+    sequenceName = "image_nfts_id_sequence",
+    initialValue = 1_000_000,
+    allocationSize = 1,
   )
   @Column(name = "id", nullable = false)
   var id: Long? = null
@@ -48,6 +47,24 @@ open class Nft : AbstractJpaPersistable<NftId>() {
   lateinit var externalUrl: String
   lateinit var creatorAddress: String
   var isMinted: Boolean = false
+
+  @Transient
+  val new: Boolean
+
+  protected constructor(new: Boolean) : super() {
+    this.new = new
+  }
+
+  /**
+   * Default constructor for JPA and id autogeneration.
+   */
+  constructor() : this(true)
+
+  constructor(id: Long) : this(false) {
+    this.id = id
+  }
+
+  override fun isNew(): Boolean = new || super.isNew()
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

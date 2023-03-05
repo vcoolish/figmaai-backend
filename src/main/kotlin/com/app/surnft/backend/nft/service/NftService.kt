@@ -20,6 +20,7 @@ import com.app.surnft.backend.nft.model.ImageNft
 import com.app.surnft.backend.nft.model.NftId
 import com.app.surnft.backend.nft.repository.CollectionRepository
 import com.app.surnft.backend.nft.repository.ImageNftRepository
+import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.hasMintedEntries
 import com.app.surnft.backend.nft.repository.extra.ImageNftSpecification.userEqual
 import com.app.surnft.backend.user.model.User
 import com.app.surnft.backend.user.service.UserEnergyService
@@ -122,7 +123,7 @@ class NftService(
 
     val user = userService.getOrCreate(address)
 
-    val price = getCollectionPrices().toList()[option].toBigDecimal()
+    val price = getCollectionPrices()[option]
     if (user.balance < price) {
       throw InsufficientBalanceException("Insufficient balance")
     }
@@ -165,23 +166,24 @@ class NftService(
     userAddress: String,
     contract: String,
     attempt: Int = 0,
-    startIndex: Int = 0,
+    startIndex: Long = 0,
   ) {
-    collectionRepository.findById(collectionId).orElseThrow { NotFoundException("Collection not found") }
+    if (!collectionRepository.existsById(collectionId)) {
+      throw NotFoundException("Collection not found")
+    }
     val user = userService.getOrCreate(userAddress)
+    val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
     try {
-      val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
-      if (startIndex == 0) {
-        (0 until count).map { id ->
-          val nft = imageCreationService.create(user, collectionId)
-          nft.id = id.toLong()
+      if (startIndex == 0L) {
+        (0 until count).map(Int::toLong).map { id ->
+          val nft = imageCreationService.create(user, collectionId, id)
           nft.name = "$name #$id"
           nft.prompt = cleanPrompt
           nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
           imageNftRepository.saveAndFlush(nft)
         }
       }
-      (startIndex until count).map { id ->
+      (startIndex until count).map { _ ->
         restTemplate.postForEntity(
           "https://surnft-ai.herokuapp.com/task",
           mapOf(
@@ -202,7 +204,7 @@ class NftService(
           userAddress = user.address,
           contract = contract,
           attempt = attempt + 1,
-          startIndex = imageNftRepository.findImageInCollection(collectionId).size - 1,
+          startIndex = imageNftRepository.countImageInCollection(collectionId) - 1,
         )
       } else {
         logger.error("Failed to create collection, giving up", t)
@@ -344,14 +346,17 @@ class NftService(
   }
 
   fun hasFreeMint(address: String): Boolean {
-//    val spec: Specification<ImageNft> = hasMintedEntries()
-//      .and(userEqual(address))
-//    val hasMinted = imageNftRepository.exists(spec)
-//    if (hasMinted) {
+    if (!appProperties.freeMintEnabled) {
       return false
-//    }
-//    val user = userService.get(address)
-//    return user.balance > BigDecimal.ZERO
+    }
+    val spec: Specification<ImageNft> = hasMintedEntries()
+      .and(userEqual(address))
+    val hasMinted = imageNftRepository.exists(spec)
+    if (hasMinted) {
+      return false
+    }
+    val user = userService.get(address)
+    return user.balance > BigDecimal.ZERO
   }
 
   fun delete(address: String, collectionId: Long, id: Long): Boolean {
@@ -365,7 +370,7 @@ class NftService(
   }
 
   fun getCollectionPrices() =
-    appProperties.collectionPrices.values
+    appProperties.collectionPrices
 
   fun updateImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {
     logger().info("{${output.prompt}}")
@@ -381,11 +386,6 @@ class NftService(
     return nft
   }
 
-  fun upgradeCar(id: Long, collectionId: Long, input: com.app.surnft.backend.ai.AIInput) {
-    val nft = imageNftRepository.findById(NftId(id, collectionId))
-    nft.get().image
-  }
-
   fun get(id: Long, collectionId: Long): ImageNft {
     return imageNftRepository.findById(NftId(id, collectionId)).orElseThrow()
   }
@@ -394,8 +394,8 @@ class NftService(
     return imageNftRepository.findNftByCollection(collectionId)
   }
 
-  fun collectionInProgressCount(collectionId: Long): Int {
-    return imageNftRepository.findImageInCollection(collectionId).size
+  fun collectionInProgressCount(collectionId: Long): Long {
+    return imageNftRepository.countImageInCollection(collectionId)
   }
 
   fun getCollection(collectionId: Long): Collection {

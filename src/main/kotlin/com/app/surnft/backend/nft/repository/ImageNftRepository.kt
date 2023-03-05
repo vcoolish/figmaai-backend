@@ -15,7 +15,6 @@ interface ImageNftRepository : JpaRepository<ImageNft, NftId>, JpaSpecificationE
   @Query("select n from ImageNft n where n.collectionId = ?1")
   fun findNftByCollection(collection: Long): List<ImageNft>
 
-
-  @Query("select n from ImageNft n where n.collectionId = ?1 and not n.image = ''")
-  fun findImageInCollection(collection: Long): List<ImageNft>
+  @Query("select count(n) from ImageNft n where n.collectionId = ?1 and not n.image = ''")
+  fun countImageInCollection(collection: Long): Long
 }

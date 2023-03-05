@@ -45,7 +45,7 @@ data class AppProperties(
 
   val carLevelDistanceRequirement: Map<@Positive Short, @Positive Int> = emptyMap(),
 
-  val collectionPrices: Map<@Positive Short, @Positive Double> = emptyMap(),
+  val collectionPrices: List<@Positive BigDecimal> = listOf(),
 
   @NotBlank
   val adminAddress: String,
@@ -68,6 +68,7 @@ data class AppProperties(
   val arweaveUrl: String,
 
   val bernoulliRequestedPercentage: Short = 1,
+  val freeMintEnabled: Boolean
 ) {
 
   fun getErcFile(): Resource {

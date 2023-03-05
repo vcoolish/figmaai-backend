@@ -186,6 +186,7 @@ class NftService(
           nft.name = "$name #$id"
           nft.prompt = currentPrompt
           nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
+          nft.isMinted = true
           imageNftRepository.saveAndFlush(nft)
         }
         restTemplate.postForEntity(
@@ -397,7 +398,13 @@ class NftService(
       nft.image = imageUrl
       imageNftRepository.save(nft)
     } else {
-      requestMidjourneyImage(output.prompt, nft.user, nft.collectionId!!)
+      restTemplate.postForEntity(
+        "https://surnft-ai.herokuapp.com/task",
+        mapOf(
+          "prompt" to output.prompt,
+        ),
+        String::class.java,
+      )
     }
     return nft
   }

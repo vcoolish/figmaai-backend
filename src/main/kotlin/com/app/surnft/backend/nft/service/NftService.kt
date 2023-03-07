@@ -199,7 +199,7 @@ class NftService(
             ),
             String::class.java,
           )
-          Thread.sleep(360000)
+          Thread.sleep(300000)
         }
       }
     } catch (t: Throwable) {

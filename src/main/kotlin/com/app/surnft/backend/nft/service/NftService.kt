@@ -189,14 +189,16 @@ class NftService(
           nft.isMinted = true
           imageNftRepository.saveAndFlush(nft)
         }
-        restTemplate.postForEntity(
-          "https://surnft-ai.herokuapp.com/task",
-          mapOf(
-            "prompt" to currentPrompt,
-          ),
-          String::class.java,
-        )
-        Thread.sleep(300000)
+        if ((id % 4) == 0L || id == 99L) {
+          restTemplate.postForEntity(
+            "https://surnft-ai.herokuapp.com/task",
+            mapOf(
+              "prompt" to currentPrompt,
+            ),
+            String::class.java,
+          )
+          Thread.sleep(360000)
+        }
       }
     } catch (t: Throwable) {
       if (attempt < 3) {
@@ -388,12 +390,49 @@ class NftService(
     }
     val nft = imageNftRepository.findNftByPrompt(cleanPrompt).first()
     logger().info("nftprompt{${nft.prompt}}")
-    Thread.sleep(20000)
     val imageUrl = "https" + output.url.substringAfter("https").substring(0, 58)
     nft.image = imageUrl
     imageNftRepository.save(nft)
     return nft
   }
+
+  @Async
+  fun updateCollectionImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {
+    logger().info("{${output.prompt}}")
+    val cleanPrompt = if (output.prompt.startsWith("<https://")) {
+      output.prompt.substringAfter(" ")
+    } else {
+      output.prompt
+    }
+    val nft = imageNftRepository.findNftByPrompt(cleanPrompt).first()
+    Thread.sleep(180000)
+    val imageUrl = "https" + output.url.substringAfter("https").substring(0, 58)
+    val imageExists = restTemplate.getForEntity(
+      imageUrl,
+      Any::class.java,
+    ).statusCode.value() != 404
+    if (imageExists) {
+      nft.image = imageUrl
+      imageNftRepository.save(nft)
+    } else {
+      restTemplate.postForEntity(
+        "https://surnft-ai.herokuapp.com/task",
+        mapOf(
+          "prompt" to output.prompt,
+        ),
+        String::class.java,
+      )
+    }
+    nft.image = imageUrl
+    imageNftRepository.save(nft)
+    return nft
+  }
+
+  fun test() =
+    restTemplate.getForEntity(
+      "https://arweave.net/LcYBFYJuCx1PEtb8mXRbArXkHTT_J_gOQJlgDKvBTBI",
+      Any::class.java,
+    ).statusCode
 
   fun get(id: Long, collectionId: Long): ImageNft {
     return imageNftRepository.findById(NftId(id, collectionId)).orElseThrow()

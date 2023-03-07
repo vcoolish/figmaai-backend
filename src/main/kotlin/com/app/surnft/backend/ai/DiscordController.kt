@@ -27,6 +27,24 @@ class DiscordController(
     return NftMapper.toExternalDto(nft)
   }
 
+  @PostMapping("/message/collection")
+  fun onCollectionMessage(
+    @RequestHeader keyword: String,
+    @Valid @RequestBody body: AIOutput,
+  ): Any {
+    if (keyword != "poop") {
+      return "Invalid keyword"
+    }
+    val nft = nftService.updateCollectionImage(body)
+
+    return NftMapper.toExternalDto(nft)
+  }
+
+  @GetMapping("/test")
+  fun test(): Any {
+    return nftService.test()
+  }
+
 
   @PostMapping("/imagine")
   fun imagine(

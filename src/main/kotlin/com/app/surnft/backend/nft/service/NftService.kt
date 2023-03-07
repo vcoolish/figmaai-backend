@@ -193,7 +193,7 @@ class NftService(
         }
         if ((id % 4) == 0L || id == 99L) {
           restTemplate.postForEntity(
-            "https://surnft-ai.herokuapp.com/task",
+            "https://surnft-ai-collection.herokuapp.com/task",
             mapOf(
               "prompt" to currentPrompt,
             ),

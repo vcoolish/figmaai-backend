@@ -127,32 +127,33 @@ class NftService(
     val user = userService.getOrCreate(address)
 
     val price = getCollectionPrices()[option]
-    if (user.balance < price) {
-      throw InsufficientBalanceException("Insufficient balance")
-    }
-    val collection = Collection()
+//    if (user.balance < price) {
+//      throw InsufficientBalanceException("Insufficient balance")
+//    }
+//    val collection = Collection()
     val count = getCountByOption(option)
-    val contract = blockchainService.deployCollection(
-      name = name,
-      symbol = symbol,
-      uri = "https://api.surnft.com/nft/${collection.id}/",
-      owner = address,
-      count = count,
-    )
-    user.balance -= price
-    collectionRepository.saveAndFlush(
-      collection.apply {
-        this.address = contract
-        this.user = user
-        this.count = count
-        this.name = name
-        this.symbol = symbol
-      }
-    )
+    val contract = "0xbd8b7202f715f1f29db726b24007998d5d42bf21" //fill mighty frogs
+//      blockchainService.deployCollection(
+//      name = name,
+//      symbol = symbol,
+//      uri = "https://api.surnft.com/nft/${collection.id}/",
+//      owner = address,
+//      count = count,
+//    )
+//    user.balance -= price
+//    collectionRepository.saveAndFlush(
+//      collection.apply {
+//        this.address = contract
+//        this.user = user
+//        this.count = count
+//        this.name = name
+//        this.symbol = symbol
+//      }
+//    )
     userService.save(user)
 
     createCollection(
-      collectionId = collection.id,
+      collectionId = 1678158393L,
       prompt = prompt,
       count = count,
       name = name,
@@ -183,14 +184,14 @@ class NftService(
         // pick random style from styleList
         val style = styleList.random()
         val currentPrompt = "$prompt $style"
-        if (startIndex == 0L) {
+//        if (startIndex == 0L) {
           val nft = imageCreationService.create(user, collectionId, id)
           nft.name = "$name #$id"
           nft.prompt = currentPrompt
           nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
           nft.isMinted = true
           imageNftRepository.saveAndFlush(nft)
-        }
+//        }
         if ((id % 4) == 0L || id == 99L) {
           restTemplate.postForEntity(
             "https://surnft-ai-collection.herokuapp.com/task",

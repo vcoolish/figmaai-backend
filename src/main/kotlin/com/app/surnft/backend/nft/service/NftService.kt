@@ -38,9 +38,11 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
+import java.io.IOException
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.net.URL
+import javax.imageio.ImageIO
 import kotlin.math.min
 
 
@@ -428,11 +430,19 @@ class NftService(
     return nft
   }
 
-  fun test() =
-    restTemplate.getForEntity(
-      "https://arweave.net/LcYBFYJuCx1PEtb8mXRbArXkHTT_J_gOQJlgDKvBTBI",
-      Any::class.java,
-    ).statusCode
+  fun test(): Boolean {
+    val url = "https://arweave.net/LcYBFYJuCx1PEtb8mXRbArXkHTT_J_gOQJlgDKvBTBI"
+    //download image with get request from url
+
+    try {
+      val image = ImageIO.read(URL(url))
+      return true
+    } catch (e: IOException) {
+      return false
+    }
+  }
+
+
 
   fun get(id: Long, collectionId: Long): ImageNft {
     return imageNftRepository.findById(NftId(id, collectionId)).orElseThrow()

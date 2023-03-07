@@ -384,39 +384,21 @@ class NftService(
 
   @Async
   fun updateImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {
-    logger().info("{${output.prompt}}")
     val cleanPrompt = if (output.prompt.startsWith("<https://")) {
       output.prompt.substringAfter(" ")
     } else {
       output.prompt
     }
     val nft = imageNftRepository.findNftByPrompt(cleanPrompt).first()
-    logger().info("nftprompt{${nft.prompt}}")
-    val imageUrl = "https" + output.url.substringAfter("https").substring(0, 58)
-    nft.image = imageUrl
-    imageNftRepository.save(nft)
-    return nft
-  }
 
-  @Async
-  fun updateCollectionImage(output: com.app.surnft.backend.ai.AIOutput): ImageNft {
-    logger().info("{${output.prompt}}")
-    val cleanPrompt = if (output.prompt.startsWith("<https://")) {
-      output.prompt.substringAfter(" ")
-    } else {
-      output.prompt
-    }
-    val nft = imageNftRepository.findNftByPrompt(cleanPrompt).first()
-    Thread.sleep(180000)
     val imageUrl = "https" + output.url.substringAfter("https").substring(0, 58)
-    val imageExists = restTemplate.getForEntity(
-      imageUrl,
-      Any::class.java,
-    ).statusCode.value() != 404
-    if (imageExists) {
+    try {
+      Thread.sleep(30000)
+      ImageIO.read(URL(imageUrl))
+
       nft.image = imageUrl
       imageNftRepository.save(nft)
-    } else {
+    } catch (e: IOException) {
       restTemplate.postForEntity(
         "https://surnft-ai.herokuapp.com/task",
         mapOf(
@@ -425,24 +407,9 @@ class NftService(
         String::class.java,
       )
     }
-    nft.image = imageUrl
-    imageNftRepository.save(nft)
+
     return nft
   }
-
-  fun test(): Boolean {
-    val url = "https://arweave.net/LcYBFYJuCx1PEtb8mXRbArXkHTT_J_gOQJlgDKvBTBI"
-    //download image with get request from url
-
-    try {
-      val image = ImageIO.read(URL(url))
-      return true
-    } catch (e: IOException) {
-      return false
-    }
-  }
-
-
 
   fun get(id: Long, collectionId: Long): ImageNft {
     return imageNftRepository.findById(NftId(id, collectionId)).orElseThrow()

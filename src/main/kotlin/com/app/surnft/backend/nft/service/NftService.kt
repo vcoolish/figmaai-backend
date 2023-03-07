@@ -75,7 +75,7 @@ class NftService(
     validatePrompt(prompt)
 
     val user = userService.getOrCreate(address)
-    val carType = ImageCollection.values().first { it.collectionId == collectionId }
+    val carType = ImageCollection.values().first() // { it.collectionId == collectionId }
 //    val spec: Specification<ImageNft> = imageIsEmpty()
 //      .and(userEqual(address))
 //      .and(createdAtGreaterOrEqual(ZonedDateTime.now(Clock.systemUTC()).minusMinutes(2)))

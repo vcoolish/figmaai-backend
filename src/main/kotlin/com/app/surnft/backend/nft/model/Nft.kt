@@ -1,11 +1,12 @@
 package com.app.surnft.backend.nft.model
 
 import com.app.surnft.backend.common.model.AbstractJpaPersistable
-import com.app.surnft.backend.config.SetableSequenceGenerator
 import org.hibernate.Hibernate
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
+import org.hibernate.engine.spi.SharedSessionContractImplementor
 import org.hibernate.id.enhanced.SequenceStyleGenerator
+import java.io.Serializable
 import java.util.*
 import javax.persistence.*
 
@@ -61,4 +62,26 @@ open class Nft : AbstractJpaPersistable<NftId>() {
   }
 
   override fun hashCode(): Int = Objects.hash(id, collectionId)
+}
+
+class SetableSequenceGenerator : SequenceStyleGenerator() {
+  companion object {
+
+    const val NAME = "com.app.surnft.backend.nft.model.SetableSequenceGenerator"
+  }
+
+  /**
+   * Custom id generation. If id is set on the
+   * com.curecomp.common.hibernate.api.Entity instance then use the set one,
+   * if id is 'null' or '0' then generate one.
+   */
+  override fun generate(session: SharedSessionContractImplementor, obj: Any): Serializable {
+    if (obj is Nft) {
+      val id: Long? = obj.id
+      if (id != null) {
+        return id
+      }
+    }
+    return super.generate(session, obj)
+  }
 }

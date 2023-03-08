@@ -10,7 +10,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "image_nfts")
-class ImageNft : Nft {
+class ImageNft : Nft() {
 
   @ManyToOne
   @JoinColumn(name = "user_address")
@@ -47,9 +47,4 @@ class ImageNft : Nft {
   @LastModifiedDate
   @UpdateTimestamp
   lateinit var updatedAt: ZonedDateTime
-
-  constructor() : super()
-  constructor(id: Long, createdAt: ZonedDateTime) : super(id) {
-    this.createdAt = createdAt
-  }
 }

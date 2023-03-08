@@ -42,6 +42,7 @@ import java.io.IOException
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.net.URL
+import java.time.ZonedDateTime
 import javax.imageio.ImageIO
 import kotlin.math.min
 
@@ -126,7 +127,7 @@ class NftService(
 
     val user = userService.getOrCreate(address)
 
-    val price = getCollectionPrices()[option]
+//    val price = getCollectionPrices()[option]
 //    if (user.balance < price) {
 //      throw InsufficientBalanceException("Insufficient balance")
 //    }
@@ -185,12 +186,15 @@ class NftService(
         val style = styleList.random()
         val currentPrompt = "$prompt $style"
 //        if (startIndex == 0L) {
-          val nft = imageCreationService.create(user, collectionId, id)
-          nft.name = "$name #$id"
-          nft.prompt = currentPrompt
-          nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
-          nft.isMinted = true
-          imageNftRepository.saveAndFlush(nft)
+        val nft = imageCreationService.create(user, collectionId)
+        nft.id = id
+        // with both ids Hiber thinks that it's just an update so doesn't set createdAt by himself
+        nft.createdAt = ZonedDateTime.now()
+        nft.name = "$name #$id"
+        nft.prompt = currentPrompt
+        nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
+        nft.isMinted = true
+        imageNftRepository.saveAndFlush(nft)
 //        }
         if ((id % 4) == 0L || id == 99L) {
           restTemplate.postForEntity(

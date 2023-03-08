@@ -1,25 +1,28 @@
 package com.app.surnft.backend.nft.model
 
 import com.app.surnft.backend.common.model.AbstractJpaPersistable
+import com.app.surnft.backend.config.SetableSequenceGenerator
 import org.hibernate.Hibernate
-import org.hibernate.engine.spi.SharedSessionContractImplementor
-import org.hibernate.id.IdentifierGenerator
-import org.springframework.batch.core.Entity
-import java.io.Serializable
+import org.hibernate.annotations.GenericGenerator
+import org.hibernate.annotations.Parameter
+import org.hibernate.id.enhanced.SequenceStyleGenerator
 import java.util.*
 import javax.persistence.*
 
 @IdClass(NftId::class)
 @MappedSuperclass
-open class Nft : AbstractJpaPersistable<NftId> {
+open class Nft : AbstractJpaPersistable<NftId>() {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "image_nfts_id_sequence_gen")
-  @SequenceGenerator(
+  @GenericGenerator(
     name = "image_nfts_id_sequence_gen",
-    sequenceName = "image_nfts_id_sequence",
-    initialValue = 1_000_000,
-    allocationSize = 1,
+    strategy = SetableSequenceGenerator.NAME,
+    parameters = [
+      Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "image_nfts_id_sequence"),
+      Parameter(name = SequenceStyleGenerator.INITIAL_PARAM, value = "1000000"),
+      Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "1"),
+    ]
   )
   @Column(name = "id", nullable = false)
   var id: Long? = null
@@ -48,24 +51,6 @@ open class Nft : AbstractJpaPersistable<NftId> {
   lateinit var creatorAddress: String
   var isMinted: Boolean = false
 
-  @Transient
-  val new: Boolean
-
-  protected constructor(new: Boolean) : super() {
-    this.new = new
-  }
-
-  /**
-   * Default constructor for JPA and id autogeneration.
-   */
-  constructor() : this(true)
-
-  constructor(id: Long) : this(false) {
-    this.id = id
-  }
-
-  override fun isNew(): Boolean = new || super.isNew()
-
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
@@ -76,33 +61,4 @@ open class Nft : AbstractJpaPersistable<NftId> {
   }
 
   override fun hashCode(): Int = Objects.hash(id, collectionId)
-}
-
-class SetableSequenceGenerator : IdentifierGenerator {
-
-  /**
-   * Custom id generation. If id is set on the
-   * com.curecomp.common.hibernate.api.Entity instance then use the set one,
-   * if id is 'null' or '0' then generate one.
-   */
-  override fun generate(session: SharedSessionContractImplementor, obj: Any): Serializable {
-    return if ((obj as? Entity)?.id == null) {
-      val query = String.format(
-        "select %s from %s",
-        session.getEntityPersister(obj.javaClass.name, obj)
-          .identifierPropertyName,
-        obj.javaClass.simpleName
-      )
-
-      val ids = session.createQuery(query, Long::class.java).stream()
-
-      val max: Long = ids.max { o1, o2 ->
-        o1.compareTo(o2)
-      }.orElse(1000000L)
-
-      return max + 1
-    } else {
-      obj.id
-    }
-  }
 }

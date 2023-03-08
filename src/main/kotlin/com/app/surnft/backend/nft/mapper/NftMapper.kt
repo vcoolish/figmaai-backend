@@ -7,7 +7,6 @@ import com.app.surnft.backend.nft.entity.ImageCollection
 import com.app.surnft.backend.nft.model.ImageNft
 import com.app.surnft.backend.nft.model.Nft
 import com.app.surnft.backend.nft.model.Quality
-import java.time.ZonedDateTime
 
 object NftMapper {
 
@@ -36,11 +35,10 @@ object NftMapper {
 
   fun generateCar(
     collectionId: Long,
-    creator: String? = null,
-    id: Long?
+    creator: String? = null
   ): ImageNft {
     val carType = ImageCollection.values().first()
-    val imageNft = id?.let { ImageNft(id, ZonedDateTime.now()) } ?: ImageNft()
+    val imageNft = ImageNft()
     imageNft.collectionId = collectionId
 
     imageNft.description = "AI powered NFT picture created from description prompt"

@@ -26,4 +26,7 @@ class NftId() : Serializable {
   }
 
   override fun hashCode(): Int = Objects.hash(id, collectionId)
+
+  @Override
+  override fun toString(): String = this::class.simpleName + "(id = $id, collectionId = $collectionId)"
 }

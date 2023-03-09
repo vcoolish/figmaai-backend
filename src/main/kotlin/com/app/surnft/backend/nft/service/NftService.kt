@@ -188,6 +188,9 @@ class NftService(
     val user = userService.getOrCreate(userAddress)
     val styleList = styles.split(",")
     try {
+      val images = imageNftRepository.findNftByCollection(collectionId).filter {
+        it.image.isNotEmpty()
+      }
       (startIndex until count).map { id ->
         // pick random style from styleList
         val style = styleList.random()
@@ -201,7 +204,13 @@ class NftService(
           nft.prompt = currentPrompt
           nft.externalUrl = "https://tofunft.com/nft/bsc/0xbD8B7202F715F1F29DB726B24007998D5d42Bf21/$id"
           nft.isMinted = true
+          nft.image = images.getOrNull(id.toInt())?.image ?: ""
           imageNftRepository.saveAndFlush(nft)
+      }
+      imageNftRepository.findNftByCollection(collectionId).forEach {
+        if (it.id!! > 99L) {
+          imageNftRepository.delete(it)
+        }
       }
       val requestImages = { currentPrompt: String ->
         while (imageNftRepository.findNftByCollection(collectionId).any { it.prompt == "" }) {

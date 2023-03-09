@@ -224,10 +224,10 @@ class NftService(
           Thread.sleep(600000)
         }
       }
-      if (styles.isEmpty()) {
+      if (styleList.isEmpty()) {
         requestImages(prompt)
       } else {
-        for (style in styles) {
+        for (style in styleList) {
           requestImages("$prompt $style")
         }
       }

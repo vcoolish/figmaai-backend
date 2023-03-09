@@ -18,5 +18,5 @@ data class RetryCollectionRequest(
   val contract: String,
   val address: String,
   val collectionId: Long,
-  val styles: String,
+  val styles: List<String>,
 )

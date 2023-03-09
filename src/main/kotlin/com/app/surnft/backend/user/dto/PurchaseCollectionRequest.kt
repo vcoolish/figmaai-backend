@@ -6,7 +6,7 @@ data class PurchaseCollectionRequest(
   val option: Int,
   val name: String,
   val symbol: String,
-  val styles: String,
+  val styles: List<String>,
 )
 
 data class RetryCollectionRequest(

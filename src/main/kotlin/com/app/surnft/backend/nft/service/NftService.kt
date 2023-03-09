@@ -121,7 +121,7 @@ class NftService(
     option: Int,
     name: String,
     symbol: String,
-    styles: String,
+    styles: List<String>,
   ) {
     validatePrompt(prompt)
 
@@ -180,20 +180,19 @@ class NftService(
     userAddress: String,
     attempt: Int = 0,
     startIndex: Long = 0,
-    styles: String,
+    styles: List<String>,
   ) {
     if (!collectionRepository.existsById(collectionId)) {
       throw NotFoundException("Collection not found")
     }
     val user = userService.getOrCreate(userAddress)
-    val styleList = styles.split(",")
     try {
       val images = imageNftRepository.findNftByCollection(collectionId).filter {
         it.image.isNotEmpty()
       }
       (startIndex until count).map { id ->
         // pick random style from styleList
-        val style = styleList.random()
+        val style = styles.random()
         val currentPrompt = "$prompt $style"
 //        if (startIndex == 0L) {
           val nft = imageCreationService.create(user, collectionId)
@@ -224,10 +223,10 @@ class NftService(
           Thread.sleep(600000)
         }
       }
-      if (styleList.isEmpty()) {
+      if (styles.isEmpty()) {
         requestImages(prompt)
       } else {
-        for (style in styleList) {
+        for (style in styles) {
           requestImages("$prompt $style")
         }
       }

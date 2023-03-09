@@ -114,6 +114,7 @@ class NftService(
   }
 
   @Async
+  @Transactional
   fun deployCollection(
     address: String,
     prompt: String,

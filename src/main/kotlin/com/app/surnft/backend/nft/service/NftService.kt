@@ -131,27 +131,20 @@ class NftService(
 //    if (user.balance < price) {
 //      throw InsufficientBalanceException("Insufficient balance")
 //    }
-//    val collection = Collection()
+    val collection = Collection()
     val count = getCountByOption(option)
-    val contract = "0xbd8b7202f715f1f29db726b24007998d5d42bf21" //fill mighty frogs
-//      blockchainService.deployCollection(
-//      name = name,
-//      symbol = symbol,
-//      uri = "https://api.surnft.com/nft/${collection.id}/",
-//      owner = address,
-//      count = count,
-//    )
+
 //    user.balance -= price
 //    collectionRepository.saveAndFlush(
 //      collection.apply {
-//        this.address = contract
+//        this.address = ""
 //        this.user = user
 //        this.count = count
 //        this.name = name
 //        this.symbol = symbol
 //      }
 //    )
-    userService.save(user)
+//    userService.save(user)
 
     createCollection(
       collectionId = 1678158393L,
@@ -159,9 +152,24 @@ class NftService(
       count = count,
       name = name,
       userAddress = user.address,
-      contract = contract,
       styles = styles,
     )
+//    val contract = blockchainService.deployCollection(
+//      name = name,
+//      symbol = symbol,
+//      uri = "https://api.surnft.com/nft/${collection.id}/",
+//      owner = address,
+//      count = count,
+//    )
+//    val collectionToUpdate = collectionRepository.findById(collection.id).get().apply {
+//      this.address = contract
+//    }
+//    collectionRepository.save(collectionToUpdate)
+//    val nftsToUpdate = imageNftRepository.findNftByCollection(collection.id)
+//    nftsToUpdate.forEach { nft ->
+//      nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/${nft.id}"
+//      imageNftRepository.save(nft)
+//    }
   }
 
   fun createCollection(
@@ -170,7 +178,6 @@ class NftService(
     count: Int,
     name: String,
     userAddress: String,
-    contract: String,
     attempt: Int = 0,
     startIndex: Long = 0,
     styles: String,
@@ -186,17 +193,18 @@ class NftService(
         val style = styleList.random()
         val currentPrompt = "$prompt $style"
 //        if (startIndex == 0L) {
-        val nft = imageCreationService.create(user, collectionId)
-        nft.id = id
-        // with both ids Hiber thinks that it's just an update so doesn't set createdAt by himself
-        nft.createdAt = ZonedDateTime.now()
-        nft.name = "$name #$id"
-        nft.prompt = currentPrompt
-        nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/$id"
-        nft.isMinted = true
-        imageNftRepository.saveAndFlush(nft)
-//        }
-        if ((id % 4) == 0L || id == 99L) {
+          val nft = imageCreationService.create(user, collectionId)
+          nft.id = id
+          // with both ids Hiber thinks that it's just an update so doesn't set createdAt by himself
+          nft.createdAt = ZonedDateTime.now()
+          nft.name = "$name #$id"
+          nft.prompt = currentPrompt
+          nft.externalUrl = "https://tofunft.com/nft/bsc/0xbD8B7202F715F1F29DB726B24007998D5d42Bf21/$id"
+          nft.isMinted = true
+          imageNftRepository.saveAndFlush(nft)
+      }
+      val requestImages = { currentPrompt: String ->
+        while (imageNftRepository.findNftByCollection(collectionId).any { it.prompt == "" }) {
           restTemplate.postForEntity(
             "https://surnft-ai-collection.herokuapp.com/task",
             mapOf(
@@ -204,7 +212,14 @@ class NftService(
             ),
             String::class.java,
           )
-          Thread.sleep(300000)
+          Thread.sleep(600000)
+        }
+      }
+      if (styles.isEmpty()) {
+        requestImages(prompt)
+      } else {
+        for (style in styles) {
+          requestImages("$prompt $style")
         }
       }
     } catch (t: Throwable) {
@@ -216,7 +231,6 @@ class NftService(
           count = count,
           name = name,
           userAddress = user.address,
-          contract = contract,
           attempt = attempt + 1,
           startIndex = imageNftRepository.countImageInCollection(collectionId) - 1,
           styles = styles,

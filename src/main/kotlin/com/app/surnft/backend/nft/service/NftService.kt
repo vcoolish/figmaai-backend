@@ -213,7 +213,7 @@ class NftService(
         }
       }
       val requestImages = { currentPrompt: String ->
-        while (imageNftRepository.findNftByCollection(collectionId).any { it.prompt == "" }) {
+        while (imageNftRepository.findNftByCollection(collectionId).any { it.image == "" }) {
           restTemplate.postForEntity(
             "https://surnft-ai-collection.herokuapp.com/task",
             mapOf(

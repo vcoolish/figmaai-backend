@@ -135,14 +135,14 @@ class NftService(
     val count = getCountByOption(option)
 
     user.balance -= price
-    collectionRepository.saveAndFlush(
+    collectionRepository.save(
       collection.apply {
-        this.id = System.currentTimeMillis() / 1000
         this.address = ""
         this.user = user
         this.count = count
         this.name = name
         this.symbol = symbol
+        this.createdAt = ZonedDateTime.now()
       }
     )
     userService.save(user)

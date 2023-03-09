@@ -193,7 +193,7 @@ class NftService(
       (startIndex until count).map { id ->
         // pick random style from styleList
         val style = styles.random()
-        val currentPrompt = "$prompt $style"
+        val currentPrompt = "$prompt ${style.trim()}"
 //        if (startIndex == 0L) {
           val nft = imageCreationService.create(user, collectionId)
           nft.id = id
@@ -227,7 +227,7 @@ class NftService(
         requestImages(prompt)
       } else {
         for (style in styles) {
-          requestImages("$prompt $style")
+          requestImages("$prompt ${style.trim()}")
         }
       }
     } catch (t: Throwable) {

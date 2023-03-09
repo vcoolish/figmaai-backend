@@ -137,6 +137,7 @@ class NftService(
     user.balance -= price
     collectionRepository.saveAndFlush(
       collection.apply {
+        this.id = System.currentTimeMillis() / 1000
         this.address = ""
         this.user = user
         this.count = count

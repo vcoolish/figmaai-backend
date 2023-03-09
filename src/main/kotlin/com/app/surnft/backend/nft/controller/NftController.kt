@@ -224,7 +224,6 @@ class NftController(
       count = request.count,
       name = request.name,
       userAddress = request.address,
-      contract = request.contract,
       styles = request.styles,
     )
     return true

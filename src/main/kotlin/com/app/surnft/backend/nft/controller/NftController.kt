@@ -218,14 +218,14 @@ class NftController(
     @Address @RequestHeader address: String,
     @Valid @RequestBody request: RetryCollectionRequest,
   ): Boolean {
-    nftService.createCollection(
-      collectionId = request.collectionId,
-      prompt = request.prompt,
-      count = request.count,
-      name = request.name,
-      userAddress = request.address,
-      styles = request.styles,
-    )
+//    nftService.createCollection(
+//      collectionId = request.collectionId,
+//      prompt = request.prompt,
+//      count = request.count,
+//      name = request.name,
+//      userAddress = request.address,
+//      styles = request.styles,
+//    )
     return true
   }
 

@@ -127,49 +127,49 @@ class NftService(
 
     val user = userService.getOrCreate(address)
 
-//    val price = getCollectionPrices()[option]
-//    if (user.balance < price) {
-//      throw InsufficientBalanceException("Insufficient balance")
-//    }
+    val price = getCollectionPrices()[option]
+    if (user.balance < price) {
+      throw InsufficientBalanceException("Insufficient balance")
+    }
     val collection = Collection()
     val count = getCountByOption(option)
 
-//    user.balance -= price
-//    collectionRepository.saveAndFlush(
-//      collection.apply {
-//        this.address = ""
-//        this.user = user
-//        this.count = count
-//        this.name = name
-//        this.symbol = symbol
-//      }
-//    )
-//    userService.save(user)
+    user.balance -= price
+    collectionRepository.saveAndFlush(
+      collection.apply {
+        this.address = ""
+        this.user = user
+        this.count = count
+        this.name = name
+        this.symbol = symbol
+      }
+    )
+    userService.save(user)
 
     createCollection(
-      collectionId = 1678158393L,
+      collectionId = collection.id,
       prompt = prompt,
       count = count,
       name = name,
       userAddress = user.address,
       styles = styles,
     )
-//    val contract = blockchainService.deployCollection(
-//      name = name,
-//      symbol = symbol,
-//      uri = "https://api.surnft.com/nft/${collection.id}/",
-//      owner = address,
-//      count = count,
-//    )
-//    val collectionToUpdate = collectionRepository.findById(collection.id).get().apply {
-//      this.address = contract
-//    }
-//    collectionRepository.save(collectionToUpdate)
-//    val nftsToUpdate = imageNftRepository.findNftByCollection(collection.id)
-//    nftsToUpdate.forEach { nft ->
-//      nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/${nft.id}"
-//      imageNftRepository.save(nft)
-//    }
+    val contract = blockchainService.deployCollection(
+      name = name,
+      symbol = symbol,
+      uri = "https://api.surnft.com/nft/${collection.id}/",
+      owner = address,
+      count = count,
+    )
+    val collectionToUpdate = collectionRepository.findById(collection.id).get().apply {
+      this.address = contract
+    }
+    collectionRepository.save(collectionToUpdate)
+    val nftsToUpdate = imageNftRepository.findNftByCollection(collection.id)
+    nftsToUpdate.forEach { nft ->
+      nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/${nft.id}"
+      imageNftRepository.save(nft)
+    }
   }
 
   fun createCollection(
@@ -187,29 +187,20 @@ class NftService(
     }
     val user = userService.getOrCreate(userAddress)
     try {
-      val images = imageNftRepository.findNftByCollection(collectionId).filter {
-        it.image.isNotEmpty()
-      }
       (startIndex until count).map { id ->
         // pick random style from styleList
         val style = styles.random()
         val currentPrompt = "$prompt ${style.trim()}"
-//        if (startIndex == 0L) {
           val nft = imageCreationService.create(user, collectionId)
           nft.id = id
           // with both ids Hiber thinks that it's just an update so doesn't set createdAt by himself
           nft.createdAt = ZonedDateTime.now()
           nft.name = "$name #$id"
           nft.prompt = currentPrompt
-          nft.externalUrl = "https://tofunft.com/nft/bsc/0xbD8B7202F715F1F29DB726B24007998D5d42Bf21/$id"
+          nft.externalUrl = ""
           nft.isMinted = true
-          nft.image = images.getOrNull(id.toInt())?.image ?: ""
+          nft.image = ""
           imageNftRepository.saveAndFlush(nft)
-      }
-      imageNftRepository.findNftByCollection(collectionId).forEach {
-        if (it.id!! > 99L) {
-          imageNftRepository.delete(it)
-        }
       }
       val requestImages = { currentPrompt: String ->
         while (imageNftRepository.findNftByCollection(collectionId).any { it.image == "" && it.prompt == currentPrompt }) {

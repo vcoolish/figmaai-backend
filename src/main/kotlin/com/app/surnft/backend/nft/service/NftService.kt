@@ -189,21 +189,22 @@ class NftService(
     try {
       (startIndex until count).map { id ->
         // pick random style from styleList
-        val style = styles.random()
-        val currentPrompt = "$prompt ${style.trim()}"
-          val nft = imageCreationService.create(user, collectionId)
-          nft.id = id
-          // with both ids Hiber thinks that it's just an update so doesn't set createdAt by himself
-          nft.createdAt = ZonedDateTime.now()
-          nft.name = "$name #$id"
-          nft.prompt = currentPrompt
-          nft.externalUrl = ""
-          nft.isMinted = true
-          nft.image = ""
-          imageNftRepository.saveAndFlush(nft)
+        val currentPrompt = if (styles.isNotEmpty()) "$prompt ${styles.random().trim()}" else prompt
+        val nft = imageCreationService.create(user, collectionId)
+        nft.id = id
+        // with both ids Hiber thinks that it's just an update so doesn't set createdAt by himself
+        nft.createdAt = ZonedDateTime.now()
+        nft.name = "$name #$id"
+        nft.prompt = currentPrompt
+        nft.externalUrl = ""
+        nft.isMinted = true
+        nft.image = ""
+        imageNftRepository.saveAndFlush(nft)
       }
       val requestImages = { currentPrompt: String ->
-        while (imageNftRepository.findNftByCollection(collectionId).any { it.image == "" && it.prompt == currentPrompt }) {
+        while (imageNftRepository.findNftByCollection(collectionId)
+            .any { it.image == "" && it.prompt == currentPrompt }
+        ) {
           restTemplate.postForEntity(
             "https://surnft-ai-collection.herokuapp.com/task",
             mapOf(

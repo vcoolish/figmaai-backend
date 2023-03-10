@@ -46,7 +46,6 @@ import java.time.ZonedDateTime
 import javax.imageio.ImageIO
 import kotlin.math.min
 
-
 @Service
 class NftService(
   private val imageNftRepository: ImageNftRepository,
@@ -132,24 +131,23 @@ class NftService(
     if (user.balance < price) {
       throw InsufficientBalanceException("Insufficient balance")
     }
-    val collection = Collection(System.currentTimeMillis() / 1000)
     val count = getCountByOption(option)
 
     user.balance -= price
-    collectionRepository.save(
-      collection.apply {
-        this.address = ""
-        this.user = user
-        this.count = count
-        this.name = name
-        this.symbol = symbol
-        this.createdAt = ZonedDateTime.now()
-      }
+    val collection = collectionRepository.save(
+      Collection(
+        address = "",
+        user = user,
+        count = count,
+        name = name,
+        symbol = symbol,
+      )
     )
+    val collectionId = collection.getSafeId()
     userService.save(user)
 
     createCollection(
-      collectionId = collection.id,
+      collectionId = collectionId,
       prompt = prompt,
       count = count,
       name = name,
@@ -159,15 +157,14 @@ class NftService(
     val contract = blockchainService.deployCollection(
       name = name,
       symbol = symbol,
-      uri = "https://api.surnft.com/nft/${collection.id}/",
+      uri = "https://api.surnft.com/nft/${collectionId}/",
       owner = address,
       count = count,
     )
-    val collectionToUpdate = collectionRepository.findById(collection.id).get().apply {
-      this.address = contract
-    }
-    collectionRepository.save(collectionToUpdate)
-    val nftsToUpdate = imageNftRepository.findNftByCollection(collection.id)
+    collection.address = contract
+
+    collectionRepository.save(collection)
+    val nftsToUpdate = imageNftRepository.findNftByCollection(collectionId)
     nftsToUpdate.forEach { nft ->
       nft.externalUrl = "https://tofunft.com/nft/bsc/$contract/${nft.id}"
       imageNftRepository.save(nft)

@@ -8,10 +8,10 @@ import com.app.surnft.backend.nft.mapper.NftMapper
 import com.app.surnft.backend.nft.model.UploadResult
 import com.app.surnft.backend.nft.service.AwsS3Service
 import com.app.surnft.backend.nft.service.NftService
-import com.app.surnft.backend.user.dto.PurchaseCollectionRequest
-import com.app.surnft.backend.user.dto.PurchaseImageRequest
-import com.app.surnft.backend.user.dto.RepairCarRequest
-import com.app.surnft.backend.user.dto.RetryCollectionRequest
+import com.app.surnft.backend.nft.dto.PurchaseCollectionRequest
+import com.app.surnft.backend.nft.dto.PurchaseImageRequest
+import com.app.surnft.backend.nft.dto.RepairCarRequest
+import com.app.surnft.backend.nft.dto.RetryCollectionRequest
 import io.swagger.v3.oas.annotations.Operation
 import org.springdoc.api.annotations.ParameterObject
 import org.springframework.core.io.InputStreamResource
@@ -195,8 +195,8 @@ class NftController(
 
   @PatchMapping("/nft/purchase")
   fun purchaseCollection(
-    @Address @RequestHeader address: String,
-    @Valid @RequestBody request: PurchaseCollectionRequest,
+      @Address @RequestHeader address: String,
+      @Valid @RequestBody request: PurchaseCollectionRequest,
   ): Boolean {
     val provider = AiProvider.values().find {
       it.name.equals(request.provider, true)
@@ -215,8 +215,8 @@ class NftController(
 
   @PatchMapping("/nft/retry")
   fun retryCollection(
-    @Address @RequestHeader address: String,
-    @Valid @RequestBody request: RetryCollectionRequest,
+      @Address @RequestHeader address: String,
+      @Valid @RequestBody request: RetryCollectionRequest,
   ): Boolean {
 //    nftService.createCollection(
 //      collectionId = request.collectionId,

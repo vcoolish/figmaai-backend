@@ -218,3 +218,16 @@ CREATE TABLE IF NOT EXISTS collections
   symbol          VARCHAR(255)
 );
 --rollback DROP TABLE collections;
+
+
+--changeset yemets:20230310204044
+-- timestamp-like
+CREATE SEQUENCE IF NOT EXISTS collections_id_sequence START WITH 1678000000 INCREMENT BY 3633;
+
+ALTER TABLE collections
+  ALTER id SET DEFAULT nextval('collections_id_sequence');
+
+ALTER SEQUENCE collections_id_sequence OWNED BY collections.id;
+--rollback ALTER TABLE collections
+--rollback   ALTER id DROP DEFAULT;
+--rollback DROP SEQUENCE IF EXISTS collections_id_sequence;

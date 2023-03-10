@@ -1,6 +1,7 @@
 package com.app.surnft.backend.user.mapper
 
 import com.app.surnft.backend.nft.dto.NftInfoDto
+import com.app.surnft.backend.nft.model.Collection
 import com.app.surnft.backend.nft.model.ImageNft
 import com.app.surnft.backend.user.dto.UserExtendedDto
 import com.app.surnft.backend.user.dto.UserInfoDto
@@ -28,7 +29,7 @@ object UserMapper {
     dto.nextEnergyRenew = user.nextEnergyRenew
     dto.donation = user.donation
     dto.balance = user.balance
-    dto.collections = user.collections.map { it.id }
+    dto.collections = user.collections.map(Collection::getSafeId)
 
     return dto
   }

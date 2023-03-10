@@ -132,7 +132,7 @@ class NftService(
     if (user.balance < price) {
       throw InsufficientBalanceException("Insufficient balance")
     }
-    val collection = Collection()
+    val collection = Collection(System.currentTimeMillis() / 1000)
     val count = getCountByOption(option)
 
     user.balance -= price

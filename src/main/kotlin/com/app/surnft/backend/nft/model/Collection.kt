@@ -4,15 +4,15 @@ import com.app.surnft.backend.common.model.AbstractJpaPersistable
 import com.app.surnft.backend.user.model.User
 import org.hibernate.annotations.CreationTimestamp
 import org.springframework.data.annotation.CreatedDate
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 import javax.persistence.*
 
 @Entity
 @Table(name = "collections")
-class Collection : AbstractJpaPersistable<Long>() {
-
-  @Id
-  var id: Long = System.currentTimeMillis() / 1000
+class Collection(
+  @Id val id: Long
+) : AbstractJpaPersistable<Long>() {
 
   override fun getId(): Long = id
 

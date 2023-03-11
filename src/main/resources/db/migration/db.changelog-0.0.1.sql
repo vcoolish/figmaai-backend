@@ -231,3 +231,8 @@ ALTER SEQUENCE collections_id_sequence OWNED BY collections.id;
 --rollback ALTER TABLE collections
 --rollback   ALTER id DROP DEFAULT;
 --rollback DROP SEQUENCE IF EXISTS collections_id_sequence;
+
+--changeset vcoolish:20230311204044
+ALTER TABLE image_nfts
+  ALTER prompt TYPE VARCHAR(1024);
+--rollback ALTER TABLE image_nfts

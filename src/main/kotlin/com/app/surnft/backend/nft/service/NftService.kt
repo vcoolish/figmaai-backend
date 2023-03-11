@@ -187,7 +187,7 @@ class NftService(
     try {
       (startIndex until count).map { id ->
         // pick random style from styleList
-        val currentPrompt = if (styles.isNotEmpty()) "$prompt ${styles.random().trim()}" else prompt
+        val currentPrompt = (if (styles.isNotEmpty()) "$prompt ${styles.random().trim()}" else prompt).trim()
         val nft = imageCreationService.create(user, collectionId)
         nft.id = id
         // with both ids Hiber thinks that it's just an update so doesn't set createdAt by himself
@@ -217,7 +217,7 @@ class NftService(
         requestImages(prompt)
       } else {
         for (style in styles) {
-          requestImages("$prompt ${style.trim()}")
+          requestImages("$prompt ${style.trim()}".trim())
         }
       }
     } catch (t: Throwable) {

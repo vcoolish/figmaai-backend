@@ -47,6 +47,7 @@ class UserService(
     User().apply {
       userUuid = generateUUID()
       email = userDto.email.lowercase()
+      figma = userDto.figma
       password = passwordEncoder.encode(userDto.password)
       enabled = userDto.enabled ?: enabled
       verified = userDto.verified ?: verified

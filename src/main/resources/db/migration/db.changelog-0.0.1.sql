@@ -105,3 +105,8 @@ CREATE TABLE refresh_tokens
 );
 --rollback DROP TABLE refresh_tokens;
 --rollback DROP SEQUENCE IF EXISTS refresh_tokens_id_seq;
+
+--changeset vcoolish:20230329153804
+ALTER TABLE refresh_tokens
+  ALTER COLUMN token TYPE VARCHAR(500);
+--rollback ALTER TABLE refresh_tokens;

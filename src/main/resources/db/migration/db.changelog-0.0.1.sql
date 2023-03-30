@@ -1,238 +1,107 @@
 --liquibase formatted sql
 
---changeset yemets:20220613114243
-CREATE TABLE IF NOT EXISTS users
+--changeset vcoolish:20230328123804
+CREATE TABLE users
 (
-  address         VARCHAR(255) PRIMARY KEY,
-  distance        BIGINT NOT NULL,
-  energy          BIGINT NOT NULL,
-  tokens_to_claim DECIMAL
+  figma                         VARCHAR(255),
+  token                         VARCHAR(255),
+  energy                        DECIMAL(12, 2)           NOT NULL,
+  max_energy                    DECIMAL(12, 2)                    DEFAULT 30,
+  next_energy_renew             TIMESTAMP with time zone          DEFAULT (now() AT TIME ZONE 'UTC'),
+  created_at                    TIMESTAMP with time zone NOT NULL DEFAULT (now() AT TIME ZONE 'UTC'),
+  id                            BIGSERIAL                NOT NULL PRIMARY KEY,
+  email                         VARCHAR(255),
+  password                      VARCHAR(255),
+  google_id                     VARCHAR(255),
+  provider                      VARCHAR(255)             NOT NULL,
+  user_uuid                     VARCHAR(255) UNIQUE      NOT NULL,
+
+  last_subscription_expire_date TIMESTAMP WITH TIME ZONE,
+  userUUID                      VARCHAR(255),
+  ancestor_id                   BIGINT,
+  profile_type                  VARCHAR(45),
+  title                         VARCHAR(45),
+
+  enabled                       BOOLEAN                           DEFAULT FALSE,
+  verified                      BOOLEAN                           DEFAULT FALSE,
+  subscription_id               VARCHAR(255),
+  is_subscribed                 BOOLEAN                           DEFAULT FALSE,
+  last_subscription_data        TIMESTAMP WITH TIME ZONE,
+  deleted                       BOOLEAN                  NOT NULL DEFAULT 'false',
+  deleted_date                  TIMESTAMP WITH TIME ZONE,
+  method                        TEXT                     NOT NULL,
+
+  FOREIGN KEY (id) REFERENCES users (id),
+  CONSTRAINT ancestor_id FOREIGN KEY (ancestor_id) REFERENCES users (id)
 );
+
+CREATE SEQUENCE IF NOT EXISTS users_id_seq MINVALUE 1 START WITH 1 INCREMENT BY 1;
+
+ALTER TABLE users
+  ALTER COLUMN id SET DEFAULT nextval('users_id_seq');
+ALTER TABLE users
+  ALTER COLUMN id SET NOT NULL;
+
+CREATE INDEX idx_ancestor_id ON users (ancestor_id);
 --rollback DROP TABLE users;
+--rollback DROP SEQUENCE IF EXISTS users_id_seq;
 
+--changeset vcoolish:20230329123804
+CREATE SEQUENCE IF NOT EXISTS images_id_sequence START WITH 1000000 INCREMENT BY 1;
 
---changeset yemets:20220831123804
-CREATE TABLE IF NOT EXISTS image_nfts
+CREATE TABLE IF NOT EXISTS images
 (
-  id              BIGINT  NOT NULL,
-  collection_id   BIGINT  NOT NULL,
-  name            VARCHAR(255),
-  description     VARCHAR(512),
-  image           VARCHAR(2048),
-  external_url    VARCHAR(2048),
-  creator_address VARCHAR(255),
-  level           INTEGER NOT NULL,
-  quality         VARCHAR(255),
-  prompt          VARCHAR(255),
-  is_minted        BOOLEAN,
-  min_speed       INTEGER NOT NULL,
-  max_speed       INTEGER NOT NULL,
-  odometer        FLOAT   NOT NULL,
-  efficiency      FLOAT   NOT NULL,
-  luck            FLOAT   NOT NULL,
-  comfortability  FLOAT   NOT NULL,
-  resilience      FLOAT   NOT NULL,
-  durability      FLOAT   NOT NULL,
-  max_durability  FLOAT   NOT NULL,
-  CONSTRAINT pk_image_nfts PRIMARY KEY (id, collection_id)
+  id          BIGINT                   NOT NULL PRIMARY KEY DEFAULT nextval('images_id_sequence'),
+  name        VARCHAR(255),
+  description VARCHAR(512),
+  image       VARCHAR(2048),
+  prompt      VARCHAR(1024),
+  user_id     BIGSERIAL                NOT NULL REFERENCES users (id),
+  created_at  TIMESTAMP with time zone NOT NULL             DEFAULT (now() AT TIME ZONE 'UTC'),
+  updated_at  TIMESTAMP with time zone
 );
---rollback DROP TABLE image_nfts;
 
---changeset yemets:20220831161927
-ALTER TABLE users
-  ALTER distance TYPE FLOAT,
-  ALTER energy TYPE FLOAT,
-  ALTER tokens_to_claim SET DEFAULT 0;
+ALTER SEQUENCE images_id_sequence OWNED BY images.id;
+--rollback DROP TABLE images;
+--rollback DROP SEQUENCE IF EXISTS images_id_sequence;
 
-ALTER TABLE users
-  ADD COLUMN max_energy FLOAT DEFAULT 30,
-  ALTER tokens_to_claim SET NOT NULL;
+--changeset vcoolish:20230329133804
+CREATE SEQUENCE IF NOT EXISTS social_connection_id_seq
+  START WITH 1
+  INCREMENT BY 1
+  NO MINVALUE
+  NO MAXVALUE
+  CACHE 1;
 
-ALTER TABLE image_nfts
-  ALTER efficiency TYPE SMALLINT,
-  ALTER luck TYPE SMALLINT,
-  ALTER comfortability TYPE SMALLINT,
-  ALTER resilience TYPE SMALLINT;
-
-ALTER TABLE image_nfts
-  RENAME resilience TO economy;
-
--- yes, there's no rollback
---rollback
-
---changeset yemets:20220831203122
-ALTER TABLE image_nfts
-  ADD mint INTEGER NOT NULL DEFAULT 0;
-
---rollback ALTER TABLE image_nfts DROP mint;
-
-
---changeset yemets:20220904163107
-ALTER TABLE users
-  ADD tokens_limit_per_day DECIMAL NOT NULL DEFAULT 10;
-
-CREATE TABLE IF NOT EXISTS user_earned_token_records
+CREATE TABLE social_connection
 (
-  address      VARCHAR(255)             NOT NULL,
-  created_at   TIMESTAMP with time zone NOT NULL,
-  token_amount DECIMAL                  NOT NULL DEFAULT 0,
-  CONSTRAINT pk_user_earned_token_records PRIMARY KEY (address, created_at)
+  id           BIGINT PRIMARY KEY DEFAULT nextval('social_connection_id_seq'),
+  state        VARCHAR(255) NOT NULL,
+  provider     VARCHAR(255) NOT NULL,
+  redirect_url VARCHAR(255) NOT NULL,
+  prod_api_key VARCHAR(255)
 );
---rollback ALTER TABLE users DROP tokens_limit_per_day;
---rollback DROP TABLE user_earned_token_records;
 
+--rollback DROP TABLE social_connection;
+--rollback DROP SEQUENCE IF EXISTS social_connection_id_seq;
 
---changeset yemets:20220911164814
-ALTER TABLE users
-  ADD next_energy_renew TIMESTAMP with time zone;
+--changeset vcoolish:20230329143804
+CREATE SEQUENCE IF NOT EXISTS refresh_tokens_id_seq
+  START WITH 1
+  INCREMENT BY 1
+  NO MINVALUE
+  NO MAXVALUE
+  CACHE 1;
 
-UPDATE users
-SET next_energy_renew = now() AT TIME ZONE 'UTC'
-WHERE energy <> max_energy;
---rollback ALTER TABLE users DROP next_energy_renew;
-
-
---changeset yemets:20220919213522
-ALTER TABLE user_earned_token_records
-  ALTER token_amount TYPE DECIMAL(30, 18);
-
-ALTER TABLE users
-  ALTER COLUMN distance TYPE DECIMAL(12, 2) USING (distance::DECIMAL(12, 2)),
-  ALTER COLUMN tokens_limit_per_day TYPE DECIMAL(30, 18) USING (tokens_limit_per_day::DECIMAL(30, 18)),
-  ALTER COLUMN tokens_to_claim TYPE DECIMAL(30, 18) USING (tokens_to_claim::DECIMAL(30, 18)),
-  ALTER COLUMN max_energy TYPE DECIMAL(12, 2) USING (max_energy::DECIMAL(12, 2)),
-  ALTER COLUMN energy TYPE DECIMAL(12, 2) USING (energy::DECIMAL(12, 2));
-
-ALTER TABLE users
-  ALTER COLUMN distance SET DEFAULT 0;
---rollback
-
---changeset yemets:20220928150421
-ALTER TABLE users
-  ADD COLUMN donation SMALLINT NOT NULL DEFAULT 5;
---rollback ALTER TABLE users DROP COLUMN donation;
-
-
---changeset yemets:20220928152606
-ALTER TABLE image_nfts
-  ALTER level TYPE SMALLINT;
---rollback ALTER TABLE image_nfts ALTER level TYPE INT;
-
---changeset vcoolish:20221017100000
-ALTER TABLE users
-  ADD COLUMN balance DECIMAL(30, 18) NOT NULL DEFAULT 0;
-
-CREATE TABLE IF NOT EXISTS balance_history
+CREATE TABLE refresh_tokens
 (
-  id           UUID PRIMARY KEY                  DEFAULT gen_random_uuid(),
-  user_address VARCHAR(255)             NOT NULL REFERENCES users,
-  balance      DECIMAL(30, 18)          NOT NULL DEFAULT 0,
-  tx_id        VARCHAR(255)             NOT NULL,
-  created_at   TIMESTAMP with time zone NOT NULL
+  id              BIGINT PRIMARY KEY DEFAULT nextval('refresh_tokens_id_seq'),
+  token           VARCHAR(255),
+  user_id         BIGSERIAL NOT NULL REFERENCES users (id),
+  expiration_date TIMESTAMP,
+  hash            VARCHAR(255),
+
+  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
---rollback ALTER TABLE users DROP COLUMN balance;
---rollback DROP TABLE balance_history;
-
---changeset vcoolish:20221017180000
-ALTER TABLE users
-  ALTER COLUMN tokens_to_claim TYPE DECIMAL(30, 8) USING (tokens_to_claim::DECIMAL(30, 18)),
-  ALTER COLUMN tokens_limit_per_day TYPE DECIMAL(30, 8) USING (tokens_limit_per_day::DECIMAL(30, 18));
---rollback ALTER TABLE users DROP COLUMN balance;
-
---changeset vcoolish:20221018180000
-ALTER TABLE users
-  ADD COLUMN sign_message VARCHAR(255) NOT NULL DEFAULT '';
---rollback ALTER TABLE users DROP COLUMN sign_message;
-
---changeset vcoolish:20221019100000
-CREATE TABLE IF NOT EXISTS transactions
-(
-  id        UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
-  address   VARCHAR(255)    NOT NULL REFERENCES users,
-  amount    DECIMAL(30, 18) NOT NULL DEFAULT 0,
-  tx_type   VARCHAR(255)    NOT NULL,
-  direction VARCHAR(255)    NOT NULL
-);
-CREATE TABLE IF NOT EXISTS blockchain_state
-(
-  transaction_id       UUID NOT NULL REFERENCES transactions,
-  last_processed_block VARCHAR(255) NOT NULL
-);
---rollback DROP TABLE transactions;
---rollback DROP TABLE blockchain_state;
-
---changeset yemets:20221023171535
-ALTER TABLE blockchain_state
-  DROP COLUMN transaction_id,
-  ADD CONSTRAINT pk_blockchain_state PRIMARY KEY (last_processed_block);
-
-ALTER TABLE IF EXISTS transactions
-  ALTER tx_type TYPE VARCHAR(20),
-  ALTER direction TYPE VARCHAR(20),
-  ADD block_id VARCHAR(255) NOT NULL REFERENCES blockchain_state(last_processed_block);
---rollback
-
---changeset vcoolish:20221028184326
-ALTER TABLE image_nfts
-  ADD user_address VARCHAR(255) NOT NULL REFERENCES users(address);
---rollback ALTER TABLE image_nfts DROP COLUMN user_address;
-
---changeset yemets:20221102220511
-CREATE SEQUENCE IF NOT EXISTS image_nfts_id_sequence START WITH 1000000 INCREMENT BY 1;
-
-ALTER TABLE image_nfts
-  ALTER id SET DEFAULT nextval('image_nfts_id_sequence');
-
-ALTER SEQUENCE image_nfts_id_sequence OWNED BY image_nfts.id;
-
---rollback ALTER TABLE image_nfts
---rollback   ALTER id DROP DEFAULT;
---rollback DROP SEQUENCE IF EXISTS image_nfts_id_sequence;
-
-
---changeset yemets:20230110182140
-ALTER TABLE IF EXISTS image_nfts
-  ADD created_at TIMESTAMP with time zone NOT NULL DEFAULT (now() AT TIME ZONE 'UTC'),
-  ADD updated_at TIMESTAMP with time zone;
-
---rollback ALTER TABLE IF EXISTS image_nfts
---rollback   DROP created_at,
---rollback   DROP updated_at;
-
-
---changeset yemets:20230116134021
-ALTER TABLE IF EXISTS users
-  ADD created_at TIMESTAMP with time zone NOT NULL DEFAULT (now() AT TIME ZONE 'UTC');
---rollback ALTER TABLE IF EXISTS users
---rollback   DROP created_at;
-
---changeset vcoolish:20230301134021
-CREATE TABLE IF NOT EXISTS collections
-(
-  id              BIGINT PRIMARY KEY,
-  address         VARCHAR(255),
-  created_at      TIMESTAMP with time zone NOT NULL DEFAULT (now() AT TIME ZONE 'UTC'),
-  user_address    VARCHAR(255) NOT NULL REFERENCES users(address),
-  count           INT NOT NULL DEFAULT 0,
-  name            VARCHAR(255),
-  symbol          VARCHAR(255)
-);
---rollback DROP TABLE collections;
-
-
---changeset yemets:20230310204044
--- timestamp-like
-CREATE SEQUENCE IF NOT EXISTS collections_id_sequence START WITH 1678000000 INCREMENT BY 3633;
-
-ALTER TABLE collections
-  ALTER id SET DEFAULT nextval('collections_id_sequence');
-
-ALTER SEQUENCE collections_id_sequence OWNED BY collections.id;
---rollback ALTER TABLE collections
---rollback   ALTER id DROP DEFAULT;
---rollback DROP SEQUENCE IF EXISTS collections_id_sequence;
-
---changeset vcoolish:20230311204044
-ALTER TABLE image_nfts
-  ALTER prompt TYPE VARCHAR(1024);
---rollback ALTER TABLE image_nfts
+--rollback DROP TABLE refresh_tokens;
+--rollback DROP SEQUENCE IF EXISTS refresh_tokens_id_seq;

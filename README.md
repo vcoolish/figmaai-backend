@@ -1,6 +1,6 @@
-# SurNFT Backend
+# FigmaAI Backend
 
-The Spring Boot application as backend for the SurNFT.
+The Spring Boot application as backend for the FigmaAI.
 
 ## Prerequisites
 

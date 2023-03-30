@@ -1,13 +1,17 @@
 spring:
   application:
-    name: SurNFT Backend
+    name: FigmaAI Backend
   liquibase:
     change-log: classpath:db/changelog.xml
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5433/postgres
+    url: jdbc:postgresql://localhost:5435/postgres
     username: postgres
     password: postgres
+    #    url: jdbc:postgresql://ec2-44-206-11-200.compute-1.amazonaws.com:5432/d5dnv721dua1v4
+    #    username: grrrdhummkvzkj
+    #    password: 24b2a32ae578d061675022b14cf440cdb4734783aa713e59e8c27599f1605fd0
+
   sql:
     init:
       continue-on-error: true
@@ -50,8 +54,8 @@ server:
           # since that cannot be set on the "Access-Control-Allow-Origin" response header.
           # To allow credentials to a set of origins, list them explicitly or consider
           # using "allowedOriginPatterns" instead.
-          allow-credentials: false
-          allowed-headers: Content-Type,X-Requested-With,accept,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Authorization, signature, address, content-length
+          allow-credentials: true
+          allowed-headers: Content-Type,X-Requested-With,accept,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Authorization, token, figma, content-length
           allowed-methods: POST,PUT,GET,DELETE,PATCH,OPTIONS,HEAD,post,put,get,delete,patch,options,head
           allowed-origins: "*"
           exposed-headers: Location,Access-Control-Allow-Origin,Access-Control-Allow-Credentials,Content-Length
@@ -64,20 +68,23 @@ web-security:
   role-access-restriction-paths:
     - methods: PUT
       paths:
-        - /address
-        - /address/*
+        - /images/**
+        - /figma/*
     - methods: POST
       paths:
-        - /address/energy
-        - /address/withdraw
-        - /upload
+        - /figma/*
+        - /images/**
     - methods: PATCH
       paths:
-        - /nft/**
-        - /address/**
+        - /figma/**
+        - /images/**
     - methods: DELETE
       paths:
-        - /nft/**
+        - /users/log-out
+        - /images/**
+    - methods: GET
+      paths:
+        - /images/**
 
 application:
   sig-key: ${SIG_KEY}
@@ -86,55 +93,15 @@ application:
   default-user-energy-limit: 30
   default-user-tokens-limit-per-day: 10
   energy-renew-rate: PT6H
-  durability-repair-cost: 0.625
-  level-up-car-cost: 100
-  chain-id: 56
-  car-level-distance-requirement:
-    1: 100
-    2: 300
-    3: 500
-    4: 1000
-    5: 2000
-  collection-prices:
-    - 1.0
-    - 3.0
-    - 5.0
-  admin-address: "0x691E1C66A852C5830d7Ba9a9e8C080F826D5ED01"
-  contract-address: "0x68276a30375db070f7677091f08ee49b7ead6cda"
-  collection-address: "0xe73711e8331aD93ca115A2AE4D1AFAc74E15D644"
-  client-url: https://intensive-divine-mountain.bsc.discover.quiknode.pro/79d20c28b6e2219dd4c5e8e9599f6440a6627034/
-  second-client-url: https://bsc-dataseed.nariox.org
-  arweave-url: "https://arweave.net/"
-  free-mint-enabled: false
 
-probability.car:
-  SUR:
-    quality:
-      proportions:
-        common: 0.5
-        uncommon: 0.25
-        rare: 0.15
-        epic: 0.06
-        legendary: 0.04
-    body:
-      proportions:
-        WORKER: 0.3
-        BASIC: 0.5
-        RACING: 0.1
-        SUPERSPORT: 0.1
-    efficiency:
-      proportions:
-        1-75: 0.01
-        75-80: 0.09
-        80-100: 0.8
-        100-125: 0.1
+  arweave-url: "https://arweave.net/"
 
 logging:
   level:
-    com.app.surnft: debug
+    com.app.figmaai: debug
 
 amazon:
   aws:
-    secret-key: ${AWS_SECRET_KEY}
-    access-key: ${AWS_ACCESS_KEY}
+    secret-key: 2an/Pt5M+WK1aPAzzQwwxAxEHQ5ynMgbaIMjU5Qf
+    access-key: AKIAV4EZHLUJSK3D56S5
     region: us-east-1

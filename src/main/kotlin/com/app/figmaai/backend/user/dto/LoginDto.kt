@@ -11,8 +11,8 @@ data class LoginDto(
   @field: NotBlank
   override val password: String,
 
-  val twoFactor: AuthenticationMethod? = null,
+//  val twoFactor: AuthenticationMethod? = null,
 
-  @field: Size(min = 4, max = 6)
-  val code: String? = null
+//  @field: Size(min = 4, max = 6)
+//  val code: String? = null
 ): LoginData

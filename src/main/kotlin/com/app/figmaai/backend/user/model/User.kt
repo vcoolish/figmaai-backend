@@ -63,9 +63,9 @@ class User : com.app.figmaai.backend.common.model.AbstractJpaPersistable<Long>()
   @Enumerated(EnumType.STRING)
   lateinit var method: AuthenticationMethod
 
-  var enabled: Boolean = false
+  var enabled: Boolean = true
 
-  var verified: Boolean = false
+  var verified: Boolean = true
 
   var deleted: Boolean = false
 

@@ -4,13 +4,12 @@ import com.app.figmaai.backend.common.specification.SpecificationBuilder
 import com.app.figmaai.backend.exception.BadRequestException
 import com.app.figmaai.backend.user.dto.UserRegistrationEntryDto
 import com.app.figmaai.backend.user.dto.UserUpdateData
-import com.app.figmaai.backend.user.model.Providers
-import com.app.figmaai.backend.user.model.User
-import com.app.figmaai.backend.user.model.UserCreateData
+import com.app.figmaai.backend.user.model.*
 import com.app.figmaai.backend.user.repository.UserRepository
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.time.ZonedDateTime
 import java.util.*
 import javax.validation.ConstraintViolationException
 
@@ -52,6 +51,9 @@ class UserService(
       enabled = userDto.enabled ?: enabled
       verified = userDto.verified ?: verified
       googleId = userDto.googleId ?: googleId
+      provider = if (googleId.isNullOrEmpty()) AuthProvider.local else AuthProvider.google
+      method = AuthenticationMethod.EMAIL
+      createdAt = ZonedDateTime.now()
     }
 
   fun generateUUID(): String = UUID.randomUUID().toString().takeUnless(this::exists) ?: generateUUID()

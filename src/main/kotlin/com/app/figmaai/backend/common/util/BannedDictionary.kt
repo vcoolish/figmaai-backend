@@ -22,6 +22,7 @@ val bannedWords = listOf(
   "blackface",
   "bleed",
   "blister",
+  "bloody",
   "blumpkin",
   "bondage",
   "boobie",

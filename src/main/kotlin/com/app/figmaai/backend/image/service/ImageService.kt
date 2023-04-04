@@ -17,20 +17,19 @@ import com.app.figmaai.backend.user.service.UserService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
-import org.springframework.http.ContentDisposition
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
+import org.springframework.http.*
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
-import java.io.IOException
+import java.io.ByteArrayOutputStream
+import java.net.URI
 import java.net.URL
 import java.time.Clock
 import java.time.ZonedDateTime
+import java.util.*
 import javax.imageio.ImageIO
 
 @Service
@@ -39,6 +38,7 @@ class ImageService(
   private val userService: UserService,
   private val appProperties: AppProperties,
   private val imageCreationService: ImageCreationService,
+  private val awsS3Service: AwsS3Service,
 ) {
 
   private val logger = logger()
@@ -150,18 +150,11 @@ class ImageService(
     )
     val createdPicUrl = response.body?.data?.firstOrNull()?.url
       ?: throw BadRequestException("Failed to create image")
-    val url = restTemplate.postForEntity(
-      "https://surnft-ai.herokuapp.com/upload",
-      mapOf(
-        "url" to createdPicUrl,
-      ),
-      String::class.java,
-    ).body?.substringAfter("https")?.substring(0, 58)
-      ?: throw BadRequestException("Image not uploaded")
+    val url = uploadImageToS3(createdPicUrl)
     imageCreationService.create(user)
       .let(imageRepository::saveAndFlush).apply {
         response.body?.data?.firstOrNull()?.url?.let {
-          image = "https$url"
+          image = url
         } ?: throw BadRequestException("Image generation failed")
       }
   }
@@ -199,25 +192,39 @@ class ImageService(
     }
     val image = imageRepository.findNftByPrompt(cleanPrompt).first()
 
-    val imageUrl = "https" + output.url.substringAfter("https").substring(0, 58)
-    try {
-      Thread.sleep(30000)
-      ImageIO.read(URL(imageUrl))
+    val url = uploadImageToS3(output.url)
 
-      image.image = imageUrl
-      imageRepository.save(image)
-    } catch (e: IOException) {
-      restTemplate.postForEntity(
-        "https://surnft-ai.herokuapp.com/task",
-        mapOf(
-          "prompt" to output.prompt,
-        ),
-        String::class.java,
-      )
-    }
+    image.image = url
+    imageRepository.save(image)
 
     return image
   }
+
+  fun uploadImageToS3(picUrl: String): String {
+    val image = ImageIO.read(URL(picUrl))
+    val filename = UUID.randomUUID().toString()
+    val url = awsS3Service.generatePreSignedUrl(
+      filePath = filename,
+      bucketName = "surpics-ai",
+      httpMethod = com.amazonaws.HttpMethod.PUT,
+    )
+    val headers = HttpHeaders()
+    headers.contentType = MediaType.IMAGE_PNG
+    //image bytes
+    val imageBytes = ByteArrayOutputStream()
+    ImageIO.write(image, "png", imageBytes)
+    val entity = HttpEntity(imageBytes.toByteArray(), headers)
+
+    restTemplate.exchange(
+      URI.create(url),
+      HttpMethod.PUT,
+      entity,
+      Any::class.java,
+    )
+    return "https://surpics-ai.s3.amazonaws.com/$filename"
+  }
+
+  data class AwsResponse(val filename: String)
 
   fun get(id: Long): ImageAI {
     return imageRepository.findById(id).orElseThrow()

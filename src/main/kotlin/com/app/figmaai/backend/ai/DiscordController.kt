@@ -16,7 +16,7 @@ class DiscordController(
   @PostMapping("/message")
   fun onMessage(
     @RequestHeader keyword: String,
-    @Valid @RequestBody body: com.app.figmaai.backend.ai.AIOutput,
+    @Valid @RequestBody body: AIOutput,
   ): Any {
     if (keyword != "poop") {
       return "Invalid keyword"
@@ -29,7 +29,7 @@ class DiscordController(
   @PostMapping("/imagine")
   fun imagine(
     @Figma @RequestHeader keyword: String,
-    @Valid @RequestBody body: com.app.figmaai.backend.ai.AIInput,
+    @Valid @RequestBody body: AIInput,
   ): String {
     return ""
   }

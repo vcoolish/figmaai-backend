@@ -47,6 +47,8 @@ class ImageService(
   fun getAll(pageable: Pageable, request: GetAllNftRequest): Page<ImageAI> {
     val spec: Specification<ImageAI> = if (request.figma.isNullOrEmpty()) {
       findByPrompt(request.query)
+    } else if (request.query.isEmpty()) {
+      userEqual(request.figma)
     } else {
       userEqual(request.figma).and(findByPrompt(request.query))
     }

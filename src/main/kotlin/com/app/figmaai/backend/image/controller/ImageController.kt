@@ -81,20 +81,4 @@ class ImageController(
     )
     return UploadResult(url = url, filename = s3File)
   }
-
-//  @Operation(summary = "Download asset")
-//  @GetMapping(
-//    "/download/{assetId}",
-//    produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE, MediaType.APPLICATION_JSON_VALUE]
-//  )
-//  fun download(@PathVariable assetId: Long): ResponseEntity<InputStreamResource> {
-//    val stream: InputStream = InputStream.nullInputStream()
-//    return ResponseEntity.status(HttpStatus.OK)
-//      .contentType(MediaType.APPLICATION_OCTET_STREAM)
-//      .header(
-//        HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" +
-//            URLEncoder.encode("empty_file", StandardCharsets.UTF_8)
-//      )
-//      .body(InputStreamResource(stream))
-//  }
 }

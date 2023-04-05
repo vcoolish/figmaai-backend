@@ -10,14 +10,14 @@ import javax.persistence.criteria.Join
 
 object ImageSpecification {
 
-  fun userEqual(figma: String?): Specification<ImageAI> = Specification { root, _, builder ->
-    if (figma == null) {
+  fun userEqual(userUuid: String?): Specification<ImageAI> = Specification { root, _, builder ->
+    if (userUuid == null) {
       return@Specification null
     }
 
     val userJoin: Join<ImageAI, User> = root.join(ImageAI::user)
 
-    return@Specification builder.equal(userJoin.get(User::figma), figma)
+    return@Specification builder.equal(userJoin.get(User::userUuid), userUuid)
   }
 
   fun findByPrompt(prompt: String?): Specification<ImageAI> = Specification { root, _, builder ->

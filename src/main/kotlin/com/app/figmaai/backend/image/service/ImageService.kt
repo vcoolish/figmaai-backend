@@ -48,9 +48,9 @@ class ImageService(
     val spec: Specification<ImageAI> = if (request.figma.isNullOrEmpty()) {
       findByPrompt(request.query)
     } else if (request.query.isEmpty()) {
-      userEqual(request.figma)
+      userEqual(userService.get(request.figma).userUuid)
     } else {
-      userEqual(request.figma).and(findByPrompt(request.query))
+      userEqual(userService.get(request.figma).userUuid).and(findByPrompt(request.query))
     }
     return imageRepository.findAll(spec, pageable)
   }
@@ -65,7 +65,7 @@ class ImageService(
 
     val user = userService.get(id)
     val spec: Specification<ImageAI> = imageIsEmpty()
-      .and(userEqual(user.figma))
+      .and(userEqual(user.userUuid))
       .and(createdAtGreaterOrEqual(ZonedDateTime.now(Clock.systemUTC()).minusMinutes(5)))
     val inProgress = imageRepository.exists(spec)
     if (inProgress) {

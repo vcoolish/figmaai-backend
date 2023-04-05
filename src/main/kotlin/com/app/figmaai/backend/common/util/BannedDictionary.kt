@@ -188,6 +188,7 @@ val bannedWords = listOf(
   "naughty",
   "nazi",
   "negligee",
+  "negra",
   "negroid",
   "nigg",
   "nigger",

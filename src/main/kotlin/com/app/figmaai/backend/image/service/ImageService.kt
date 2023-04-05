@@ -70,7 +70,7 @@ class ImageService(
       throw BadRequestException("You already have an image in progress")
     }
 
-    if (hasSubscription(id)) {
+    if (!hasSubscription(id)) {
       throw BadRequestException("Subscription expired")
     }
     logger.info("{${prompt}}")

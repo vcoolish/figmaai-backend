@@ -34,7 +34,7 @@ class ImageController(
     @PageableDefault(
       size = 15,
       page = 0,
-      sort = ["id"],
+      sort = ["imageId"],
       direction = Sort.Direction.DESC
     ) pageable: Pageable,
     @ParameterObject request: GetAllNftRequest

@@ -1,5 +1,7 @@
 package com.app.figmaai.backend.image.service
 
+import com.app.figmaai.backend.ai.AiProvider
+import com.app.figmaai.backend.ai.AiVersion
 import com.app.figmaai.backend.common.util.bannedPhrases
 import com.app.figmaai.backend.common.util.bannedWords
 import com.app.figmaai.backend.common.util.logger
@@ -59,7 +61,8 @@ class ImageService(
   fun create(
     id: String,
     prompt: String,
-    provider: com.app.figmaai.backend.ai.AiProvider,
+    provider: AiProvider,
+    version: AiVersion,
   ): List<ImageAI> {
     validatePrompt(prompt)
 
@@ -77,8 +80,21 @@ class ImageService(
     }
     logger.info("{${prompt}}")
 
+    val prompt = prompt
+      .split(" ")
+      .filter { it.isNotBlank() }
+      .joinToString(" ")
+      .trim()
+      .let {
+        if (provider == AiProvider.MIDJOURNEY && version == AiVersion.V5) {
+          "$it --v 5"
+        } else {
+          it
+        }
+      }
+
     val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
-    val images = if (provider == com.app.figmaai.backend.ai.AiProvider.MIDJOURNEY) {
+    val images = if (provider == AiProvider.MIDJOURNEY) {
       requestMidjourneyImage(prompt, user)
     } else {
       createDalleImage(prompt, user)

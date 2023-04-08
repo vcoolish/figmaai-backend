@@ -4,3 +4,8 @@ enum class AiProvider(val energy: Int) {
   DALLE(6),
   MIDJOURNEY(6)
 }
+
+enum class AiVersion {
+  V4,
+  V5
+}

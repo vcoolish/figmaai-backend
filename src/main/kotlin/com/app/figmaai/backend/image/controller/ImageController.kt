@@ -2,6 +2,7 @@ package com.app.figmaai.backend.image.controller
 
 import com.amazonaws.HttpMethod
 import com.app.figmaai.backend.ai.AiProvider
+import com.app.figmaai.backend.ai.AiVersion
 import com.app.figmaai.backend.constraint.Figma
 import com.app.figmaai.backend.image.dto.GetAllNftRequest
 import com.app.figmaai.backend.image.dto.ImageInternalDto
@@ -57,6 +58,7 @@ class ImageController(
       id = figma,
       prompt = request.prompt.trim(),
       provider = provider,
+      version = AiVersion.valueOf(request.version.uppercase()),
     ).map { ImageMapper.toInternalDto(it) }
   }
 

@@ -54,7 +54,7 @@ server:
           # since that cannot be set on the "Access-Control-Allow-Origin" response header.
           # To allow credentials to a set of origins, list them explicitly or consider
           # using "allowedOriginPatterns" instead.
-          allow-credentials: true
+          allow-credentials: false
           allowed-headers: Content-Type,X-Requested-With,accept,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Authorization, token, figma, content-length
           allowed-methods: POST,PUT,GET,DELETE,PATCH,OPTIONS,HEAD,post,put,get,delete,patch,options,head
           allowed-origins: "*"

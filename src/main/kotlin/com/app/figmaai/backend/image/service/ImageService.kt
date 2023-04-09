@@ -63,7 +63,7 @@ class ImageService(
     prompt: String,
     provider: AiProvider,
     version: AiVersion,
-  ): List<ImageAI> {
+  ): ImageAI {
     validatePrompt(prompt)
 
     val user = userService.get(id)
@@ -94,24 +94,23 @@ class ImageService(
       }
 
     val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
-    val images = if (provider == AiProvider.MIDJOURNEY) {
+    val image = if (provider == AiProvider.MIDJOURNEY) {
       requestMidjourneyImage(prompt, user)
     } else {
       createDalleImage(prompt, user)
-    }.map { image ->
-      image.name = "Image #${image.imageId}"
-      image.prompt = cleanPrompt
-      imageRepository.save(image)
     }
+    image.name = "Image #${image.imageId}"
+    image.prompt = cleanPrompt
+    imageRepository.save(image)
 
     userService.save(user)
 
-    return images
+    return image
   }
 
   private fun hasSubscription(id: String): Boolean = true
 
-  private fun requestMidjourneyImage(prompt: String, user: User): List<ImageAI> {
+  private fun requestMidjourneyImage(prompt: String, user: User): ImageAI {
     restTemplate.postForEntity(
       "https://surnft-ai-collection.herokuapp.com/task",
       mapOf(
@@ -119,13 +118,11 @@ class ImageService(
       ),
       String::class.java,
     )
-    return (0..3).map {
-      imageCreationService.create(user)
-        .let(imageRepository::saveAndFlush)
-    }
+    return imageCreationService.create(user)
+      .let(imageRepository::saveAndFlush)
   }
 
-  private fun createDalleImage(prompt: String, user: User): List<ImageAI> = (0..3).map {
+  private fun createDalleImage(prompt: String, user: User): ImageAI {
     val headers = LinkedMultiValueMap<String, String>()
     headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
     headers.add("OpenAI-Organization", "org-PPCMBOiIcK9DBzlYoBqyNeFJ")
@@ -169,7 +166,7 @@ class ImageService(
     val createdPicUrl = response.body?.data?.firstOrNull()?.url
       ?: throw BadRequestException("Failed to create image")
     val url = uploadImageToS3(createdPicUrl)
-    imageCreationService.create(user)
+    return imageCreationService.create(user)
       .let(imageRepository::saveAndFlush).apply {
         response.body?.data?.firstOrNull()?.url?.let {
           image = url

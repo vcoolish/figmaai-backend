@@ -50,7 +50,7 @@ class ImageController(
   fun purchase(
     @Figma @RequestHeader figma: String,
     @Valid @RequestBody request: PurchaseImageRequest,
-  ): List<ImageInternalDto> {
+  ): ImageInternalDto {
     val provider = com.app.figmaai.backend.ai.AiProvider.values().find {
       it.name.equals(request.provider, true)
     } ?: AiProvider.MIDJOURNEY
@@ -59,7 +59,7 @@ class ImageController(
       prompt = request.prompt.trim(),
       provider = provider,
       version = AiVersion.valueOf(request.version.uppercase()),
-    ).map { ImageMapper.toInternalDto(it) }
+    ).let { ImageMapper.toInternalDto(it) }
   }
 
   @DeleteMapping("/{id}")

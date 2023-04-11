@@ -25,7 +25,7 @@ object ImageSpecification {
       return@Specification null
     }
 
-    return@Specification builder.like(root.get("prompt"), "%$prompt%")
+    return@Specification builder.like(builder.lower(root.get("prompt")), "%${prompt.lowercase()}%")
   }
 
   fun imageIsEmpty(): Specification<ImageAI> = Specification { root, _, builder ->

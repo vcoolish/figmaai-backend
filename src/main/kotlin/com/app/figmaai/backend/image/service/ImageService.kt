@@ -15,6 +15,7 @@ import com.app.figmaai.backend.image.repository.extra.ImageSpecification.findByP
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.imageIsEmpty
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.userEqual
 import com.app.figmaai.backend.user.model.User
+import com.app.figmaai.backend.user.service.UserEnergyService
 import com.app.figmaai.backend.user.service.UserService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -41,6 +42,7 @@ class ImageService(
   private val appProperties: AppProperties,
   private val imageCreationService: ImageCreationService,
   private val awsS3Service: AwsS3Service,
+  private val userEnergyService: UserEnergyService,
 ) {
 
   private val logger = logger()
@@ -74,6 +76,9 @@ class ImageService(
     if (inProgress) {
       throw BadRequestException("You already have an image in progress")
     }
+    if (user.subscriptionId.isNullOrEmpty() && user.energy < provider.energy.toBigDecimal()) {
+      throw BadRequestException("Not enough energy. Start your subscription for unlimited generations")
+    }
 
     if (!hasSubscription(id)) {
       throw BadRequestException("Subscription expired")
@@ -102,6 +107,9 @@ class ImageService(
     image.name = "Image #${image.imageId}"
     image.prompt = cleanPrompt
     imageRepository.save(image)
+    if (user.subscriptionId.isNullOrEmpty()) {
+      userEnergyService.spendEnergy(user, provider.energy.toBigDecimal())
+    }
 
     userService.save(user)
 

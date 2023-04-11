@@ -2,6 +2,7 @@ package com.app.figmaai.backend.image.service
 
 import com.app.figmaai.backend.ai.AiProvider
 import com.app.figmaai.backend.ai.AiVersion
+import com.app.figmaai.backend.common.util.SpecificationUtil.not
 import com.app.figmaai.backend.common.util.bannedPhrases
 import com.app.figmaai.backend.common.util.bannedWords
 import com.app.figmaai.backend.common.util.logger
@@ -50,7 +51,7 @@ class ImageService(
 
   fun getAll(pageable: Pageable, request: GetAllNftRequest): Page<ImageAI> {
     val spec: Specification<ImageAI> = if (request.figma.isNullOrEmpty()) {
-      findByPrompt(request.query)
+      findByPrompt(request.query).and(imageIsEmpty().not())
     } else if (request.query.isEmpty()) {
       userEqual(userService.get(request.figma).userUuid)
     } else {

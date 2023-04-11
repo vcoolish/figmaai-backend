@@ -13,7 +13,7 @@ import java.util.*
 @Repository
 interface UserRepository : JpaSpecificationRepository<User> {
 
-  fun findOneByFigma(figma: String): User?
+  fun findByFigma(figma: String): List<User>
 
   @Query(
     "select u.next_energy_renew from users u order by u.next_energy_renew nulls last limit 1",

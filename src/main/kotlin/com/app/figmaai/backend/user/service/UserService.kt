@@ -22,10 +22,10 @@ class UserService(
   fun getOneOrNull(spec: Specification<User>?): User? =
     repository.findOne(spec).orElse(null)
 
-  fun get(figma: String): User = repository.findOneByFigma(figma)!!
+  fun get(figma: String): User = repository.findByFigma(figma).first()
 
   fun updateSubscription(figma: String, id: String): User {
-    val user = repository.findOneByFigma(figma)!!
+    val user = get(figma)
     user.subscriptionId = id
     repository.save(user)
     return user

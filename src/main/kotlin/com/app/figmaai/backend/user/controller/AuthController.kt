@@ -1,6 +1,8 @@
 package com.app.figmaai.backend.user.controller
 
 import com.app.figmaai.backend.user.dto.LoginDto
+import com.app.figmaai.backend.user.dto.OauthTokensDto
+import com.app.figmaai.backend.user.dto.ReadTokenDto
 import com.app.figmaai.backend.user.dto.TokensDto
 import com.app.figmaai.backend.user.service.AuthService
 import com.app.figmaai.backend.user.service.SecurityContextService
@@ -30,6 +32,23 @@ class AuthController(
   @PostMapping("/login")
   fun login(@RequestBody @Valid loginDto: LoginDto, request: HttpServletRequest?): ResponseEntity<TokensDto> {
     val user = authService.authenticateUser(loginDto)
+    return authService.loginUser(user, request)
+      .let { ResponseEntity.ok(it) }
+  }
+
+  @PostMapping("/oauth-token")
+  fun oauthToken(
+    @RequestHeader("figma") figma: String,
+  ): ResponseEntity<OauthTokensDto> =
+    authService.generateOAuthTokens(figma)
+      .let { ResponseEntity.ok(it) }
+
+  @PostMapping("/oauth")
+  fun readTokenAuth(
+    @RequestBody @Valid readDto: ReadTokenDto,
+    request: HttpServletRequest?,
+  ): ResponseEntity<TokensDto> {
+    val user = authService.oauthLogin(readDto.readToken)
     return authService.loginUser(user, request)
       .let { ResponseEntity.ok(it) }
   }

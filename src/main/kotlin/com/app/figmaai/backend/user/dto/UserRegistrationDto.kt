@@ -17,6 +17,4 @@ class UserRegistrationDto(
   @field: ValidPassword(message = "{password.not_valid}")
   override val password: String,
 
-  override val figma: String,
-
 ) : UserCreateData

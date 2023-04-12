@@ -5,11 +5,11 @@ import com.app.figmaai.backend.common.util.logger
 import com.app.figmaai.backend.exception.BadRequestException
 import com.app.figmaai.backend.exception.NotFoundException
 import com.app.figmaai.backend.user.dto.LoginData
+import com.app.figmaai.backend.user.dto.OauthTokensDto
 import com.app.figmaai.backend.user.dto.TokensDto
-import com.app.figmaai.backend.user.model.CreateTokenData
-import com.app.figmaai.backend.user.model.CustomUserDetails
-import com.app.figmaai.backend.user.model.UpdateTokenData
-import com.app.figmaai.backend.user.model.User
+import com.app.figmaai.backend.user.model.*
+import com.app.figmaai.backend.user.repository.OauthRepository
+import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
@@ -27,7 +27,8 @@ class AuthService(
   private val tokenProvider: TokenProvider,
   private val httpServletRequestTokenHelper: HttpServletRequestTokenHelper,
   private val userService: UserService,
-  private val customUserDetailsService: UserDetailsService
+  private val customUserDetailsService: UserDetailsService,
+  private val oauthRepository: OauthRepository,
 ) {
   private val logger = logger()
 
@@ -38,6 +39,15 @@ class AuthService(
     val authenticationManager = authenticationManagerBuilder.getObject()
     val authentication = authenticationManager.authenticate(authenticationToken)
     SecurityContextHolder.getContext().authentication = authentication
+    val user = (authentication.principal as CustomUserDetails).user
+    if (!loginDto.writeToken.isNullOrEmpty()) {
+      runCatching {
+        val figma = oauthRepository.findByWriteToken(loginDto.writeToken!!)?.figma!!
+        val dbUser = userService.getByUuid(user.userUuid)
+        dbUser.figma = figma
+        userService.save(dbUser)
+      }
+    }
     return (authentication.principal as CustomUserDetails).user
   }
 
@@ -55,6 +65,16 @@ class AuthService(
   @Transactional
   fun loginUser(user: User, request: HttpServletRequest?): TokensDto =
     generateTokens(user, httpServletRequestTokenHelper.generateHash(request))
+
+  @Transactional
+  fun oauthLogin(readToken: String): User {
+    val oauth = oauthRepository.findByReadToken(readToken)
+      ?: throw BadRequestException(message = "Token not found")
+    val figma = oauth.figma
+      ?: throw BadRequestException(message = "Figma not found")
+    oauthRepository.delete(oauth)
+    return userService.get(figma)
+  }
 
   @Transactional
   fun updateRefreshTokens(request: HttpServletRequest): TokensDto {
@@ -83,6 +103,23 @@ class AuthService(
       )
     }
     return generateTokens(user, hash)
+  }
+
+  @Transactional
+  fun generateOAuthTokens(figma: String): OauthTokensDto {
+    val current = oauthRepository.findByFigma(figma)
+    if (current != null) {
+      oauthRepository.delete(current)
+    }
+    val write = DigestUtils.md5Hex(UUID.randomUUID().toString())
+    val read = DigestUtils.md5Hex(UUID.randomUUID().toString())
+    val oauth = OAuthToken().apply {
+      this.figma = figma
+      writeToken = write
+      readToken = read
+    }
+    oauthRepository.save(oauth)
+    return OauthTokensDto(readToken = read, writeToken = write)
   }
 
   @Transactional

@@ -17,7 +17,7 @@ import javax.validation.constraints.Email
 )
 class User : com.app.figmaai.backend.common.model.AbstractJpaPersistable<Long>() {
 
-  lateinit var figma: String
+  var figma: String? = null
 
   @Id
   @SequenceGenerator(name = "users_id_seq", sequenceName = "users_id_seq", allocationSize = 1)

@@ -6,8 +6,6 @@ interface UserCreateData {
 
   val password: String
 
-  val figma: String
-
   val verified: Boolean?
     get() = null
 
@@ -21,7 +19,6 @@ interface UserCreateData {
 data class SocialUserCreateData(
   override val email: String,
   override val password: String,
-  override val figma: String,
   override val verified: Boolean? = null,
   override val enabled: Boolean? = null,
   override val googleId: String? = null,

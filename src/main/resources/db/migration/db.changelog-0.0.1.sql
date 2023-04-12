@@ -110,3 +110,22 @@ CREATE TABLE refresh_tokens
 ALTER TABLE refresh_tokens
   ALTER COLUMN token TYPE VARCHAR(500);
 --rollback ALTER TABLE refresh_tokens;
+
+
+--changeset vcoolish:20230411143804
+CREATE SEQUENCE IF NOT EXISTS oauth_tokens_id_seq
+  START WITH 1
+  INCREMENT BY 1
+  NO MINVALUE
+  NO MAXVALUE
+  CACHE 1;
+
+CREATE TABLE oauth_tokens
+(
+  id          BIGINT PRIMARY KEY DEFAULT nextval('oauth_tokens_id_seq'),
+  read_token  VARCHAR(500),
+  write_token VARCHAR(500),
+  figma       VARCHAR(500)
+);
+--rollback DROP TABLE oauth_tokens;
+--rollback DROP SEQUENCE IF EXISTS oauth_tokens_id_seq;

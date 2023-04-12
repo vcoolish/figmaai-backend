@@ -15,6 +15,8 @@ interface UserRepository : JpaSpecificationRepository<User> {
 
   fun findByFigma(figma: String): List<User>
 
+  fun findByUserUuid(userUuid: String): User
+
   @Query(
     "select u.next_energy_renew from users u order by u.next_energy_renew nulls last limit 1",
     nativeQuery = true

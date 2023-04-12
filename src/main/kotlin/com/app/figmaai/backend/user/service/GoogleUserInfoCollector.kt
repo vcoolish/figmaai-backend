@@ -19,7 +19,6 @@ class GoogleUserInfoCollector(
       email = userInfo.email.orEmpty(),
       password = passwordGenerator.generate(),
       googleId = userInfo.id,
-      figma = figma,
     )
   }
 

@@ -24,6 +24,8 @@ class UserService(
 
   fun get(figma: String): User = repository.findByFigma(figma).first()
 
+  fun getByUuid(userUuid: String): User = repository.findByUserUuid(userUuid)
+
   fun updateSubscription(figma: String, id: String): User {
     val user = get(figma)
     user.subscriptionId = id
@@ -47,7 +49,6 @@ class UserService(
     User().apply {
       userUuid = generateUUID()
       email = userDto.email.lowercase()
-      figma = userDto.figma
       password = passwordEncoder.encode(userDto.password)
       enabled = userDto.enabled ?: enabled
       verified = userDto.verified ?: verified

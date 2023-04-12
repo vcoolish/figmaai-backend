@@ -40,11 +40,6 @@ class UserRegistrationService(
     return user
   }
 
-//  fun checkUserNotVerified(email: String) {
-//    if (userService.isVerified(email))
-//      throw BadRequestException("User with email $email already verified.")
-//  }
-
   fun checkEmail(email: String) {
     if (userService.isEmailExist(email)) {
       throw BadRequestException("Email $email already reserved.")

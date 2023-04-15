@@ -23,6 +23,9 @@ data class AppProperties(
   @NotBlank
   val dalleKey: String,
 
+  @NotBlank
+  val stableKey: String,
+
   @Positive
   val defaultUserEnergyLimit: BigDecimal = BigDecimal.valueOf(30),
 

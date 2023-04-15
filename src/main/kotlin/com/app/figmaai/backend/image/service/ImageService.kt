@@ -1,7 +1,6 @@
 package com.app.figmaai.backend.image.service
 
-import com.app.figmaai.backend.ai.AiProvider
-import com.app.figmaai.backend.ai.AiVersion
+import com.app.figmaai.backend.ai.*
 import com.app.figmaai.backend.common.util.SpecificationUtil.not
 import com.app.figmaai.backend.common.util.bannedPhrases
 import com.app.figmaai.backend.common.util.bannedWords
@@ -100,10 +99,13 @@ class ImageService(
       }
 
     val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
-    val image = if (provider == AiProvider.MIDJOURNEY) {
-      requestMidjourneyImage(prompt, user)
-    } else {
-      createDalleImage(prompt, user)
+    val image = when (provider) {
+        AiProvider.MIDJOURNEY ->
+          requestMidjourneyImage(prompt, user)
+        AiProvider.STABILITY ->
+          createStabilityImage(prompt, user)
+        else ->
+          createDalleImage(prompt, user)
     }
     image.name = "Image #${image.imageId}"
     image.prompt = cleanPrompt
@@ -129,6 +131,72 @@ class ImageService(
     )
     return imageCreationService.create(user)
       .let(imageRepository::saveAndFlush)
+  }
+
+  private fun createStabilityImage(prompt: String, user: User): ImageAI {
+    val headers = LinkedMultiValueMap<String, String>()
+    headers.add("Authorization", appProperties.stableKey)
+    val (body, path) = if (prompt.startsWith("https://")) {
+      val fileContent = URL(prompt.substringBefore(" ")).openStream().readAllBytes()
+
+      val fileMap: MultiValueMap<String, String> = LinkedMultiValueMap()
+      val contentDisposition = ContentDisposition
+        .builder("form-data")
+        .name("image")
+        .filename("image.png")
+        .build()
+
+      fileMap.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
+      val fileEntity = HttpEntity(fileContent, fileMap)
+
+      val body: MultiValueMap<String, Any> = LinkedMultiValueMap()
+      body.add("init_image", fileEntity)
+      body.add("text_prompts[0][text]", prompt.substringAfter(" "))
+
+      headers.add("Content-Type", "multipart/form-data")
+      Pair(
+        body,
+        "image-to-image"
+      )
+    } else {
+      headers.add("Content-Type", "application/json")
+      Pair(
+        StabilityRequest(listOf(StabilityPrompt(prompt.substringAfter(" ")))),
+        "text-to-image",
+      )
+    }
+    val httpEntity: HttpEntity<*> = HttpEntity<Any>(body, headers)
+
+    val response = restTemplate.exchange(
+      "https://api.stability.ai/v1/generation/stable-diffusion-xl-beta-v2-2-2/$path",
+      HttpMethod.POST,
+      httpEntity,
+      StabilityResponse::class.java
+    )
+    val createdPicBytes = response.body?.artifacts?.firstOrNull()?.base64
+      ?: throw BadRequestException("Failed to create image")
+
+    val filename = UUID.randomUUID().toString()
+    val url = awsS3Service.generatePreSignedUrl(
+      filePath = filename,
+      bucketName = "surpics-ai",
+      httpMethod = com.amazonaws.HttpMethod.PUT,
+    )
+    val entity = HttpEntity(
+      Base64.getDecoder().decode(createdPicBytes),
+      HttpHeaders().apply { contentType = MediaType.IMAGE_PNG }
+    )
+
+    restTemplate.exchange(
+      URI.create(url),
+      HttpMethod.PUT,
+      entity,
+      Any::class.java,
+    )
+    return imageCreationService.create(user)
+      .let(imageRepository::saveAndFlush).apply {
+        image = "https://surpics-ai.s3.amazonaws.com/$filename"
+      }
   }
 
   private fun createDalleImage(prompt: String, user: User): ImageAI {
@@ -160,7 +228,7 @@ class ImageService(
     } else {
       headers.add("Content-Type", "application/json")
       Pair(
-        com.app.figmaai.backend.ai.DalleRequest(prompt.substringAfter(" ")),
+        DalleRequest(prompt.substringAfter(" ")),
         "generations",
       )
     }

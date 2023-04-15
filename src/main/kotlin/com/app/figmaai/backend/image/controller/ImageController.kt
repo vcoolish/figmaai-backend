@@ -38,8 +38,9 @@ class ImageController(
       sort = ["imageId"],
       direction = Sort.Direction.DESC
     ) pageable: Pageable,
-    @ParameterObject request: GetAllNftRequest
-  ): Page<ImageInternalDto> = imageService.getAll(pageable, request)
+    @ParameterObject request: GetAllNftRequest,
+    @RequestHeader token: String,
+  ): Page<ImageInternalDto> = imageService.getAll(pageable, request, token)
     .map { ImageMapper.toInternalDto(it) }
 
   @GetMapping("/{id}")

@@ -15,6 +15,7 @@ import com.app.figmaai.backend.image.repository.extra.ImageSpecification.findByP
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.imageIsEmpty
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.userEqual
 import com.app.figmaai.backend.user.model.User
+import com.app.figmaai.backend.user.service.RefreshTokenService
 import com.app.figmaai.backend.user.service.UserEnergyService
 import com.app.figmaai.backend.user.service.UserService
 import org.springframework.data.domain.Page
@@ -43,14 +44,17 @@ class ImageService(
   private val imageCreationService: ImageCreationService,
   private val awsS3Service: AwsS3Service,
   private val userEnergyService: UserEnergyService,
+  private val refreshTokenService: RefreshTokenService,
 ) {
 
   private val logger = logger()
   private val restTemplate = RestTemplate()
 
-  fun getAll(pageable: Pageable, request: GetAllNftRequest): Page<ImageAI> {
+  fun getAll(pageable: Pageable, request: GetAllNftRequest, token: String): Page<ImageAI> {
     val spec: Specification<ImageAI> = if (request.figma.isNullOrEmpty()) {
-      findByPrompt(request.query).and(imageIsEmpty().not())
+      findByPrompt(request.query)
+        .and(imageIsEmpty().not())
+        .and(userEqual(refreshTokenService.getOne(token)?.user?.userUuid).not())
     } else if (request.query.isEmpty()) {
       userEqual(userService.get(request.figma).userUuid)
     } else {

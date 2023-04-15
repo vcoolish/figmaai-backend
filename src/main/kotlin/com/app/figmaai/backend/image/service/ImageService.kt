@@ -147,7 +147,7 @@ class ImageService(
       val fileMap: MultiValueMap<String, String> = LinkedMultiValueMap()
       val contentDisposition = ContentDisposition
         .builder("form-data")
-        .name("image")
+        .name("init_image")
         .filename("image.png")
         .build()
 

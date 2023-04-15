@@ -136,6 +136,7 @@ class ImageService(
   private fun createStabilityImage(prompt: String, user: User): ImageAI {
     val headers = LinkedMultiValueMap<String, String>()
     headers.add("Authorization", appProperties.stableKey)
+    headers.add("Accept", "application/json")
     val (body, path) = if (prompt.startsWith("https://")) {
       val fileContent = URL(prompt.substringBefore(" ")).openStream().readAllBytes()
 

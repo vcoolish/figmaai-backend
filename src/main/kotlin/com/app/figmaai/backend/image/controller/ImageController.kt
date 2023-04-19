@@ -60,6 +60,8 @@ class ImageController(
       prompt = request.prompt.trim(),
       provider = provider,
       version = AiVersion.valueOf(request.version.uppercase()),
+      height = request.height,
+      width = request.width,
     ).let { ImageMapper.toInternalDto(it) }
   }
 

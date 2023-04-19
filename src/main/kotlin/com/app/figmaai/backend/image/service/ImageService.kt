@@ -69,6 +69,8 @@ class ImageService(
     prompt: String,
     provider: AiProvider,
     version: AiVersion,
+    height: Int,
+    width: Int,
   ): ImageAI {
     validatePrompt(prompt)
 
@@ -107,7 +109,7 @@ class ImageService(
         AiProvider.MIDJOURNEY ->
           requestMidjourneyImage(prompt, user)
         AiProvider.STABILITY ->
-          createStabilityImage(prompt, user)
+          createStabilityImage(prompt, user, height, width)
         else ->
           createDalleImage(prompt, user)
     }
@@ -137,7 +139,7 @@ class ImageService(
       .let(imageRepository::saveAndFlush)
   }
 
-  private fun createStabilityImage(prompt: String, user: User): ImageAI {
+  private fun createStabilityImage(prompt: String, user: User, height: Int, width: Int): ImageAI {
     val headers = LinkedMultiValueMap<String, String>()
     headers.add("Authorization", appProperties.stableKey)
     headers.add("Accept", "application/json")
@@ -155,6 +157,8 @@ class ImageService(
       val fileEntity = HttpEntity(fileContent, fileMap)
 
       val body: MultiValueMap<String, Any> = LinkedMultiValueMap()
+      body.add("height", height)
+      body.add("width", width)
       body.add("init_image", fileEntity)
       body.add("text_prompts[0][text]", prompt.substringAfter(" "))
 
@@ -166,7 +170,7 @@ class ImageService(
     } else {
       headers.add("Content-Type", "application/json")
       Pair(
-        StabilityRequest(listOf(StabilityPrompt(prompt.substringAfter(" ")))),
+        StabilityRequest(listOf(StabilityPrompt(prompt.substringAfter(" "))), height, width),
         "text-to-image",
       )
     }

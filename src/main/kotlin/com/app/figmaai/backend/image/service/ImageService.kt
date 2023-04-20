@@ -73,8 +73,9 @@ class ImageService(
     width: Int,
   ): ImageAI {
     validatePrompt(prompt)
-
     val user = userService.get(id)
+    checkImageCount(user)
+
     val spec: Specification<ImageAI> = imageIsEmpty()
       .and(userEqual(user.userUuid))
       .and(createdAtGreaterOrEqual(ZonedDateTime.now(Clock.systemUTC()).minusMinutes(5)))
@@ -123,6 +124,13 @@ class ImageService(
     userService.save(user)
 
     return image
+  }
+
+  private fun checkImageCount(user: User) {
+    val count = imageRepository.findUserImagesByDate(user, ZonedDateTime.now(Clock.systemUTC()).minusMonths(1), ZonedDateTime.now(Clock.systemUTC()))
+    if (count >= 300) {
+      throw BadRequestException("You have reached the limit of 300 images per month")
+    }
   }
 
   private fun hasSubscription(id: String): Boolean = true

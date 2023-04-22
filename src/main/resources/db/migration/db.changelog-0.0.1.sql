@@ -130,7 +130,6 @@ CREATE TABLE oauth_tokens
 --rollback DROP TABLE oauth_tokens;
 --rollback DROP SEQUENCE IF EXISTS oauth_tokens_id_seq;
 
--- --changeset vcoolish:20230412143804
 -- CREATE TABLE credentials
 -- (
 --   id BIGSERIAL PRIMARY KEY NOT NULL,
@@ -140,9 +139,8 @@ CREATE TABLE oauth_tokens
 --   google_client_secret   VARCHAR(500) NULL DEFAULT NULL,
 --   google_scope           VARCHAR(300) NULL DEFAULT NULL
 -- );
--- --rollback DROP TABLE credentials;
 
---changeset vcoolish:20230413143804
+--changeset vcoolish:20230414143804
 INSERT INTO credentials (active_profile)
 VALUES ('dev'), ('prod');
 

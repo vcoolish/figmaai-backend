@@ -140,5 +140,20 @@ CREATE TABLE credentials
   google_client_secret   VARCHAR(500) NULL DEFAULT NULL,
   google_scope           VARCHAR(300) NULL DEFAULT NULL
 );
-
 --rollback DROP TABLE credentials;
+
+INSERT INTO credentials (active_profile)
+VALUES ('dev'), ('prod');
+
+--changeset vcoolish:20230412143804
+UPDATE credentials
+SET (
+     google_client_id,
+     google_client_secret,
+     google_scope
+      ) = (
+           'fHr5+08ZeHFdWT+66ysGJ432kbUF3kyvAhw2gjY3cblP6BTMEjLyPx9nso+nVrb/j3btMVbPSHZq3IKYwb9Lp03RxzPyZbddWC+oJaJIYDbqDSc7xB18YkYS2XI84nilRwptRZw6MvdZZLa9MVcZ4KexHg4JA6v4OI3EUWF7Jmgdicz4WdjmYhjjfceojfTzR6bjHMhNdzoNstdLgmqxf8ZOCv/iQcPKC9cY2i0MCE6JnyRQ6RVBMaXwzYEZ0NZDgx1/8C2oPKsDCiGi6LHK6qnRR1RTar4d536zMQT9gKUHWdOCX/zk242bcMlR+QR62R+ah1eifJ2s/QjcqSRzRQ==',
+           'Dc6FROZEU3d9J8HAodrwoJBen4y/wGJ5ZDVAHAI4IqL7tLswuiL7qJaAAas4TWWG9B9LuukyVUHhq1csypUpu2u1kP1IV9eZbcIx8NJ0iZ9P8dBsQUg/HmynXgdLhm80trUr4NU2/csaL56bL1/cNxlGcJboBIUrd3NT3SlxTqz3X94cadSJenh5u8wbkQlVlw9pR82XhzyAPtGegoD9wQyJqx/mk6krfKK7y5w1/+Lyth8wActKXRnAzYCryc4bOuzyvttImzXEs3pi725RsakJLeikV6An3oCgCSyQcucG/fxy5ioXWwOq/OI5h0ZX9qV0ZnKs/LbjHjabnVigOA==',
+           'email profile https://www.googleapis.com/auth/user.birthday.read https://www.googleapis.com/auth/user.gender.read'
+  );
+--rollback ALTER TABLE credentials;

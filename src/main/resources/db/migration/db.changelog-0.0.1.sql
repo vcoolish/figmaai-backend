@@ -157,3 +157,22 @@ SET (
            'email profile https://www.googleapis.com/auth/user.birthday.read https://www.googleapis.com/auth/user.gender.read'
   );
 --rollback ALTER TABLE credentials;
+
+--changeset vcoolish:20230415143804
+CREATE TABLE "userconnection"
+(
+  userId         VARCHAR(255)  NOT NULL,
+  providerId     VARCHAR(255)  NOT NULL,
+  providerUserId VARCHAR(255)  NOT NULL,
+  "rank"           BIGINT       NOT NULL,
+  displayName    VARCHAR(255)  NULL DEFAULT NULL,
+  profileUrl     VARCHAR(512)  NULL DEFAULT NULL,
+  imageUrl       VARCHAR(512)  NULL DEFAULT NULL,
+  accessToken    VARCHAR(1024) NOT NULL,
+  secret         VARCHAR(255)  NULL DEFAULT NULL,
+  refreshToken   VARCHAR(255)  NULL DEFAULT NULL,
+  expireTime     BIGINT    NULL DEFAULT NULL,
+  PRIMARY KEY (userId, providerId, providerUserId),
+  UNIQUE (userId, providerId, "rank")
+);
+--rollback CREATE TABLE userconnection;

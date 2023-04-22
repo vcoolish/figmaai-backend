@@ -129,3 +129,16 @@ CREATE TABLE oauth_tokens
 );
 --rollback DROP TABLE oauth_tokens;
 --rollback DROP SEQUENCE IF EXISTS oauth_tokens_id_seq;
+
+--changeset vcoolish:20230412143804
+CREATE TABLE credentials
+(
+  id BIGSERIAL PRIMARY KEY NOT NULL,
+  active_profile character varying(50) COLLATE pg_catalog."default",
+  active_social_networks VARCHAR(100) NOT NULL DEFAULT 'GOOGLE',
+  google_client_id       VARCHAR(500) NULL DEFAULT NULL,
+  google_client_secret   VARCHAR(500) NULL DEFAULT NULL,
+  google_scope           VARCHAR(300) NULL DEFAULT NULL
+);
+
+--rollback DROP TABLE credentials;

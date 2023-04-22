@@ -40,15 +40,20 @@ class AuthService(
     val authentication = authenticationManager.authenticate(authenticationToken)
     SecurityContextHolder.getContext().authentication = authentication
     val user = (authentication.principal as CustomUserDetails).user
-    if (!loginDto.writeToken.isNullOrEmpty()) {
-      runCatching {
-        val figma = oauthRepository.findByWriteToken(loginDto.writeToken!!)?.figma!!
-        val dbUser = userService.getByUuid(user.userUuid)
-        dbUser.figma = figma
-        userService.save(dbUser)
-      }
-    }
+    wireFigma(user, loginDto.writeToken)
     return (authentication.principal as CustomUserDetails).user
+  }
+
+  fun wireFigma(user: User, writeToken: String?) {
+    if (writeToken.isNullOrEmpty()) {
+      return
+    }
+    runCatching {
+      val figma = oauthRepository.findByWriteToken(writeToken)?.figma ?: return
+      val dbUser = userService.getByUuid(user.userUuid)
+      dbUser.figma = figma
+      userService.save(dbUser)
+    }
   }
 
   @Transactional

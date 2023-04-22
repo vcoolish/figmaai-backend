@@ -15,4 +15,6 @@ class SocialUserRegistrationSuccessDto(state: String, code: String) {
 
   @field: NotBlank
   val state: String = URLDecoder.decode(state.substringBefore(facebookEndSymbol), UTF_8)
+
+  val writeToken: String? = null
 }

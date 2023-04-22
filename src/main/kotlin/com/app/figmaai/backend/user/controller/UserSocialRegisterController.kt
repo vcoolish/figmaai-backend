@@ -56,7 +56,6 @@ class UserSocialRegisterController(
 
   @PostMapping("/success")
   fun socialSignInSuccess(
-    @Figma @RequestHeader figma: String,
     @RequestBody @Valid dto: SocialUserRegistrationSuccessDto,
     request: HttpServletRequest?
   ): ResponseEntity<TokensDto> {
@@ -79,8 +78,10 @@ class UserSocialRegisterController(
         .let { userService.findByEmail(it) }
         .takeIf { it != null }
         ?.run { signInSocial(provider, connection, socialConnection, this) }
-        ?: signUpSocial(provider, connection, socialConnection, request, figma)
-    }.let { helper.loginUser(it, request) }
+        ?: signUpSocial(provider, connection, socialConnection, request)
+    }
+      .also { authService.wireFigma(it, dto.writeToken) }
+      .let { helper.loginUser(it, request) }
       .let { ResponseEntity.ok(it) }
   }
 
@@ -126,10 +127,9 @@ class UserSocialRegisterController(
       connection: Connection<*>,
       socialConnection: SocialConnection,
       request: HttpServletRequest?,
-      figma: String,
     ): User {
       val createInfo = providerSocialCollector
-        .collectCreateInfo(provider, connection, figma)
+        .collectCreateInfo(provider, connection)
       return createInfo
         .run { registerService.registerUser(this) }
         .also { providerConnectionService.doPostSignUp(connection) }

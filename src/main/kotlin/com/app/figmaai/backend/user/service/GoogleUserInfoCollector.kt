@@ -12,7 +12,7 @@ class GoogleUserInfoCollector(
   private val passwordGenerator: PasswordGenerator,
 ) : SocialUserInfoCollector<SocialUserCreateData, SocialUserUpdateData> {
 
-  override fun collectCreateInfo(connection: Connection<*>, figma: String): SocialUserCreateData {
+  override fun collectCreateInfo(connection: Connection<*>): SocialUserCreateData {
     val googleApi = (connection as Connection<Google>).api
     val userInfo = googleApi.oauth2Operations().userinfo
     return SocialUserCreateData(

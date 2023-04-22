@@ -6,6 +6,6 @@ import org.springframework.social.connect.Connection
 
 interface SocialUserInfoCollector<out V, out U>
     where U : UserUpdateData, V : UserCreateData {
-  fun collectCreateInfo(connection: Connection<*>, figma: String): V
+  fun collectCreateInfo(connection: Connection<*>): V
   fun collectUpdateInfo(connection: Connection<*>): U
 }

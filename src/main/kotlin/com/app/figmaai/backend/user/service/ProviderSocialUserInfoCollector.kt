@@ -19,8 +19,8 @@ class ProviderSocialUserInfoCollector(
         put(Providers.GOOGLE, googleUserCollector)
       }
 
-  fun collectCreateInfo(provider: Providers, connection: Connection<*>, figma: String): UserCreateData =
-    getSocialUserCreator(provider).collectCreateInfo(connection, figma)
+  fun collectCreateInfo(provider: Providers, connection: Connection<*>): UserCreateData =
+    getSocialUserCreator(provider).collectCreateInfo(connection)
 
   fun collectUpdateInfo(provider: Providers, connection: Connection<*>): UserUpdateData =
     getSocialUserCreator(provider).collectUpdateInfo(connection)

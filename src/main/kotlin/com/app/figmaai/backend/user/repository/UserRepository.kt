@@ -1,10 +1,12 @@
 package com.app.figmaai.backend.user.repository
 
 import com.app.figmaai.backend.common.repository.JpaSpecificationRepository
+import com.app.figmaai.backend.user.model.Providers
 import com.app.figmaai.backend.user.model.User
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.*
@@ -99,5 +101,4 @@ interface UserRepository : JpaSpecificationRepository<User> {
         """
   )
   fun filterActiveUserUuids(uuids: Collection<String>): Collection<String>
-
 }

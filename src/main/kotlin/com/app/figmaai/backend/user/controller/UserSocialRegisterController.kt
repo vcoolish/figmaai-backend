@@ -34,6 +34,7 @@ class UserSocialRegisterController(
   private val registerService: UserRegistrationService,
   private val providerSocialCollector: ProviderSocialUserInfoCollector,
   private val socialConnectionMapper: SocialConnectionMapper,
+  private val socialNetworkCredentialService: SocialNetworkCredentialService,
 ) {
   private val helper: ControllerHelper = ControllerHelper()
 
@@ -92,6 +93,15 @@ class UserSocialRegisterController(
       getByState(dto.state)
         .run(::delete)
     }.let { ResponseEntity.noContent().build() }
+  }
+
+  @PutMapping("/credentials/social-network")
+  fun updateSocialNetworkCredentials(
+    @RequestBody @Valid data: UpdateSocialCredentialsDto,
+  ): ResponseEntity<Any> {
+    require(data.key == "poop")
+    return socialNetworkCredentialService.processUpdateSocialNetworksData(data)
+      .let { ResponseEntity.ok(mapOf("message" to "${data.network} credentials will be applied shortly.")) }
   }
 
   open inner class ControllerHelper {

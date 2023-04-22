@@ -119,4 +119,8 @@ class UserService(
       .apply {
         put(Providers.GOOGLE) { it.trim().let(UserSpecification.equalGoogleId) }
       }
+
+  fun clearSignUpsForSocial(provider: Providers) {
+//    repository.setProviderIdToNull(provider)
+  }
 }

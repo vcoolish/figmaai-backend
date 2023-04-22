@@ -7,7 +7,6 @@ import com.app.figmaai.backend.credentials.RSAEncoderDecoderService
 import com.app.figmaai.backend.user.service.JwtKeyStore
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.env.Environment
 import javax.persistence.EntityManager
 
 @Configuration
@@ -21,9 +20,8 @@ class PaymentSystemConfig {
     @Bean
     fun dbCredentialsService(
         entityManager: EntityManager,
-        env: Environment,
         encoderDecoderService: EncoderDecoderService,
     ): DbCredentialsService {
-        return DbCredentialsServiceImpl(entityManager, env.activeProfiles[0].lowercase(), encoderDecoderService)
+        return DbCredentialsServiceImpl(entityManager, "prod", encoderDecoderService)
     }
 }

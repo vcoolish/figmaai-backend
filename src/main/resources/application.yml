@@ -5,12 +5,12 @@ spring:
     change-log: classpath:db/changelog.xml
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5435/postgres
-    username: postgres
-    password: postgres
-    #    url: jdbc:postgresql://ec2-44-206-11-200.compute-1.amazonaws.com:5432/d5dnv721dua1v4
-    #    username: grrrdhummkvzkj
-    #    password: 24b2a32ae578d061675022b14cf440cdb4734783aa713e59e8c27599f1605fd0
+#    url: jdbc:postgresql://localhost:5435/postgres
+#    username: postgres
+#    password: postgres
+    url: jdbc:postgresql://ec2-52-45-200-167.compute-1.amazonaws.com:5432/d3019g42jgm2pp
+    username: amkuisiuxtpyab
+    password: f19538fbf2b3207738a1c04e045769d65d262aaa863551da4279b869dbea2520
 
   sql:
     init:

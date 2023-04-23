@@ -1,6 +1,5 @@
 package com.app.figmaai.backend.subscription
 
-import com.app.figmaai.backend.common.util.logger
 import com.app.figmaai.backend.config.properties.AppProperties
 import com.app.figmaai.backend.subscription.model.PaypalAccess
 import com.app.figmaai.backend.subscription.model.PaypalSubscription
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
-import java.util.*
 
 @Service
 class PaypalSubscriptionValidator(
@@ -26,9 +24,7 @@ class PaypalSubscriptionValidator(
     headers.contentType = MediaType.APPLICATION_JSON
 //    headers.add("X-PAYPAL-SECURITY-CONTEXT", "{\"consumer\":{\"accountNumber\":1181198218909172527,\"merchantId\":\"5KW8F2FXKX5HA\"},\"merchant\":{\"accountNumber\":1659371090107732880,\"merchantId\":\"2J6QB8YJQSJRJ\"},\"apiCaller\":{\"clientId\":\"AdtlNBDhgmQWi2xk6edqJVKklPFyDWxtyKuXuyVT-OgdnnKpAVsbKHgvqHHP\",\"appId\":\"APP-6DV794347V142302B\",\"payerId\":\"2J6QB8YJQSJRJ\",\"accountNumber\":\"1659371090107732880\"},\"scopes\":[\"https://api-m.paypal.com/v1/subscription/.*\",\"https://uri.paypal.com/services/subscription\",\"openid\"]}");
     headers.add("Accept", "application/json")
-    val creds = Base64.getEncoder().encodeToString("${appProperties.paypalId}:${appProperties.paypalSecret}".toByteArray())
-    logger().info(creds)
-    headers.add("Authorization", "Basic $creds")
+    headers.setBasicAuth(appProperties.paypalId, appProperties.paypalSecret)
 
     val response = restTemplate.getForEntity(
       "${appProperties.paypalUrl}/v1/billing/subscriptions/$id",

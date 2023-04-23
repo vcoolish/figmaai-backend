@@ -5,6 +5,7 @@ import com.app.figmaai.backend.subscription.model.PaypalAccess
 import com.app.figmaai.backend.subscription.model.PaypalSubscription
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
@@ -24,13 +25,15 @@ class PaypalSubscriptionValidator(
     headers.contentType = MediaType.APPLICATION_JSON
 //    headers.add("X-PAYPAL-SECURITY-CONTEXT", "{\"consumer\":{\"accountNumber\":1181198218909172527,\"merchantId\":\"5KW8F2FXKX5HA\"},\"merchant\":{\"accountNumber\":1659371090107732880,\"merchantId\":\"2J6QB8YJQSJRJ\"},\"apiCaller\":{\"clientId\":\"AdtlNBDhgmQWi2xk6edqJVKklPFyDWxtyKuXuyVT-OgdnnKpAVsbKHgvqHHP\",\"appId\":\"APP-6DV794347V142302B\",\"payerId\":\"2J6QB8YJQSJRJ\",\"accountNumber\":\"1659371090107732880\"},\"scopes\":[\"https://api-m.paypal.com/v1/subscription/.*\",\"https://uri.paypal.com/services/subscription\",\"openid\"]}");
     headers.add("Accept", "application/json")
-    headers.add("Cookie", "l7_az=ccg14.slc")
     headers.setBasicAuth(appProperties.paypalId, appProperties.paypalSecret)
 
-    val response = restTemplate.getForEntity(
+    val requestEntity = HttpEntity<MultiValueMap<String, String>>(headers)
+
+    val response = restTemplate.exchange(
       "${appProperties.paypalUrl}/v1/billing/subscriptions/$id",
+      HttpMethod.GET,
+      requestEntity,
       PaypalSubscription::class.java,
-      headers,
     )
     if (response.body?.status != "ACTIVE") {
       error("Subscription is not active")

@@ -2,6 +2,7 @@ package com.app.figmaai.backend.user.service
 
 import com.app.figmaai.backend.common.specification.SpecificationBuilder
 import com.app.figmaai.backend.exception.BadRequestException
+import com.app.figmaai.backend.subscription.PaypalSubscriptionValidator
 import com.app.figmaai.backend.user.dto.SubscriptionProvider
 import com.app.figmaai.backend.user.dto.UserRegistrationEntryDto
 import com.app.figmaai.backend.user.dto.UserUpdateData
@@ -18,6 +19,7 @@ import javax.validation.ConstraintViolationException
 class UserService(
   private val repository: UserRepository,
   private val passwordEncoder: PasswordEncoder,
+  private val paypalValidator: PaypalSubscriptionValidator,
 ) {
 
   fun getOneOrNull(spec: Specification<User>?): User? =
@@ -30,17 +32,12 @@ class UserService(
   fun updateSubscription(figma: String, id: String, provider: SubscriptionProvider): User {
     val user = get(figma)
     when (provider) {
-      SubscriptionProvider.paypal -> validatePaypalSubscription(id)
+      SubscriptionProvider.paypal -> paypalValidator.validate(id)
       else -> error("Unknown provider")
     }
     user.subscriptionId = id
     repository.save(user)
     return user
-  }
-
-  fun validatePaypalSubscription(id: String) {
-    //check PayPal subscription valid with PayPal API
-
   }
 
   fun save(user: User) {

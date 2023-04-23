@@ -2,6 +2,7 @@ package com.app.figmaai.backend.user.service
 
 import com.app.figmaai.backend.common.specification.SpecificationBuilder
 import com.app.figmaai.backend.exception.BadRequestException
+import com.app.figmaai.backend.user.dto.SubscriptionProvider
 import com.app.figmaai.backend.user.dto.UserRegistrationEntryDto
 import com.app.figmaai.backend.user.dto.UserUpdateData
 import com.app.figmaai.backend.user.model.*
@@ -26,11 +27,20 @@ class UserService(
 
   fun getByUuid(userUuid: String): User = repository.findByUserUuid(userUuid)
 
-  fun updateSubscription(figma: String, id: String): User {
+  fun updateSubscription(figma: String, id: String, provider: SubscriptionProvider): User {
     val user = get(figma)
+    when (provider) {
+      SubscriptionProvider.paypal -> validatePaypalSubscription(id)
+      else -> error("Unknown provider")
+    }
     user.subscriptionId = id
     repository.save(user)
     return user
+  }
+
+  fun validatePaypalSubscription(id: String) {
+    //check PayPal subscription valid with PayPal API
+
   }
 
   fun save(user: User) {

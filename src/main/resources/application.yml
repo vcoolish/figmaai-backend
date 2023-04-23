@@ -91,6 +91,9 @@ application:
   key: ${KEY}
   dalle-key: ${DALLE_KEY}
   stable-key: ${STABLE_KEY}
+  paypal-id: ${PAYPAL_ID}
+  paypal-secret: ${PAYPAL_SECRET}
+  paypal-url: "https://api-m.sandbox.paypal.com"
   default-user-energy-limit: 30
   default-user-tokens-limit-per-day: 10
   energy-renew-rate: PT6H

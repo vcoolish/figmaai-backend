@@ -1,6 +1,5 @@
 package com.app.figmaai.backend.user.controller
 
-import com.app.figmaai.backend.constraint.Figma
 import com.app.figmaai.backend.exception.NotFoundException
 import com.app.figmaai.backend.user.dto.*
 import com.app.figmaai.backend.user.model.Providers

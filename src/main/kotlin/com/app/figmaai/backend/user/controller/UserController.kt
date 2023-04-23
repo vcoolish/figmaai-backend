@@ -46,6 +46,6 @@ class UserController(
     @Figma @RequestHeader figma: String,
     @RequestBody @Valid subscriptionDto: UserSubscriptionDto,
   ): UserExtendedDto = UserMapper.toExtendedDto(
-    userService.updateSubscription(figma, subscriptionDto.subscriptionId),
+    userService.updateSubscription(figma, subscriptionDto.subscriptionId, subscriptionDto.provider),
   )
 }

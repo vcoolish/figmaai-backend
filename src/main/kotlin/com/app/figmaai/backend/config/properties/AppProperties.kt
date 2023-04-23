@@ -39,5 +39,14 @@ data class AppProperties(
   val energyRenewPercent: BigDecimal = BigDecimal.valueOf(0.2),
 
   @NotBlank
-  val arweaveUrl: String
+  val arweaveUrl: String,
+
+  @NotBlank
+  val paypalId: String,
+
+  @NotBlank
+  val paypalSecret: String,
+
+  @NotBlank
+  val paypalUrl: String,
 )

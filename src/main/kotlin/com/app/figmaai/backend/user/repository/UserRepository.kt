@@ -35,7 +35,7 @@ interface UserRepository : JpaSpecificationRepository<User> {
     @Param("nextEnergyRenew") nextEnergyRenew: ZonedDateTime
   ): Set<User>
 
-  fun findOneByEmail(email: String): User?
+  fun findOneByEmail(email: String): User
 
   @Query(
     """

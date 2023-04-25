@@ -64,12 +64,11 @@ class UserSocialRegisterController(
     val connection = providerConnectionService.getConnection(provider, dto.code, socialConnection.redirectUrl)
     val userProfile = connection.fetchUserProfile()
     val socialId = userProfile.id.orEmpty().trim()
-    userProfile.email
     if (providerConnectionService.isExistUserConnection(connection)) {
       return socialId
-        .also { helper.checkSocialSignUp(it, provider) }
+//        .also { helper.checkSocialSignUp(it, provider) }
         .also { socialConnectionService.delete(socialConnection) }
-        .let { userService.getUserWithProductRoles(it, provider) }
+        .let { userService.getByEmail(userProfile.email) }
         .let { helper.loginUser(it, request) }
         .let { ResponseEntity.ok(it) }
     }
@@ -138,7 +137,7 @@ class UserSocialRegisterController(
     }
 
     fun checkSocialSignUp(socialId: String, provider: Providers) {
-      if (socialId.isNotEmpty() && !userService.isSocialSignUp(socialId, provider))
+      if (!userService.isSocialSignUp(socialId, provider))
         throw Exception(
           "Social sign up connection already exists."
         )

@@ -29,6 +29,8 @@ class UserService(
 
   fun getByUuid(userUuid: String): User = repository.findByUserUuid(userUuid)
 
+  fun getByEmail(email: String): User = repository.findOneByEmail(email)
+
   fun updateSubscription(figma: String, id: String, provider: SubscriptionProvider): User {
     val user = get(figma)
     when (provider) {

@@ -65,7 +65,7 @@ class UserSocialRegisterController(
     val socialId = userProfile.id.orEmpty().trim()
     if (providerConnectionService.isExistUserConnection(connection)) {
       return socialId
-        .also { helper.checkSocialSignUp(it, provider) }
+//        .also { helper.checkSocialSignUp(it, provider) }
         .also { socialConnectionService.delete(socialConnection) }
         .let { userService.getUserWithProductRoles(it, provider) }
         .let { helper.loginUser(it, request) }

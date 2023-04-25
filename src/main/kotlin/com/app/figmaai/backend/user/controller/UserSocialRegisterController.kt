@@ -73,7 +73,7 @@ class UserSocialRegisterController(
     }
     return with(helper) {
       userProfile.email.orEmpty().trim()
-        .also { checkEmail(it.toLowerCase()) }
+        .also { checkEmail(it.lowercase()) }
         .let { userService.findByEmail(it) }
         .takeIf { it != null }
         ?.run { signInSocial(provider, connection, socialConnection, this) }

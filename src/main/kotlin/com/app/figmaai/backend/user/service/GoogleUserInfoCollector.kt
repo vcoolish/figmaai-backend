@@ -15,6 +15,7 @@ class GoogleUserInfoCollector(
   override fun collectCreateInfo(connection: Connection<*>): SocialUserCreateData {
     val googleApi = (connection as Connection<Google>).api
     val userInfo = googleApi.oauth2Operations().userinfo
+    println(userInfo.id)
     return SocialUserCreateData(
       email = userInfo.email.orEmpty(),
       password = passwordGenerator.generate(),
@@ -25,6 +26,7 @@ class GoogleUserInfoCollector(
   override fun collectUpdateInfo(connection: Connection<*>): SocialUserUpdateData {
     val googleApi = (connection as Connection<Google>).api
     val userInfo = googleApi.oauth2Operations().userinfo
+    println(userInfo.id)
     return SocialUserUpdateData(
       googleId = userInfo.id,
     )

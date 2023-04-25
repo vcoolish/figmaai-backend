@@ -1,5 +1,6 @@
 package com.app.figmaai.backend.user.controller
 
+import com.app.figmaai.backend.common.util.logger
 import com.app.figmaai.backend.exception.NotFoundException
 import com.app.figmaai.backend.user.dto.*
 import com.app.figmaai.backend.user.model.Providers
@@ -63,6 +64,8 @@ class UserSocialRegisterController(
     val connection = providerConnectionService.getConnection(provider, dto.code, socialConnection.redirectUrl)
     val userProfile = connection.fetchUserProfile()
     val socialId = userProfile.id.orEmpty().trim()
+    logger().info(socialId)
+    logger().info(userProfile.toString())
     if (providerConnectionService.isExistUserConnection(connection)) {
       return socialId
 //        .also { helper.checkSocialSignUp(it, provider) }

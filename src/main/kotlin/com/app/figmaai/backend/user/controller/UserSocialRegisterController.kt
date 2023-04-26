@@ -69,6 +69,7 @@ class UserSocialRegisterController(
 //        .also { helper.checkSocialSignUp(it, provider) }
         .also { socialConnectionService.delete(socialConnection) }
         .let { userService.getByEmail(userProfile.email) }
+        .also { authService.wireFigma(it, dto.writeToken) }
         .let { helper.loginUser(it, request) }
         .let { ResponseEntity.ok(it) }
     }

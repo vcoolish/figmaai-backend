@@ -165,8 +165,6 @@ class ImageService(
       val fileEntity = HttpEntity(fileContent, fileMap)
 
       val body: MultiValueMap<String, Any> = LinkedMultiValueMap()
-      body.add("height", height)
-      body.add("width", width)
       body.add("init_image", fileEntity)
       body.add("text_prompts[0][text]", prompt.substringAfter(" "))
 

@@ -9,6 +9,7 @@ import com.app.figmaai.backend.user.dto.OauthTokensDto
 import com.app.figmaai.backend.user.dto.TokensDto
 import com.app.figmaai.backend.user.model.*
 import com.app.figmaai.backend.user.repository.OauthRepository
+import com.app.figmaai.backend.user.repository.UserRepository
 import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -28,7 +29,7 @@ class AuthService(
   private val httpServletRequestTokenHelper: HttpServletRequestTokenHelper,
   private val userService: UserService,
   private val customUserDetailsService: UserDetailsService,
-  private val oauthRepository: OauthRepository,
+  private val oauthRepository: OauthRepository, private val userRepository: UserRepository,
 ) {
   private val logger = logger()
 
@@ -52,6 +53,14 @@ class AuthService(
       val figma = oauthRepository.findByWriteToken(writeToken)?.figma ?: return
       val dbUser = userService.getByUuid(user.userUuid)
       dbUser.figma = figma
+      oauthRepository.findByWriteToken(writeToken)?.let {
+        it.loggedIn = true
+        oauthRepository.save(it)
+      }
+      userRepository.findByFigma(figma).forEach {
+        it.figma = null
+        userRepository.save(it)
+      }
       userService.save(dbUser)
     }
   }
@@ -75,10 +84,14 @@ class AuthService(
   fun oauthLogin(readToken: String): User {
     val oauth = oauthRepository.findByReadToken(readToken)
       ?: throw BadRequestException(message = "Token not found")
+    if (!oauth.loggedIn) {
+      throw BadRequestException(message = "Token not logged in")
+    }
     val figma = oauth.figma
       ?: throw BadRequestException(message = "Figma not found")
-    oauthRepository.delete(oauth)
-    return userService.get(figma)
+    return userService.get(figma).also {
+      oauthRepository.delete(oauth)
+    }
   }
 
   @Transactional

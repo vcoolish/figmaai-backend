@@ -16,6 +16,7 @@ class OAuthToken(
   var readToken: String? = null,
   var writeToken: String? = null,
   var figma: String? = null,
+  var loggedIn: Boolean = false,
 
 ) : AbstractJpaPersistable<Long>() {
   override fun getId(): Long? = id

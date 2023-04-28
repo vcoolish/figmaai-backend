@@ -38,7 +38,11 @@ class AuthService(
   fun authenticateUser(loginDto: LoginData): User {
     val authenticationToken = UsernamePasswordAuthenticationToken(loginDto.login, loginDto.password)
     val authenticationManager = authenticationManagerBuilder.getObject()
-    val authentication = authenticationManager.authenticate(authenticationToken)
+    val authentication = try {
+      authenticationManager.authenticate(authenticationToken)
+    } catch (ex: BadCredentialsException) {
+      throw BadRequestException(message = "Invalid password")
+    }
     SecurityContextHolder.getContext().authentication = authentication
     val user = (authentication.principal as CustomUserDetails).user
     wireFigma(user, loginDto.writeToken)
@@ -67,12 +71,17 @@ class AuthService(
 
   @Transactional
   fun simpleAuthenticateUser(loginDto: LoginData): User {
-    val user = customUserDetailsService
-      .loadUserByUsername(loginDto.login)
-      .let { (it as CustomUserDetails).user }
-    if (!userService.matchUserPassword(loginDto.password, user)) {
-      throw BadCredentialsException("Bad credentials!")
+    val user = try {
+      customUserDetailsService
+        .loadUserByUsername(loginDto.login)
+        .let { (it as CustomUserDetails).user }
+    } catch (ex: Exception) {
+      throw BadCredentialsException("Email address not found!")
     }
+    if (!userService.matchUserPassword(loginDto.password, user)) {
+      throw BadCredentialsException("Invalid password!")
+    }
+    wireFigma(user, loginDto.writeToken)
     return user
   }
 

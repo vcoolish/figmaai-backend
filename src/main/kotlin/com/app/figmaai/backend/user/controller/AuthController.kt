@@ -31,7 +31,7 @@ class AuthController(
   )
   @PostMapping("/login")
   fun login(@RequestBody @Valid loginDto: LoginDto, request: HttpServletRequest?): ResponseEntity<TokensDto> {
-    val user = authService.authenticateUser(loginDto)
+    val user = authService.simpleAuthenticateUser(loginDto)
     return authService.loginUser(user, request)
       .let { ResponseEntity.ok(it) }
   }

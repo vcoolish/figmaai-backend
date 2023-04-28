@@ -176,3 +176,8 @@ CREATE TABLE "userconnection"
   UNIQUE (userId, providerId, "rank")
 );
 --rollback CREATE TABLE userconnection;
+
+--changeset vcoolish:20230427143804
+ALTER TABLE oauth_tokens
+  ADD logged_in BOOLEAN DEFAULT FALSE;
+--rollback DROP TABLE oauth_tokens;

@@ -42,7 +42,7 @@ class UserRegistrationService(
 
   fun checkEmail(email: String) {
     if (userService.isEmailExist(email)) {
-      throw BadRequestException("Email $email already reserved.")
+      throw BadRequestException("Email already reserved.")
     }
   }
 }

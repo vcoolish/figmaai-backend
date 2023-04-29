@@ -42,6 +42,11 @@ class UserService(
     return user
   }
 
+  fun getSubscription(figma: String): String? {
+    val user = get(figma)
+    return user.subscriptionId
+  }
+
   fun save(user: User) {
     repository.save(user)
   }

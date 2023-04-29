@@ -48,4 +48,9 @@ class UserController(
   ): UserExtendedDto = UserMapper.toExtendedDto(
     userService.updateSubscription(figma, subscriptionDto.subscriptionId, subscriptionDto.provider),
   )
+
+  @GetMapping("/subscription")
+  fun getSubscription(
+    @Figma @RequestHeader figma: String,
+  ): String? = userService.getSubscription(figma)
 }

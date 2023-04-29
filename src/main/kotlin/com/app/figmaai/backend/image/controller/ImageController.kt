@@ -62,6 +62,7 @@ class ImageController(
       version = AiVersion.valueOf(request.version.uppercase()),
       height = request.height,
       width = request.width,
+      strength = request.strengthPercent,
     ).let { ImageMapper.toInternalDto(it) }
   }
 

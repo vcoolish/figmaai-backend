@@ -71,6 +71,7 @@ class ImageService(
     version: AiVersion,
     height: Int,
     width: Int,
+    strength: Int,
   ): ImageAI {
     validatePrompt(prompt)
     val user = userService.get(id)
@@ -110,7 +111,7 @@ class ImageService(
         AiProvider.MIDJOURNEY ->
           requestMidjourneyImage(prompt, user)
         AiProvider.STABILITY ->
-          createStabilityImage(prompt, user, height, width)
+          createStabilityImage(prompt, user, height, width, strength)
         else ->
           createDalleImage(prompt, user)
     }
@@ -147,7 +148,13 @@ class ImageService(
       .let(imageRepository::saveAndFlush)
   }
 
-  private fun createStabilityImage(prompt: String, user: User, height: Int, width: Int): ImageAI {
+  private fun createStabilityImage(
+    prompt: String,
+    user: User,
+    height: Int,
+    width: Int,
+    strength: Int
+  ): ImageAI {
     val headers = LinkedMultiValueMap<String, String>()
     headers.add("Authorization", appProperties.stableKey)
     headers.add("Accept", "application/json")
@@ -167,6 +174,7 @@ class ImageService(
       val body: MultiValueMap<String, Any> = LinkedMultiValueMap()
       body.add("init_image", fileEntity)
       body.add("text_prompts[0][text]", prompt.substringAfter(" "))
+      body.add("image_strength", strength / 100f)
 
       headers.add("Content-Type", "multipart/form-data")
       Pair(

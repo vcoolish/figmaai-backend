@@ -6,4 +6,5 @@ class PurchaseImageRequest(
   val version: String = "V5",
   val height: Int = 512,
   val width: Int = 512,
+  val strengthPercent: Int = 35,
 )

@@ -43,10 +43,9 @@ class UserController(
 
   @PostMapping("/subscription")
   fun updateSubscription(
-    @Figma @RequestHeader email: String,
     @RequestBody @Valid subscriptionDto: UserSubscriptionDto,
   ): UserExtendedDto = UserMapper.toExtendedDto(
-    userService.updateSubscription(email, subscriptionDto.subscriptionId, subscriptionDto.provider),
+    userService.updateSubscription(subscriptionDto.email, subscriptionDto.subscriptionId, subscriptionDto.provider),
   )
 
   @GetMapping("/subscription/{email}")

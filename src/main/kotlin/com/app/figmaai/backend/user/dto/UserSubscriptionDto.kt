@@ -2,6 +2,7 @@ package com.app.figmaai.backend.user.dto
 
 class UserSubscriptionDto(
   val subscriptionId: String,
+  val email: String,
   val provider: SubscriptionProvider,
 )
 

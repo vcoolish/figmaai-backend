@@ -3,6 +3,7 @@ package com.app.figmaai.backend.user.service
 import com.app.figmaai.backend.common.specification.SpecificationBuilder
 import com.app.figmaai.backend.exception.BadRequestException
 import com.app.figmaai.backend.subscription.PaypalSubscriptionValidator
+import com.app.figmaai.backend.subscription.model.PaypalSubscription
 import com.app.figmaai.backend.user.dto.SubscriptionProvider
 import com.app.figmaai.backend.user.dto.UserRegistrationEntryDto
 import com.app.figmaai.backend.user.dto.UserUpdateData
@@ -42,9 +43,11 @@ class UserService(
     return user
   }
 
-  fun getSubscription(email: String): String? {
+  fun getSubscription(email: String): PaypalSubscription {
     val user = getByEmail(email)
-    return user.subscriptionId
+    val id = user.subscriptionId
+      ?: throw BadRequestException("User ${user.email} has no subscription")
+    return paypalValidator.details(id)
   }
 
   fun save(user: User) {

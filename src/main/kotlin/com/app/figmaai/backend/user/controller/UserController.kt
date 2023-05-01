@@ -1,5 +1,6 @@
 package com.app.figmaai.backend.user.controller
 
+import com.app.figmaai.backend.common.util.previewImages
 import com.app.figmaai.backend.constraint.Figma
 import com.app.figmaai.backend.user.dto.UserExtendedDto
 import com.app.figmaai.backend.user.dto.UserRegistrationDto
@@ -52,4 +53,7 @@ class UserController(
   fun getSubscription(
     @PathVariable email: String,
   ): String? = userService.getSubscription(email)
+
+  @GetMapping("/preview")
+  fun getPreview(): List<String> = previewImages
 }

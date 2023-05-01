@@ -14,6 +14,16 @@ data class PaypalSubscription(
   val billing_info: BillingInfo,
 ) {
 
+  val generations = when (plan_id) {
+    "P-5C904719PS7528140MRGJZSQ" -> 300
+    "P-2KK54741YU675415DMRGJZ7I" -> 500
+    "P-33302185HJ953941AMRGJ2LA" -> 1000
+    "P-0P805065T1698011YMRGJ2XI" -> 300
+    "P-6L277222N7410725SMRGJ3AY" -> 500
+    "P-8F65766989155762JMRGJ3MI" -> 1000
+    else -> 300
+  }
+
   data class BillingInfo(
     val cycle_executions: List<CycleExecution>,
     val next_billing_time: String,

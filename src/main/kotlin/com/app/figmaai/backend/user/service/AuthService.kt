@@ -55,8 +55,6 @@ class AuthService(
     }
     runCatching {
       val figma = oauthRepository.findByWriteToken(writeToken)?.figma ?: return
-      val dbUser = userService.getByUuid(user.userUuid)
-      dbUser.figma = figma
       oauthRepository.findByWriteToken(writeToken)?.let {
         it.loggedIn = true
         oauthRepository.save(it)
@@ -65,6 +63,8 @@ class AuthService(
         it.figma = null
         userRepository.save(it)
       }
+      val dbUser = userService.getByUuid(user.userUuid)
+      dbUser.figma = figma
       userService.save(dbUser)
     }
   }

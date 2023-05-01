@@ -31,8 +31,8 @@ class UserService(
 
   fun getByEmail(email: String): User = repository.findOneByEmail(email)
 
-  fun updateSubscription(figma: String, id: String, provider: SubscriptionProvider): User {
-    val user = get(figma)
+  fun updateSubscription(email: String, id: String, provider: SubscriptionProvider): User {
+    val user = getByEmail(email)
     when (provider) {
       SubscriptionProvider.paypal -> paypalValidator.validate(id)
       else -> error("Unknown provider")

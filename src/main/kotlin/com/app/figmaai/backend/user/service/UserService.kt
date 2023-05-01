@@ -42,8 +42,8 @@ class UserService(
     return user
   }
 
-  fun getSubscription(figma: String): String? {
-    val user = get(figma)
+  fun getSubscription(email: String): String? {
+    val user = getByEmail(email)
     return user.subscriptionId
   }
 

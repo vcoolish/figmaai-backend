@@ -49,8 +49,8 @@ class UserController(
     userService.updateSubscription(figma, subscriptionDto.subscriptionId, subscriptionDto.provider),
   )
 
-  @GetMapping("/subscription")
+  @GetMapping("/subscription/{email}")
   fun getSubscription(
-    @Figma @RequestHeader figma: String,
-  ): String? = userService.getSubscription(figma)
+    @PathVariable email: Long,
+  ): String? = userService.getSubscription(email)
 }

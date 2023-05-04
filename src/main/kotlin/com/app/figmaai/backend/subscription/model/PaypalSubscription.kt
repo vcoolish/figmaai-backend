@@ -2,7 +2,7 @@ package com.app.figmaai.backend.subscription.model
 
 data class PaypalSubscription(
   val status: String,
-  val status_update_time: String,
+  val status_update_time: String?,
   val id: String,
   val plan_id: String,
   val start_time: String,

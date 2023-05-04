@@ -1,17 +1,17 @@
 package com.app.figmaai.backend.subscription.model
 
 data class PaypalSubscription(
-  val status: String,
+  val status: String?,
   val status_update_time: String?,
-  val id: String,
-  val plan_id: String,
-  val start_time: String,
-  val quantity: String,
-  val subscriber: Subscriber,
-  val create_time: String,
-  val update_time: String,
-  val plan_overridden: Boolean,
-  val billing_info: BillingInfo,
+  val id: String?,
+  val plan_id: String?,
+  val start_time: String?,
+  val quantity: String?,
+  val subscriber: Subscriber?,
+  val create_time: String?,
+  val update_time: String?,
+  val plan_overridden: Boolean?,
+  val billing_info: BillingInfo?,
 ) {
 
   val generations = when (plan_id) {

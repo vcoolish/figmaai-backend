@@ -20,7 +20,7 @@ class TokenProvider(
   private val keyStore: JwtKeyStore,
 ) {
   private val accessTokenExpirationTime: Long = 60 * DateUtils.MILLIS_PER_DAY
-  private val refreshTokenExpirationTime: Long = 60 * DateUtils.MILLIS_PER_DAY
+  private val refreshTokenExpirationTime: Long = 90 * DateUtils.MILLIS_PER_DAY
 
   companion object {
     private const val SUBJECT_API = "system-api"
@@ -38,7 +38,7 @@ class TokenProvider(
       .body
 
   fun createAccessToken(user: User): String {
-    val validity = Date(System.currentTimeMillis() + VALIDILITY_VALUE * accessTokenExpirationTime)
+    val validity = Date(System.currentTimeMillis() + accessTokenExpirationTime)
 
     return Jwts.builder()
       .setSubject(user.userUuid)
@@ -48,7 +48,7 @@ class TokenProvider(
   }
 
   fun createRefreshToken(subject: String?): String {
-    val validity = Date(System.currentTimeMillis() + VALIDILITY_VALUE * refreshTokenExpirationTime)
+    val validity = Date(System.currentTimeMillis() + refreshTokenExpirationTime)
 
     return Jwts.builder()
       .setSubject(subject)

@@ -17,15 +17,12 @@ import javax.validation.constraints.Email
 )
 class User : com.app.figmaai.backend.common.model.AbstractJpaPersistable<Long>() {
 
-  val primaryKey: Long
-    get() { return id }
-
   var figma: String? = null
 
   @Id
   @SequenceGenerator(name = "users_id_seq", sequenceName = "users_id_seq", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_id_seq")
-  private var id: Long = 0L
+  var id: Long = 0L
 
   override fun getId(): Long = id
 

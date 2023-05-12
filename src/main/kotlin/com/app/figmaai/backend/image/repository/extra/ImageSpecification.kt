@@ -17,7 +17,7 @@ object ImageSpecification {
 
     val userJoin: Join<ImageAI, User> = root.join(ImageAI::user)
 
-    return@Specification builder.equal(userJoin.get(User::primaryKey), userId)
+    return@Specification builder.equal(userJoin.get(User::id), userId)
   }
 
   fun findByPrompt(prompt: String?): Specification<ImageAI> = Specification { root, _, builder ->

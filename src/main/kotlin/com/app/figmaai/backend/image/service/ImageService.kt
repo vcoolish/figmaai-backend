@@ -51,10 +51,13 @@ class ImageService(
   private val restTemplate = RestTemplate()
 
   fun getAll(pageable: Pageable, request: GetAllNftRequest, token: String): Page<ImageAI> {
+    println(request.query)
+    println(request.figma)
     val spec: Specification<ImageAI> = if (request.figma.isNullOrEmpty()) {
+      println("start search")
       findByPrompt(request.query)
-        .and(imageIsEmpty().not())
-        .and(userEqual(refreshTokenService.getOne(token)?.user?.userUuid).not())
+//        .and(imageIsEmpty().not())
+//        .and(userEqual(refreshTokenService.getOne(token)?.user?.userUuid).not())
     } else if (request.query.isEmpty()) {
       userEqual(userService.get(request.figma).userUuid)
     } else {

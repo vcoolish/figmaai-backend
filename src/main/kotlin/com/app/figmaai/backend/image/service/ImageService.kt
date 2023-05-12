@@ -52,14 +52,14 @@ class ImageService(
 
   fun getAll(pageable: Pageable, request: GetAllNftRequest, token: String): Page<ImageAI> {
     val spec: Specification<ImageAI> = if (request.figma.isNullOrEmpty()) {
-      println(refreshTokenService.getOne(token)?.user?.userUuid)
+      val user = refreshTokenService.getOne(token)?.user?.id
       findByPrompt(request.query)
-//        .and(imageIsEmpty().not())
-        .and(userEqual(refreshTokenService.getOne(token)?.user?.userUuid).not())
+        .and(imageIsEmpty().not())
+        .and(userEqual(user).not())
     } else if (request.query.isEmpty()) {
-      userEqual(userService.get(request.figma).userUuid)
+      userEqual(userService.get(request.figma).id)
     } else {
-      userEqual(userService.get(request.figma).userUuid).and(findByPrompt(request.query))
+      userEqual(userService.get(request.figma).id).and(findByPrompt(request.query))
     }
     return imageRepository.findAll(spec, pageable)
   }
@@ -79,7 +79,7 @@ class ImageService(
     checkImageCount(user)
 
     val spec: Specification<ImageAI> = imageIsEmpty()
-      .and(userEqual(user.userUuid))
+      .and(userEqual(user.id))
       .and(createdAtGreaterOrEqual(ZonedDateTime.now(Clock.systemUTC()).minusMinutes(5)))
     val inProgress = imageRepository.exists(spec)
     if (inProgress) {

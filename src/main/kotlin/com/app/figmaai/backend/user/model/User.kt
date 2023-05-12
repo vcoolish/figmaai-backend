@@ -17,6 +17,9 @@ import javax.validation.constraints.Email
 )
 class User : com.app.figmaai.backend.common.model.AbstractJpaPersistable<Long>() {
 
+  val primaryKey: Long
+    get() { return id }
+
   var figma: String? = null
 
   @Id

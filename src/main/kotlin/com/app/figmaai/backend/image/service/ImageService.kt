@@ -53,9 +53,10 @@ class ImageService(
   fun getAll(pageable: Pageable, request: GetAllNftRequest, token: String): Page<ImageAI> {
     val spec: Specification<ImageAI> = if (request.figma.isNullOrEmpty()) {
       val user = refreshTokenService.getOne(token)?.user?.id
+      println(user)
       findByPrompt(request.query)
         .and(imageIsEmpty().not())
-        .and(userEqual(user).not())
+//        .and(userEqual(user).not())
     } else if (request.query.isEmpty()) {
       userEqual(userService.get(request.figma).id)
     } else {

@@ -21,7 +21,7 @@ object ImageSpecification {
   }
 
   fun findByPrompt(prompt: String?): Specification<ImageAI> = Specification { root, _, builder ->
-    if (prompt == null) {
+    if (prompt.isNullOrEmpty()) {
       return@Specification null
     }
 

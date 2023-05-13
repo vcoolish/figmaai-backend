@@ -1,5 +1,6 @@
 package com.app.figmaai.backend.user.controller
 
+import com.app.figmaai.backend.common.util.PreviewImage
 import com.app.figmaai.backend.common.util.previewImages
 import com.app.figmaai.backend.constraint.Figma
 import com.app.figmaai.backend.subscription.model.PaypalSubscription
@@ -56,5 +57,8 @@ class UserController(
   ): PaypalSubscription = userService.getSubscription(email)
 
   @GetMapping("/preview")
-  fun getPreview(): List<String> = previewImages
+  fun getPreview(): List<String> = previewImages.map { it.url }
+
+  @GetMapping("/preview-plugin")
+  fun getPreviewPlugin(): List<PreviewImage> = previewImages
 }

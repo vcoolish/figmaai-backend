@@ -15,7 +15,7 @@ import com.app.figmaai.backend.image.repository.extra.ImageSpecification.findByP
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.imageIsEmpty
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.userEqual
 import com.app.figmaai.backend.user.model.User
-import com.app.figmaai.backend.user.service.RefreshTokenService
+import com.app.figmaai.backend.user.service.TokenProvider
 import com.app.figmaai.backend.user.service.UserEnergyService
 import com.app.figmaai.backend.user.service.UserService
 import org.springframework.data.domain.Page
@@ -44,7 +44,7 @@ class ImageService(
   private val imageCreationService: ImageCreationService,
   private val awsS3Service: AwsS3Service,
   private val userEnergyService: UserEnergyService,
-  private val refreshTokenService: RefreshTokenService,
+  private val tokenProvider: TokenProvider,
 ) {
 
   private val logger = logger()
@@ -52,15 +52,14 @@ class ImageService(
 
   fun getAll(pageable: Pageable, request: GetAllNftRequest, token: String): Page<ImageAI> {
     val spec: Specification<ImageAI> = if (request.figma.isNullOrEmpty()) {
-      val user = refreshTokenService.getOne(token)?.user?.id
-      println(user)
+      val user = tokenProvider.createParser().parseClaimsJws(token).body.subject
       findByPrompt(request.query)
         .and(imageIsEmpty().not())
-//        .and(userEqual(user).not())
+        .and(userEqual(user).not())
     } else if (request.query.isEmpty()) {
-      userEqual(userService.get(request.figma).id)
+      userEqual(userService.get(request.figma).userUuid)
     } else {
-      userEqual(userService.get(request.figma).id).and(findByPrompt(request.query))
+      userEqual(userService.get(request.figma).userUuid).and(findByPrompt(request.query))
     }
     return imageRepository.findAll(spec, pageable)
   }
@@ -80,7 +79,7 @@ class ImageService(
     checkImageCount(user)
 
     val spec: Specification<ImageAI> = imageIsEmpty()
-      .and(userEqual(user.id))
+      .and(userEqual(user.userUuid))
       .and(createdAtGreaterOrEqual(ZonedDateTime.now(Clock.systemUTC()).minusMinutes(5)))
     val inProgress = imageRepository.exists(spec)
     if (inProgress) {

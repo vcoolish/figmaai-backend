@@ -1,7 +1,7 @@
 package com.app.figmaai.backend.common.util
 
 data class PreviewImage(
-  val url: String,
+  val image: String,
   val prompt: String,
 )
 

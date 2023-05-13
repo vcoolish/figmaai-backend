@@ -57,7 +57,7 @@ class UserController(
   ): PaypalSubscription = userService.getSubscription(email)
 
   @GetMapping("/preview")
-  fun getPreview(): List<String> = previewImages.map { it.url }
+  fun getPreview(): List<String> = previewImages.map { it.image }
 
   @GetMapping("/preview-plugin")
   fun getPreviewPlugin(): List<PreviewImage> = previewImages

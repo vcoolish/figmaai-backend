@@ -9,12 +9,13 @@ import com.app.figmaai.backend.user.model.User
 object UserMapper {
 
   fun toExtendedDto(user: User): UserExtendedDto =
-    toExtendedDto(user, toDto(user.images))
+    toExtendedDto(user, toDto(user.images, user.subscriptionId))
 
   fun toDto(user: User): UserInfoDto = toExtendedDto(user, UserInfoDto())
 
-  fun toDto(nfts: List<ImageAI>): UserExtendedDto = UserExtendedDto(
+  fun toDto(nfts: List<ImageAI>, subscription: String?): UserExtendedDto = UserExtendedDto(
     nfts.map(ImageAI::getSafeId).map { ImageInfoDto(it) },
+    !subscription.isNullOrEmpty(),
   )
 
   private fun <D : UserInfoDto> toExtendedDto(user: User, dto: D): D {

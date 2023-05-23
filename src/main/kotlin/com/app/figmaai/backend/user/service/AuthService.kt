@@ -180,7 +180,7 @@ class AuthService(
   fun generateTokens(user: User, hash: String): TokensDto {
     val accessToken = tokenProvider.createAccessToken(user)
     val refreshToken = tokenProvider.createRefreshToken(user.userUuid)
-    return TokensDto(accessToken, refreshToken, user.email)
+    return TokensDto(accessToken, refreshToken, user.email, !user.subscriptionId.isNullOrEmpty())
       .also { processRefreshToken(user, hash, refreshToken) }
   }
 }

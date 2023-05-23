@@ -6,4 +6,5 @@ class TokensDto(
   val accessToken: String,
   val refreshToken: String,
   val email: String,
+  val hasSubscription: Boolean,
 ) : Serializable

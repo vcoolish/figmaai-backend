@@ -38,7 +38,9 @@ class SecurityConfig(
   private val jwtConfigurer: JWTConfigurer,
   private val sigFilter: SigFilter
 ) {
+  val unauthorizedHandler = CustomAuthenticationEntryPoint()
 
+  val accessDeniedHandler = CustomAccessDeniedEntryPoint()
   @Bean
   fun passwordEncoder(): PasswordEncoder {
     return BCryptPasswordEncoder()
@@ -84,10 +86,8 @@ class SecurityConfig(
       .httpBasic().disable()
       .csrf().disable()
       .exceptionHandling()
-//          .authenticationEntryPoint(SecurityAuthenticationEntryPoint(objectMapper))
-      .accessDeniedHandler(SecurityAccessDeniedHandler())
-      .authenticationEntryPoint(CustomAuthenticationEntryPoint())
-      .accessDeniedHandler(CustomAccessDeniedEntryPoint())
+      .accessDeniedHandler(accessDeniedHandler)
+      .authenticationEntryPoint(unauthorizedHandler)
       .and()
       .authorizeRequests()
       .and()
@@ -172,10 +172,4 @@ class SecurityConfig(
     }
     return source
   }
-
-  @Bean
-  fun unauthorizedHandler() = CustomAuthenticationEntryPoint()
-
-  @Bean
-  fun accessDeniedHandler() = CustomAccessDeniedEntryPoint()
 }

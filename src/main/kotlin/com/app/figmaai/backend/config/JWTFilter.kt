@@ -2,7 +2,6 @@ package com.app.figmaai.backend.config
 
 import com.app.figmaai.backend.user.service.HttpServletRequestTokenHelper
 import com.app.figmaai.backend.user.service.TokenProvider
-import io.jsonwebtoken.JwtException
 import org.springframework.security.core.context.SecurityContextHolder
 import javax.servlet.Filter
 import javax.servlet.FilterChain
@@ -24,7 +23,7 @@ class JWTFilter(
           val authentication = tokenProvider.getAuthentication(claims, jwt)
           SecurityContextHolder.getContext().authentication = authentication
         }
-      } catch (ex: JwtException) {
+      } catch (ex: Exception) {
         tokenProvider.logError(ex)
       }
     }

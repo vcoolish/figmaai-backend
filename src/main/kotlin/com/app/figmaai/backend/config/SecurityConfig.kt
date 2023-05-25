@@ -90,6 +90,7 @@ class SecurityConfig(
       .authenticationEntryPoint(unauthorizedHandler)
       .and()
       .authorizeRequests()
+
       .and()
       .sessionManagement()
       .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -103,7 +104,7 @@ class SecurityConfig(
     // set error path open for all by default
     urlRegistry.antMatchers(properties.error.path).permitAll()
 
-    applyUnauthorizedPaths(urlRegistry)
+//    applyUnauthorizedPaths(urlRegistry)
     applyAnonymousPaths(urlRegistry)
     applyRoleRestrictions(urlRegistry)
 

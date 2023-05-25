@@ -90,7 +90,16 @@ class SecurityConfig(
       .authenticationEntryPoint(unauthorizedHandler)
       .and()
       .authorizeRequests()
-
+      .let {
+        var urlRegistry = it
+        webSecurityProps.roleAccessRestrictionPaths?.forEach { roleRestriction ->
+          roleRestriction.methods.forEach { method ->
+            urlRegistry = urlRegistry.antMatchers(method, *roleRestriction.paths).authenticated()
+          }
+        }
+        urlRegistry
+      }
+      .apply { applyRoleRestrictions(this) }
       .and()
       .sessionManagement()
       .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -104,9 +113,9 @@ class SecurityConfig(
     // set error path open for all by default
     urlRegistry.antMatchers(properties.error.path).permitAll()
 
-//    applyUnauthorizedPaths(urlRegistry)
-//    applyAnonymousPaths(urlRegistry)
-//    applyRoleRestrictions(urlRegistry)
+    applyUnauthorizedPaths(urlRegistry)
+    applyAnonymousPaths(urlRegistry)
+    applyRoleRestrictions(urlRegistry)
 
     if (corsProperties.isEnabled) {
       http.cors().configurationSource(null)
@@ -117,7 +126,7 @@ class SecurityConfig(
     return http.build()
   }
 
-  protected fun applyAuthorizedPaths(
+  protected fun applyUnauthorizedPaths(
     urlRegistry: ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry
   ) {
     if (webSecurityProps.unauthorizedPaths.isEmpty()) {

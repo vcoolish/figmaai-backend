@@ -105,8 +105,8 @@ class SecurityConfig(
     urlRegistry.antMatchers(properties.error.path).permitAll()
 
 //    applyUnauthorizedPaths(urlRegistry)
-    applyAnonymousPaths(urlRegistry)
-    applyRoleRestrictions(urlRegistry)
+//    applyAnonymousPaths(urlRegistry)
+//    applyRoleRestrictions(urlRegistry)
 
     if (corsProperties.isEnabled) {
       http.cors().configurationSource(null)
@@ -117,7 +117,7 @@ class SecurityConfig(
     return http.build()
   }
 
-  protected fun applyUnauthorizedPaths(
+  protected fun applyAuthorizedPaths(
     urlRegistry: ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry
   ) {
     if (webSecurityProps.unauthorizedPaths.isEmpty()) {

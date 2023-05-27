@@ -12,12 +12,11 @@ import org.springframework.stereotype.Component
 class JWTConfigurer(
   private val tokenProvider: TokenProvider,
   private val tokenHelper: HttpServletRequestTokenHelper,
-  private val sigFilter: SigFilter,
 
 ) : SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity>() {
 
   @Throws(Exception::class)
   override fun configure(http: HttpSecurity) {
-    http.addFilterBefore(JWTFilter(tokenHelper, tokenProvider, sigFilter), UsernamePasswordAuthenticationFilter::class.java)
+    http.addFilterBefore(JWTFilter(tokenHelper, tokenProvider), UsernamePasswordAuthenticationFilter::class.java)
   }
 }

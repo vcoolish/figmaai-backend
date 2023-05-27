@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest
 class JWTFilter(
   private val tokenHelper: HttpServletRequestTokenHelper,
   private val tokenProvider: TokenProvider,
-  private val sigFilter: SigFilter,
 ) : Filter {
 
   override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
@@ -28,7 +27,6 @@ class JWTFilter(
         tokenProvider.logError(ex)
       }
     }
-    sigFilter.doFilter(servletRequest, servletResponse, filterChain)
     filterChain.doFilter(servletRequest, servletResponse)
   }
 }

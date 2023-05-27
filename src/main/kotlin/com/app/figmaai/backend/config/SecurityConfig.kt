@@ -35,10 +35,9 @@ class SecurityConfig(
   protected val corsProperties: CorsProperties,
   private val properties: ServerProperties,
   private val jwtConfigurer: JWTConfigurer,
+  private val unauthorizedHandler: CustomAuthenticationEntryPoint,
+  private val accessDeniedHandler: CustomAccessDeniedEntryPoint,
 ) {
-  val unauthorizedHandler = CustomAuthenticationEntryPoint()
-
-  val accessDeniedHandler = CustomAccessDeniedEntryPoint()
   @Bean
   fun passwordEncoder(): PasswordEncoder {
     return BCryptPasswordEncoder()

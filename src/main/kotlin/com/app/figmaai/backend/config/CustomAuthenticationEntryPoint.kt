@@ -14,17 +14,11 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Component
-class CustomAuthenticationEntryPoint : AuthenticationEntryPoint, Serializable {
-
-  @Autowired
-  private lateinit var errorServletResponseCreator: ErrorServletResponseCreator
-
-  @Autowired
-  private lateinit var tokenProvider: TokenProvider
-
-  @Autowired
-  private lateinit var tokenHelper: HttpServletRequestTokenHelper
-
+class CustomAuthenticationEntryPoint(
+  private var errorServletResponseCreator: ErrorServletResponseCreator,
+  private var tokenProvider: TokenProvider,
+  private var tokenHelper: HttpServletRequestTokenHelper,
+) : AuthenticationEntryPoint, Serializable {
 
   @Suppress("DEPRECATION")
   override fun commence(

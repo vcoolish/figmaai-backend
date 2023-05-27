@@ -10,10 +10,9 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Component
-class CustomAccessDeniedEntryPoint : AccessDeniedHandler, Serializable {
-
-  @Autowired
-  private lateinit var errorServletResponseCreator: ErrorServletResponseCreator
+class CustomAccessDeniedEntryPoint(
+  private val errorServletResponseCreator: ErrorServletResponseCreator
+) : AccessDeniedHandler, Serializable {
 
   override fun handle(request: HttpServletRequest, response: HttpServletResponse, exception: AccessDeniedException) {
     exception

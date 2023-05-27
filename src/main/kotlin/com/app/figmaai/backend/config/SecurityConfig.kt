@@ -15,7 +15,6 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.firewall.HttpFirewall
 import org.springframework.security.web.firewall.StrictHttpFirewall
 import org.springframework.security.web.session.DisableEncodeUrlFilter
@@ -36,7 +35,6 @@ class SecurityConfig(
   protected val corsProperties: CorsProperties,
   private val properties: ServerProperties,
   private val jwtConfigurer: JWTConfigurer,
-  private val sigFilter: SigFilter
 ) {
   val unauthorizedHandler = CustomAuthenticationEntryPoint()
 
@@ -89,23 +87,10 @@ class SecurityConfig(
       .accessDeniedHandler(accessDeniedHandler)
       .authenticationEntryPoint(unauthorizedHandler)
       .and()
-      .authorizeRequests()
-      .let {
-        var urlRegistry = it
-        webSecurityProps.roleAccessRestrictionPaths?.forEach { roleRestriction ->
-          roleRestriction.methods.forEach { method ->
-            urlRegistry = urlRegistry.antMatchers(method, *roleRestriction.paths).authenticated()
-          }
-        }
-        urlRegistry
-      }
-      .apply { applyRoleRestrictions(this) }
-      .and()
       .sessionManagement()
       .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       .and()
       .addFilterBefore(NormalizationFilter(), DisableEncodeUrlFilter::class.java)
-      .addFilterAt(sigFilter, UsernamePasswordAuthenticationFilter::class.java)
       .apply(jwtConfigurer)
 
     val urlRegistry = http.authorizeRequests()

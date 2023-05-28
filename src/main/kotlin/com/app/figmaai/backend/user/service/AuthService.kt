@@ -69,6 +69,12 @@ class AuthService(
     }
   }
 
+  fun authenticatePlugin(token: String, writeToken: String) {
+    val userId = tokenProvider.createParser().parseClaimsJws(token).body.subject
+    val user = userRepository.findByUserUuid(userId)
+    wireFigma(user, writeToken)
+  }
+
   @Transactional
   fun simpleAuthenticateUser(loginDto: LoginData): User {
     val user = try {

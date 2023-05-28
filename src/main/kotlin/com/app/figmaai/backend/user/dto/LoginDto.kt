@@ -11,3 +11,7 @@ data class LoginDto(
 
   override val writeToken: String? = null,
 ): LoginData
+
+data class AuthorizationDto(
+  val writeToken: String
+)

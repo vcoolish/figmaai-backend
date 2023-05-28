@@ -1,9 +1,6 @@
 package com.app.figmaai.backend.user.controller
 
-import com.app.figmaai.backend.user.dto.LoginDto
-import com.app.figmaai.backend.user.dto.OauthTokensDto
-import com.app.figmaai.backend.user.dto.ReadTokenDto
-import com.app.figmaai.backend.user.dto.TokensDto
+import com.app.figmaai.backend.user.dto.*
 import com.app.figmaai.backend.user.service.AuthService
 import com.app.figmaai.backend.user.service.SecurityContextService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -34,6 +31,16 @@ class AuthController(
     val user = authService.simpleAuthenticateUser(loginDto)
     return authService.loginUser(user, request)
       .let { ResponseEntity.ok(it) }
+  }
+
+  @PostMapping("/authorize")
+  fun authorize(
+    @RequestBody @Valid authorizationDto: AuthorizationDto,
+    @RequestHeader token: String,
+    request: HttpServletRequest?,
+  ): ResponseEntity.BodyBuilder {
+    return authService.authenticatePlugin(token, authorizationDto.writeToken)
+      .let { ResponseEntity.ok() }
   }
 
   @PostMapping("/oauth-token")

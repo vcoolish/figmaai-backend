@@ -51,8 +51,7 @@ class HttpServletRequestTokenHelper {
       ?: request?.getParameter(
         AUTHORIZATION_PARAMETER
       )
-    logger().info(request.toString())
-    logger().info(request.toString())
+    logger().info(request?.getHeader(AUTHORIZATION_HEADER))
     if (!bearerToken.isNullOrBlank()) {
       val token = bearerToken.trim()
       if (token.startsWith(TOKEN_TYPE_STRING)) {

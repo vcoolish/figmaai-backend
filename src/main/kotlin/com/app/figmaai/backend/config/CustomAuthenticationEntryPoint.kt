@@ -3,13 +3,11 @@ package com.app.figmaai.backend.config
 import com.app.figmaai.backend.user.service.HttpServletRequestTokenHelper
 import com.app.figmaai.backend.user.service.TokenProvider
 import io.jsonwebtoken.ExpiredJwtException
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
 import java.io.Serializable
-import java.lang.Exception
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -27,8 +25,11 @@ class CustomAuthenticationEntryPoint(
     exception: AuthenticationException
   ) {
     val jwt = tokenHelper.resolveToken(request)
+    val tokenRequest = runCatching { tokenProvider.getClaimsFromToken(jwt) }.exceptionOrNull()
+    val isTokenExpired = tokenRequest is ExpiredJwtException
     when {
-      !jwt.isNullOrBlank() && isExpiredToken(jwt) -> errorServletResponseCreator.build(
+      tokenRequest == null -> {}
+      isTokenExpired -> errorServletResponseCreator.build(
         servletResponse = response,
         error = Exception("Token expired"),
         status = HttpStatus.INSUFFICIENT_SPACE_ON_RESOURCE
@@ -40,7 +41,4 @@ class CustomAuthenticationEntryPoint(
       )
     }
   }
-
-  private fun isExpiredToken(jwt: String) =
-    runCatching { tokenProvider.getClaimsFromToken(jwt) }.exceptionOrNull() is ExpiredJwtException
 }

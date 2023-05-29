@@ -84,7 +84,7 @@ class SecurityConfig(
       .csrf().disable()
       .exceptionHandling()
       .accessDeniedHandler(accessDeniedHandler)
-      .authenticationEntryPoint(unauthorizedHandler)
+//      .authenticationEntryPoint(unauthorizedHandler)
       .and()
       .sessionManagement()
       .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

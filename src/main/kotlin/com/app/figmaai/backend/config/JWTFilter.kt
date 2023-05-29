@@ -19,10 +19,10 @@ class JWTFilter(
     if (!jwt.isNullOrBlank()) {
       try {
         val claims = tokenProvider.getClaimsFromToken(jwt)
-        if (tokenProvider.isClaimsContainsAuthKey(claims)) {
-          val authentication = tokenProvider.getAuthentication(claims, jwt)
-          SecurityContextHolder.getContext().authentication = authentication
-        }
+//        if (tokenProvider.isClaimsContainsAuthKey(claims)) {
+//        }
+        val authentication = tokenProvider.getAuthentication(claims, jwt)
+        SecurityContextHolder.getContext().authentication = authentication
       } catch (ex: Exception) {
         tokenProvider.logError(ex)
       }

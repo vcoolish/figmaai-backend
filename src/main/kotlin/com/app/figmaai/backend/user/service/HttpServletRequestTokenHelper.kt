@@ -1,5 +1,6 @@
 package com.app.figmaai.backend.user.service
 
+import com.app.figmaai.backend.common.util.logger
 import com.blueconic.browscap.BrowsCapField
 import com.blueconic.browscap.UserAgentService
 import org.apache.commons.codec.digest.DigestUtils
@@ -45,9 +46,13 @@ class HttpServletRequestTokenHelper {
   }
 
   fun resolveToken(request: HttpServletRequest?): String? {
-    val bearerToken = request?.getHeader(AUTHORIZATION_HEADER) ?: request?.getParameter(
-      AUTHORIZATION_PARAMETER
-    )
+    val bearerToken = request?.getHeader(AUTHORIZATION_HEADER)
+      ?: request?.getHeader(AUTHORIZATION_PARAMETER)
+      ?: request?.getParameter(
+        AUTHORIZATION_PARAMETER
+      )
+    logger().info(request.toString())
+    logger().info(request.toString())
     if (!bearerToken.isNullOrBlank()) {
       val token = bearerToken.trim()
       if (token.startsWith(TOKEN_TYPE_STRING)) {

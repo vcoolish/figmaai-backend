@@ -38,7 +38,8 @@ class HttpServletRequestTokenHelper {
         BrowsCapField.PLATFORM_BITS
       )
     )
-    private const val AUTHORIZATION_HEADER = "Authorization"
+    //skip authorization
+    private const val AUTHORIZATION_HEADER = "token"
     private const val AUTHORIZATION_PARAMETER = "access_token"
     private const val TOKEN_TYPE_STRING = "Bearer "
   }

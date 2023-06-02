@@ -38,9 +38,9 @@ class AuthController(
     @RequestBody @Valid authorizationDto: AuthorizationDto,
     @RequestHeader token: String,
     request: HttpServletRequest?,
-  ): ResponseEntity.BodyBuilder {
+  ): ResponseEntity<String> {
     return authService.authenticatePlugin(token, authorizationDto.writeToken)
-      .let { ResponseEntity.ok() }
+      .let { ResponseEntity.ok("Authorized") }
   }
 
   @PostMapping("/oauth-token")

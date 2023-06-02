@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 
-@Component
 class SigFilter(
   private val properties: AppProperties,
 //  private val userService: UserService,
@@ -63,11 +62,11 @@ class SigFilter(
 //    val figma: String = request.getHeader("figma")!!
 
 //    val user = userService.get(figma)
-    val cachedRequest = CopyingRequestWrapper(request)
+//    val cachedRequest = CopyingRequestWrapper(request)
     //TODO add url check
 //    if (!user.subscriptionId.isNullOrEmpty()) {
       SecurityContextHolder.getContext().authentication = EMPTY_AUTH_TOKEN
 //    }
-    filterChain.doFilter(cachedRequest, response)
+    filterChain.doFilter(request, response)
   }
 }

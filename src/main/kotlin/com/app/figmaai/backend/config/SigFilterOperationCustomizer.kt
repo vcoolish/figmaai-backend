@@ -8,6 +8,9 @@ import io.swagger.v3.oas.models.parameters.HeaderParameter
 import io.swagger.v3.oas.models.security.SecurityRequirement
 import org.springdoc.core.customizers.OperationCustomizer
 import org.springframework.core.annotation.AnnotatedElementUtils
+import org.springframework.http.HttpMethod
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.method.HandlerMethod
@@ -18,7 +21,7 @@ class SigFilterOperationCustomizer(
   webSecurityProperties: WebSecurityProperties
 ) : OperationCustomizer {
 
-  val requestMatchers = SigFilter.constructAntMatchers(webSecurityProperties)
+  val requestMatchers = constructAntMatchers(webSecurityProperties)
 
   override fun customize(operation: Operation, handlerMethod: HandlerMethod): Operation {
     val controllerRequestAnnotation =
@@ -58,6 +61,17 @@ class SigFilterOperationCustomizer(
           .schema(Schema<String>(SpecVersion.V30))
       )
     }
+  }
+
+  companion object {
+    fun constructAntMatchers(webSecurityProperties: WebSecurityProperties): List<RequestMatcher> =
+      webSecurityProperties.roleAccessRestrictionPaths?.flatMap { restrictionPath ->
+        restrictionPath.methods.takeUnless(Array<HttpMethod>::isEmpty)?.flatMap { method ->
+          restrictionPath.paths.map { path: String ->
+            AntPathRequestMatcher(path, method.toString())
+          }
+        } ?: restrictionPath.paths.map { path: String -> AntPathRequestMatcher(path) }
+      } ?: emptyList()
   }
 
 }

@@ -2,8 +2,9 @@ package com.app.figmaai.backend.user.service
 
 import com.app.figmaai.backend.common.specification.SpecificationBuilder
 import com.app.figmaai.backend.exception.BadRequestException
+import com.app.figmaai.backend.subscription.LemonSubscriptionValidator
 import com.app.figmaai.backend.subscription.PaypalSubscriptionValidator
-import com.app.figmaai.backend.subscription.model.PaypalSubscription
+import com.app.figmaai.backend.subscription.model.Subscription
 import com.app.figmaai.backend.user.dto.SubscriptionProvider
 import com.app.figmaai.backend.user.dto.UserRegistrationEntryDto
 import com.app.figmaai.backend.user.dto.UserUpdateData
@@ -20,6 +21,7 @@ import javax.validation.ConstraintViolationException
 class UserService(
   private val repository: UserRepository,
   private val passwordEncoder: PasswordEncoder,
+  private val lemonValidator: LemonSubscriptionValidator,
   private val paypalValidator: PaypalSubscriptionValidator,
 ) {
 
@@ -36,18 +38,24 @@ class UserService(
     val user = getByEmail(email)
     when (provider) {
       SubscriptionProvider.paypal -> paypalValidator.validate(id)
+      SubscriptionProvider.lemon -> lemonValidator.validate(id)
       else -> error("Unknown provider")
     }
     user.subscriptionId = id
+    user.subscriptionProvider = provider
     repository.save(user)
     return user
   }
 
-  fun getSubscription(email: String): PaypalSubscription {
+  fun getSubscription(email: String): Subscription {
     val user = getByEmail(email)
     val id = user.subscriptionId
       ?: throw BadRequestException("User ${user.email} has no subscription")
-    return paypalValidator.details(id)
+    return when (user.subscriptionProvider) {
+      SubscriptionProvider.paypal -> paypalValidator.status(id)
+      SubscriptionProvider.lemon -> lemonValidator.status(id)
+      else -> error("Unknown provider")
+    }
   }
 
   fun save(user: User) {

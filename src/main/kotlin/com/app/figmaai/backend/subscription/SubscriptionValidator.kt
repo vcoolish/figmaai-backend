@@ -1,8 +1,8 @@
 package com.app.figmaai.backend.subscription
 
-import com.app.figmaai.backend.subscription.model.PaypalSubscription
+import com.app.figmaai.backend.subscription.model.Subscription
 
 interface SubscriptionValidator {
     fun validate(id: String)
-    fun details(id: String): PaypalSubscription
+    fun status(id: String): Subscription
 }

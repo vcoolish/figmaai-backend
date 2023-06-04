@@ -3,7 +3,7 @@ package com.app.figmaai.backend.user.controller
 import com.app.figmaai.backend.common.util.PreviewImage
 import com.app.figmaai.backend.common.util.previewImages
 import com.app.figmaai.backend.constraint.Figma
-import com.app.figmaai.backend.subscription.model.PaypalSubscription
+import com.app.figmaai.backend.subscription.model.Subscription
 import com.app.figmaai.backend.user.dto.UserExtendedDto
 import com.app.figmaai.backend.user.dto.UserRegistrationDto
 import com.app.figmaai.backend.user.dto.UserSubscriptionDto
@@ -54,7 +54,7 @@ class UserController(
   @GetMapping("/subscription/{email}")
   fun getSubscription(
     @PathVariable email: String,
-  ): PaypalSubscription = userService.getSubscription(email)
+  ): Subscription = userService.getSubscription(email)
 
   @GetMapping("/preview")
   fun getPreview(): List<String> = previewImages.map { it.image }

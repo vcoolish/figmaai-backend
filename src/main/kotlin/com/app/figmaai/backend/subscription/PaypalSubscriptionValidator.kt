@@ -3,6 +3,7 @@ package com.app.figmaai.backend.subscription
 import com.app.figmaai.backend.config.properties.AppProperties
 import com.app.figmaai.backend.subscription.model.PaypalAccess
 import com.app.figmaai.backend.subscription.model.PaypalSubscription
+import com.app.figmaai.backend.subscription.model.Subscription
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -20,13 +21,13 @@ class PaypalSubscriptionValidator(
   private val restTemplate = RestTemplate()
 
   override fun validate(id: String) {
-    val response = details(id)
-    if (response.status != "ACTIVE") {
+    val status = status(id).status
+    if (status != "ACTIVE") {
       error("Subscription is not active")
     }
   }
 
-  override fun details(id: String): PaypalSubscription {
+  override fun status(id: String): Subscription {
     val headers = HttpHeaders()
     headers.contentType = MediaType.APPLICATION_JSON
     headers.add("Accept", "application/json")
@@ -34,12 +35,17 @@ class PaypalSubscriptionValidator(
 
     val requestEntity = HttpEntity<MultiValueMap<String, String>>(headers)
 
-    return restTemplate.exchange(
+    val sub = restTemplate.exchange(
       "${appProperties.paypalUrl}/v1/billing/subscriptions/$id",
       HttpMethod.GET,
       requestEntity,
       PaypalSubscription::class.java,
     ).body ?: throw Exception("Subscription not found")
+    return Subscription(
+      status = sub.status!!,
+      renews_at = sub.billing_info?.next_billing_time,
+      created_at = sub.create_time,
+    )
   }
 
   private fun getAccessToken(): String {

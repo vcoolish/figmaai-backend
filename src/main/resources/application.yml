@@ -98,6 +98,8 @@ application:
   default-user-energy-limit: 30
   default-user-tokens-limit-per-day: 10
   energy-renew-rate: PT6H
+  lemon-key: ${LEMON_KEY}
+  lemon-url: "https://api.lemonsqueezy.com"
 
   arweave-url: "https://arweave.net/"
 

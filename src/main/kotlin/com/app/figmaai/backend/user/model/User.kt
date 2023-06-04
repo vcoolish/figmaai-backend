@@ -1,6 +1,7 @@
 package com.app.figmaai.backend.user.model
 
 import com.app.figmaai.backend.image.model.ImageAI
+import com.app.figmaai.backend.user.dto.SubscriptionProvider
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.hibernate.annotations.CreationTimestamp
 import org.springframework.data.annotation.CreatedDate
@@ -38,6 +39,9 @@ class User : com.app.figmaai.backend.common.model.AbstractJpaPersistable<Long>()
 
   @Enumerated(EnumType.STRING)
   lateinit var provider: AuthProvider
+
+  @Enumerated(EnumType.STRING)
+  lateinit var subscriptionProvider: SubscriptionProvider
 
   var googleId: String? = null
 

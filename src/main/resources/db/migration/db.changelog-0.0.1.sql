@@ -144,7 +144,8 @@ CREATE TABLE oauth_tokens
 
 --changeset vcoolish:20230414143804
 INSERT INTO credentials (active_profile)
-VALUES ('dev'), ('prod');
+VALUES ('dev'),
+       ('prod');
 
 UPDATE credentials
 SET (
@@ -164,14 +165,14 @@ CREATE TABLE "userconnection"
   userId         VARCHAR(255)  NOT NULL,
   providerId     VARCHAR(255)  NOT NULL,
   providerUserId VARCHAR(255)  NOT NULL,
-  "rank"           BIGINT       NOT NULL,
+  "rank"         BIGINT        NOT NULL,
   displayName    VARCHAR(255)  NULL DEFAULT NULL,
   profileUrl     VARCHAR(512)  NULL DEFAULT NULL,
   imageUrl       VARCHAR(512)  NULL DEFAULT NULL,
   accessToken    VARCHAR(1024) NOT NULL,
   secret         VARCHAR(255)  NULL DEFAULT NULL,
   refreshToken   VARCHAR(255)  NULL DEFAULT NULL,
-  expireTime     BIGINT    NULL DEFAULT NULL,
+  expireTime     BIGINT        NULL DEFAULT NULL,
   PRIMARY KEY (userId, providerId, providerUserId),
   UNIQUE (userId, providerId, "rank")
 );
@@ -181,3 +182,8 @@ CREATE TABLE "userconnection"
 ALTER TABLE oauth_tokens
   ADD logged_in BOOLEAN DEFAULT FALSE;
 --rollback DROP TABLE oauth_tokens;
+
+--changeset vcoolish:20230527143804
+ALTER TABLE users
+  ADD COLUMN subscription_provider VARCHAR(255) NOT NULL DEFAULT 'paypal';
+--rollback ALTER TABLE users;

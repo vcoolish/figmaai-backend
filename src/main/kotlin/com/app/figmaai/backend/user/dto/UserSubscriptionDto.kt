@@ -10,4 +10,5 @@ enum class SubscriptionProvider {
   apple,
   google,
   paypal,
+  lemon,
 }

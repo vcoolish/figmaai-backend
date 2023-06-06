@@ -5,6 +5,8 @@ data class Subscription(
   val renews_at: String? = null,
   val ends_at: String? = null,
   val created_at: String? = null,
+  val trial_ends_at: String? = null,
+  val variant_id: String? = null,
 )
 data class LemonResponse(
   val data: LemonSubscription,
@@ -25,6 +27,7 @@ data class SubscriptionAttributes(
   val renews_at: String,
   val ends_at: String,
   val created_at: String,
+  val variant_id: String,
 )
 
 data class PaypalSubscription(

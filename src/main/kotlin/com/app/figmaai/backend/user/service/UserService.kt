@@ -2,10 +2,6 @@ package com.app.figmaai.backend.user.service
 
 import com.app.figmaai.backend.common.specification.SpecificationBuilder
 import com.app.figmaai.backend.exception.BadRequestException
-import com.app.figmaai.backend.subscription.LemonSubscriptionValidator
-import com.app.figmaai.backend.subscription.PaypalSubscriptionValidator
-import com.app.figmaai.backend.subscription.model.Subscription
-import com.app.figmaai.backend.user.dto.SubscriptionProvider
 import com.app.figmaai.backend.user.dto.UserRegistrationEntryDto
 import com.app.figmaai.backend.user.dto.UserUpdateData
 import com.app.figmaai.backend.user.model.*
@@ -21,9 +17,9 @@ import javax.validation.ConstraintViolationException
 class UserService(
   private val repository: UserRepository,
   private val passwordEncoder: PasswordEncoder,
-  private val lemonValidator: LemonSubscriptionValidator,
-  private val paypalValidator: PaypalSubscriptionValidator,
 ) {
+
+  fun getByEmail(email: String): User = repository.findOneByEmail(email)
 
   fun getOneOrNull(spec: Specification<User>?): User? =
     repository.findOne(spec).orElse(null)
@@ -31,32 +27,6 @@ class UserService(
   fun get(figma: String): User = repository.findByFigma(figma).first()
 
   fun getByUuid(userUuid: String): User = repository.findByUserUuid(userUuid)
-
-  fun getByEmail(email: String): User = repository.findOneByEmail(email)
-
-  fun updateSubscription(email: String, id: String, provider: SubscriptionProvider): User {
-    val user = getByEmail(email)
-    when (provider) {
-      SubscriptionProvider.paypal -> paypalValidator.validate(id)
-      SubscriptionProvider.lemon -> lemonValidator.validate(id)
-      else -> error("Unknown provider")
-    }
-    user.subscriptionId = id
-    user.subscriptionProvider = provider
-    repository.save(user)
-    return user
-  }
-
-  fun getSubscription(email: String): Subscription {
-    val user = getByEmail(email)
-    val id = user.subscriptionId
-      ?: throw BadRequestException("User ${user.email} has no subscription")
-    return when (user.subscriptionProvider) {
-      SubscriptionProvider.paypal -> paypalValidator.status(id)
-      SubscriptionProvider.lemon -> lemonValidator.status(id)
-      else -> error("Unknown provider")
-    }
-  }
 
   fun save(user: User) {
     repository.save(user)

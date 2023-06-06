@@ -3,10 +3,8 @@ package com.app.figmaai.backend.user.controller
 import com.app.figmaai.backend.common.util.PreviewImage
 import com.app.figmaai.backend.common.util.previewImages
 import com.app.figmaai.backend.constraint.Figma
-import com.app.figmaai.backend.subscription.model.Subscription
 import com.app.figmaai.backend.user.dto.UserExtendedDto
 import com.app.figmaai.backend.user.dto.UserRegistrationDto
-import com.app.figmaai.backend.user.dto.UserSubscriptionDto
 import com.app.figmaai.backend.user.mapper.UserMapper
 import com.app.figmaai.backend.user.service.UserRegistrationService
 import com.app.figmaai.backend.user.service.UserService
@@ -43,18 +41,6 @@ class UserController(
   ): UserExtendedDto = UserMapper.toExtendedDto(
     userService.get(figma),
   )
-
-  @PostMapping("/subscription")
-  fun updateSubscription(
-    @RequestBody @Valid subscriptionDto: UserSubscriptionDto,
-  ): UserExtendedDto = UserMapper.toExtendedDto(
-    userService.updateSubscription(subscriptionDto.email, subscriptionDto.subscriptionId, subscriptionDto.provider),
-  )
-
-  @GetMapping("/subscription/{email}")
-  fun getSubscription(
-    @PathVariable email: String,
-  ): Subscription = userService.getSubscription(email)
 
   @GetMapping("/preview")
   fun getPreview(): List<String> = previewImages.map { it.image }

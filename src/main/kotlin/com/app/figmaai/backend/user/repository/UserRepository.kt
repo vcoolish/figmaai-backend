@@ -26,6 +26,12 @@ interface UserRepository : JpaSpecificationRepository<User> {
   fun getNextRenewTime(): Optional<Instant>
 
   @Query(
+    "select u.next_subscription_validation from users u order by u.next_subscription_validation nulls last limit 1",
+    nativeQuery = true
+  )
+  fun getNextSubscriptionValidationTime(): Optional<Instant>
+
+  @Query(
     "select distinct u " +
         "from User u " +
         "where u.nextEnergyRenew <= :nextEnergyRenew or u.energy < u.maxEnergy " +
@@ -33,6 +39,16 @@ interface UserRepository : JpaSpecificationRepository<User> {
   )
   fun findByNextEnergyRenewLessThanEqualOrderByNextEnergyRenewAsc(
     @Param("nextEnergyRenew") nextEnergyRenew: ZonedDateTime
+  ): Set<User>
+
+  @Query(
+    "select distinct u " +
+        "from User u " +
+        "where u.nextSubscriptionValidation <= :nextSubscriptionValidation " +
+        "order by u.nextSubscriptionValidation"
+  )
+  fun findByNextSubscriptionValidationLessThanEqualOrderByNextEnergyRenewAsc(
+    @Param("nextSubscriptionValidation") nextSubscriptionValidation: ZonedDateTime
   ): Set<User>
 
   fun findOneByEmail(email: String): User

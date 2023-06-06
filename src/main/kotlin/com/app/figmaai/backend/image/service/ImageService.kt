@@ -88,6 +88,9 @@ class ImageService(
     if (user.subscriptionId.isNullOrEmpty() && user.energy < provider.energy.toBigDecimal()) {
       throw BadRequestException("Not enough energy. Start your subscription for unlimited generations")
     }
+    if (!user.subscriptionId.isNullOrEmpty() && user.generations <= 0) {
+      throw BadRequestException("You ran out of generations. Start new subscription to get more.")
+    }
 
     if (!hasSubscription(id)) {
       throw BadRequestException("Subscription expired")
@@ -118,9 +121,12 @@ class ImageService(
     }
     image.name = "Image #${image.imageId}"
     image.prompt = cleanPrompt
+
     imageRepository.save(image)
     if (user.subscriptionId.isNullOrEmpty()) {
       userEnergyService.spendEnergy(user, provider.energy.toBigDecimal())
+    } else {
+      user.generations -= 1
     }
 
     userService.save(user)

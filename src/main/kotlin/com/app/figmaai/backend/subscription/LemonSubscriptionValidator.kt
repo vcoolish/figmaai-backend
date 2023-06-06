@@ -43,6 +43,8 @@ class LemonSubscriptionValidator(
       renews_at = attrs.renews_at,
       ends_at = attrs.ends_at,
       created_at = attrs.created_at,
+      variant_id = attrs.variant_id,
+      trial_ends_at = attrs.trial_ends_at,
     )
   }
 

@@ -45,6 +45,7 @@ class PaypalSubscriptionValidator(
       status = sub.status!!,
       renews_at = sub.billing_info?.next_billing_time,
       created_at = sub.create_time,
+      variant_id = sub.plan_id,
     )
   }
 

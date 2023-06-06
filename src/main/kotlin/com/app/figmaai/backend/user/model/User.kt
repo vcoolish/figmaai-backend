@@ -80,4 +80,8 @@ class User : com.app.figmaai.backend.common.model.AbstractJpaPersistable<Long>()
   var isSubscribed: Boolean = false
 
   var lastSubscriptionData: ZonedDateTime? = null
+
+  var nextSubscriptionValidation: ZonedDateTime? = null
+
+  var generations: Long = 0L
 }

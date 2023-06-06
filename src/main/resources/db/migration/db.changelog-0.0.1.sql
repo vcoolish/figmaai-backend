@@ -187,3 +187,9 @@ ALTER TABLE oauth_tokens
 ALTER TABLE users
   ADD COLUMN subscription_provider VARCHAR(255) NOT NULL DEFAULT 'paypal';
 --rollback ALTER TABLE users;
+
+--changeset vcoolish:20230528143804
+ALTER TABLE users
+  ADD COLUMN generations BIGINT NOT NULL DEFAULT 0,
+  ADD COLUMN next_subscription_validation TIMESTAMP WITH TIME ZONE,;
+--rollback ALTER TABLE users;

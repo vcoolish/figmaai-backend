@@ -242,9 +242,9 @@
         <version>4.9.1</version>
         <configuration>
           <changeLogFile>./db/changelog.xml</changeLogFile>
-          <url>jdbc:postgresql://localhost:5432/postgres</url>
-          <username>postgres</username>
-          <password>postgres</password>
+          <url>jdbc:postgresql://ec2-52-45-200-167.compute-1.amazonaws.com:5432/d3019g42jgm2pp</url>
+          <username>amkuisiuxtpyab</username>
+          <password>f19538fbf2b3207738a1c04e045769d65d262aaa863551da4279b869dbea2520</password>
         </configuration>
         <dependencies>
           <dependency>

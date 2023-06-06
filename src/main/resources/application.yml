@@ -98,6 +98,7 @@ application:
   default-user-energy-limit: 30
   default-user-tokens-limit-per-day: 10
   energy-renew-rate: PT6H
+  subscription-validation-rate: PT24H
   lemon-key: ${LEMON_KEY}
   lemon-url: "https://api.lemonsqueezy.com"
 

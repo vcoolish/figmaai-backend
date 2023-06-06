@@ -33,16 +33,18 @@ class SubscriptionService(
     val subscription = when (provider) {
       SubscriptionProvider.paypal -> paypalValidator.status(id)
       SubscriptionProvider.lemon -> lemonValidator.status(id)
-      else -> error("Unknown provider")
+      SubscriptionProvider.google,
+      SubscriptionProvider.apple -> {
+        Subscription("active")
+      }
     }
     require(subscription.status == "active")
     val type = SubscriptionType.values().find { it.lemonId == subscription.variant_id }
-      ?: error("Unknown subscription plan")
 
     if (user.subscriptionId != id) {
       user.subscriptionId = id
       user.subscriptionProvider = provider
-      user.generations = type.tokens.toLong()
+      user.generations = type?.tokens?.toLong() ?: 800L
     }
     eventPublisher.publishEvent(UserSubscribedEvent())
     repository.save(user)
@@ -56,19 +58,22 @@ class SubscriptionService(
     return when (user.subscriptionProvider) {
       SubscriptionProvider.paypal -> paypalValidator.status(id)
       SubscriptionProvider.lemon -> lemonValidator.status(id)
-      else -> error("Unknown provider")
+      SubscriptionProvider.google,
+      SubscriptionProvider.apple -> {
+        Subscription("active")
+      }
     }
   }
 
   fun tryToValidateSubscription(user: User): User {
     sync.execute(user.id.toString()) {
       val subscription = getSubscription(user.email)
-      user.isSubscribed = subscription.status == "active"
+      user.isSubscribed = subscription.status == "active" && !user.subscriptionId.isNullOrEmpty()
       val now = ZonedDateTime.now()
       val shouldRenew = user.isSubscribed && (now.minusMonths(1).isAfter(user.lastSubscriptionData))
       if (shouldRenew) {
         user.generations = SubscriptionType.values().find { it.lemonId == subscription.variant_id }?.tokens?.toLong()
-          ?: error("Unknown subscription plan")
+          ?: 800
       }
 
       user.nextEnergyRenew = now.plus(appProperties.subscriptionValidationRate)

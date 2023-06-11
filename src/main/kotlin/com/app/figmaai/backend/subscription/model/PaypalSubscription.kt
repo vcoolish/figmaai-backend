@@ -1,6 +1,7 @@
 package com.app.figmaai.backend.subscription.model
 
 data class Subscription(
+  val id: String,
   val status: String,
   val renews_at: String? = null,
   val ends_at: String? = null,
@@ -12,7 +13,12 @@ data class LemonResponse(
   val data: LemonSubscription,
 )
 
+data class LemonListResponse(
+  val data: List<LemonSubscription>,
+)
+
 data class LemonSubscription(
+  val id: String,
   val attributes: SubscriptionAttributes,
 )
 
@@ -28,6 +34,7 @@ data class SubscriptionAttributes(
   val ends_at: String,
   val created_at: String,
   val variant_id: String,
+  val order_id: String?,
 )
 
 data class PaypalSubscription(

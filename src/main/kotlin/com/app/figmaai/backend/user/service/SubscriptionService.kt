@@ -35,14 +35,14 @@ class SubscriptionService(
       SubscriptionProvider.lemon -> lemonValidator.status(id)
       SubscriptionProvider.google,
       SubscriptionProvider.apple -> {
-        Subscription("active")
+        Subscription(id, "active")
       }
     }
     require(subscription.status == "active")
     val type = SubscriptionType.values().find { it.lemonId == subscription.variant_id }
 
-    if (user.subscriptionId != id) {
-      user.subscriptionId = id
+    if (user.subscriptionId != subscription.id) {
+      user.subscriptionId = subscription.id
       user.subscriptionProvider = provider
       user.generations = type?.tokens?.toLong() ?: 800L
     }
@@ -60,7 +60,7 @@ class SubscriptionService(
       SubscriptionProvider.lemon -> lemonValidator.status(id)
       SubscriptionProvider.google,
       SubscriptionProvider.apple -> {
-        Subscription("active")
+        Subscription(id, "active")
       }
     }
   }

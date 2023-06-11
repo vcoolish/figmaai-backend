@@ -1,7 +1,7 @@
 package com.app.figmaai.backend.subscription
 
 import com.app.figmaai.backend.config.properties.AppProperties
-import com.app.figmaai.backend.subscription.model.LemonResponse
+import com.app.figmaai.backend.subscription.model.LemonListResponse
 import com.app.figmaai.backend.subscription.model.Subscription
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -32,13 +32,21 @@ class LemonSubscriptionValidator(
 
     val requestEntity = HttpEntity<MultiValueMap<String, String>>(headers)
 
-    val attrs = restTemplate.exchange(
-      "${appProperties.paypalUrl}/v1/subscriptions/$id",
+    val orderId = restTemplate.exchange(
+      "${appProperties.paypalUrl}/v1/license-keys?key=$id",
       HttpMethod.GET,
       requestEntity,
-      LemonResponse::class.java,
-    ).body?.data?.attributes ?: throw Exception("Subscription not found")
+      LemonListResponse::class.java,
+    ).body?.data?.firstOrNull()?.attributes?.order_id ?: throw Exception("License key not found")
+    val response = restTemplate.exchange(
+      "${appProperties.paypalUrl}/v1/subscriptions?order_id=$orderId",
+      HttpMethod.GET,
+      requestEntity,
+      LemonListResponse::class.java,
+    ).body?.data?.firstOrNull() ?: throw Exception("Subscription not found")
+    val attrs = response.attributes
     return Subscription(
+      id = response.id,
       status = attrs.status,
       renews_at = attrs.renews_at,
       ends_at = attrs.ends_at,

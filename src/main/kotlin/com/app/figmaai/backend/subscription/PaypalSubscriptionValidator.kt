@@ -42,6 +42,7 @@ class PaypalSubscriptionValidator(
       PaypalSubscription::class.java,
     ).body ?: throw Exception("Subscription not found")
     return Subscription(
+      id = id,
       status = sub.status!!,
       renews_at = sub.billing_info?.next_billing_time,
       created_at = sub.create_time,

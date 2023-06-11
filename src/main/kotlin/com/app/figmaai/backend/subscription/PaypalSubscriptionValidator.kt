@@ -21,13 +21,13 @@ class PaypalSubscriptionValidator(
   private val restTemplate = RestTemplate()
 
   override fun validate(id: String) {
-    val status = status(id).status
+    val status = status(id, null).status
     if (status != "ACTIVE") {
       error("Subscription is not active")
     }
   }
 
-  override fun status(id: String): Subscription {
+  override fun status(id: String, licenseId: String?): Subscription {
     val headers = HttpHeaders()
     headers.contentType = MediaType.APPLICATION_JSON
     headers.add("Accept", "application/json")

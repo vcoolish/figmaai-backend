@@ -31,8 +31,8 @@ class SubscriptionService(
   fun updateSubscription(email: String, id: String, provider: SubscriptionProvider): User {
     val user = getUserByEmail(email)
     val subscription = when (provider) {
-      SubscriptionProvider.paypal -> paypalValidator.status(id)
-      SubscriptionProvider.lemon -> lemonValidator.status(id)
+      SubscriptionProvider.paypal -> paypalValidator.status(id, null)
+      SubscriptionProvider.lemon -> lemonValidator.status("", id)
       SubscriptionProvider.google,
       SubscriptionProvider.apple -> {
         Subscription(id, "active")
@@ -56,8 +56,8 @@ class SubscriptionService(
     val id = user.subscriptionId
       ?: throw BadRequestException("User ${user.email} has no subscription")
     return when (user.subscriptionProvider) {
-      SubscriptionProvider.paypal -> paypalValidator.status(id)
-      SubscriptionProvider.lemon -> lemonValidator.status(id)
+      SubscriptionProvider.paypal -> paypalValidator.status(id, null)
+      SubscriptionProvider.lemon -> lemonValidator.status(id, null)
       SubscriptionProvider.google,
       SubscriptionProvider.apple -> {
         Subscription(id, "active")

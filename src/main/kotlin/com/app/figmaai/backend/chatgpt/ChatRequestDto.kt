@@ -3,7 +3,7 @@ package com.app.figmaai.backend.chatgpt
 class ChatCopyrightRequestDto(
   val text: String,
   val mode: CopyrightMode,
-  val language: String? = "english",
+  val language: ChatGptLanguage?,
 )
 
 class UxRequestDto(
@@ -12,11 +12,11 @@ class UxRequestDto(
 )
 
 enum class CopyrightMode(val request: String) {
-  paraphrase("Paraphrase the following text."),
-  enlonger("Make the following text longer."),
-  enshorter("Make the following text shorter."),
-  translate("Translate the following text into %s language."),
-  fix("Correct grammatical errors in the following text without paraphrasing."),
+  paraphrase("paraphrase the following text"),
+  enlonger("make the following text longer"),
+  enshorter("make the following text shorter"),
+  translate("translation into %s"),
+  fix("correct grammatical errors in the following text"),
 }
 
 enum class UxMode(val value: String) {

@@ -35,7 +35,7 @@ class LemonSubscriptionValidator(
 
     if (licenseId.isNullOrEmpty()) {
       val attrs = restTemplate.exchange(
-        "${appProperties.paypalUrl}/v1/subscriptions/$id",
+        "${appProperties.lemonUrl}/v1/subscriptions/$id",
         HttpMethod.GET,
         requestEntity,
         LemonResponse::class.java,
@@ -51,13 +51,13 @@ class LemonSubscriptionValidator(
       )
     } else {
       val orderId = restTemplate.exchange(
-        "${appProperties.paypalUrl}/v1/license-keys?key=$licenseId",
+        "${appProperties.lemonUrl}/v1/license-keys?key=$licenseId",
         HttpMethod.GET,
         requestEntity,
         LemonListResponse::class.java,
       ).body?.data?.firstOrNull()?.attributes?.order_id ?: throw Exception("License key not found")
       val response = restTemplate.exchange(
-        "${appProperties.paypalUrl}/v1/subscriptions?order_id=$orderId",
+        "${appProperties.lemonUrl}/v1/subscriptions?order_id=$orderId",
         HttpMethod.GET,
         requestEntity,
         LemonListResponse::class.java,

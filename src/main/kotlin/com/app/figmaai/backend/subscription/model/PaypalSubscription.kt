@@ -33,8 +33,8 @@ data class SubscriptionAttributes(
   val renews_at: String,
   val ends_at: String,
   val created_at: String,
-  val variant_id: String,
-  val order_id: String?,
+  val variant_id: Int,
+  val order_id: Int?,
 )
 
 data class PaypalSubscription(

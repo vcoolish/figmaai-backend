@@ -22,7 +22,7 @@ enum class CopyrightMode(val request: String) {
 enum class UxMode(val value: String) {
   map(
     """
-      Your goal is to create Mind Maps. When creating a mind map, you should always base yourself on the following rules and represent it in json format:
+      Your goal is to create Mind Maps. When creating a mind map, you should always base yourself on the following rules and represent the result in JSON format:
       "Rules:
       1. Create a Mind Map based on the information provided, viz:
       - Goals/Objectives: The main goals or objectives of the project or business. - Success Metrics: Key Performance Indicators (KPIs) that will be used to
@@ -48,7 +48,7 @@ enum class UxMode(val value: String) {
   ),
   ujm(
     """
-    Your goal is to create user journey maps (UJM) based on the following template and represent it in json format: « Stage Name:
+    Your goal is to create user journey maps (UJM) based on the following template and represent the result in JSON format: « Stage Name:
       1. Actions: (What actions does the user take at this stage?)
       2. Touchpoints: (What parts of the system or service does the user interact
       with?)
@@ -74,7 +74,7 @@ enum class UxMode(val value: String) {
   ),
   persona(
     """
-    Your goal is to create user personas based on the following template and represent it in json format: «**1. Persona Name**
+    Your goal is to create user personas based on the following template and represent the result in JSON format: «**1. Persona Name**
       * The name of the persona.
        **2. Basic Information**
       * Age: Age of the persona.

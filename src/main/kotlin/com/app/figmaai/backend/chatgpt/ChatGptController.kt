@@ -14,11 +14,12 @@ class ChatGptController(
   @PostMapping("/copyright")
   fun copyright(
     @RequestBody @Valid copyrightDto: ChatCopyrightRequestDto,
-  ): ResponseEntity<String> = ResponseEntity.ok(
+  ): ResponseEntity<List<String>> = ResponseEntity.ok(
     chatGptService.copyright(
       text = copyrightDto.text,
       mode = copyrightDto.mode,
       language = copyrightDto.language?.name,
+      tone = copyrightDto.tone,
     ),
   )
 
@@ -26,7 +27,7 @@ class ChatGptController(
   fun uxBuilder(
     @RequestBody @Valid uxDto: UxRequestDto,
     @RequestHeader token: String,
-  ): ResponseEntity<String> = ResponseEntity.ok(
+  ): ResponseEntity<List<String>> = ResponseEntity.ok(
     chatGptService.uxBuilder(
       text = uxDto.text,
       mode = uxDto.mode,
@@ -40,6 +41,11 @@ class ChatGptController(
   @GetMapping("/copyright/languages")
   fun getCopyrightLanguages(): Map<String, String> = ChatGptLanguage.values().associate {
     it.name to it.code
+  }
+
+  @GetMapping("/copyright/tones")
+  fun getCopyrightTones(): Map<String, String> = ChatGptTone.values().associate {
+    it.name to it.value
   }
 
   @GetMapping("/ux-builder/modes")

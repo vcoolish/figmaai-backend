@@ -29,27 +29,29 @@ class ChatGptService(
     text: String,
     mode: CopyrightMode,
     language: String?,
-  ): String {
+    tone: ChatGptTone?,
+  ): List<String> {
     val instruction = when (mode) {
       CopyrightMode.translate -> {
         require(!language.isNullOrEmpty()) { "Language must be specified for translate mode" }
         String.format(mode.request, language)
       }
       else -> mode.request
-    }
-    return requestEdit(text, instruction)
+    } + " ${tone?.value ?: ""}"
+    val copies = mode.copies
+    return requestEdit(text, instruction.trim(), copies)
   }
 
   fun uxBuilder(
     text: String,
     mode: UxMode,
     token: String,
-  ): String {
+  ): List<String> {
 //    val userUuid = tokenProvider.createParser().parseClaimsJws(token).body.subject
     return requestChat("userUuid", text, mode.value)
   }
 
-  private fun requestChat(userUuid: String, prompt: String, instruction: String): String {
+  private fun requestChat(userUuid: String, prompt: String, instruction: String): List<String> {
     val headers = LinkedMultiValueMap<String, String>()
     headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
 
@@ -76,11 +78,11 @@ class ChatGptService(
       httpEntity,
       EditResponse::class.java
     )
-    return response.body?.choices?.fold("") { acc, it -> acc + it.message?.content }
+    return response.body?.choices?.map { it.message?.content ?: "" }
       ?: throw BadRequestException("Failed to create edit")
   }
 
-  private fun requestEdit(prompt: String, instruction: String): String {
+  private fun requestEdit(prompt: String, instruction: String, copies: Int): List<String> {
     val headers = LinkedMultiValueMap<String, String>()
     headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
 
@@ -88,6 +90,7 @@ class ChatGptService(
       model = ChatModel.DAVINCI.value,
       instruction = instruction,
       input = prompt,
+      n = copies,
     )
     headers.add("Content-Type", "application/json")
     val httpEntity: HttpEntity<*> = HttpEntity<Any>(body, headers)
@@ -98,7 +101,7 @@ class ChatGptService(
       httpEntity,
       EditResponse::class.java
     )
-    return response.body?.choices?.firstOrNull()?.text
+    return response.body?.choices?.map { it.text ?: "" }
       ?: throw BadRequestException("Failed to create edit")
   }
 }

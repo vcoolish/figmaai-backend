@@ -41,7 +41,7 @@ class User : com.app.figmaai.backend.common.model.AbstractJpaPersistable<Long>()
   lateinit var provider: AuthProvider
 
   @Enumerated(EnumType.STRING)
-  lateinit var subscriptionProvider: SubscriptionProvider
+  var subscriptionProvider: SubscriptionProvider? = null
 
   var googleId: String? = null
 

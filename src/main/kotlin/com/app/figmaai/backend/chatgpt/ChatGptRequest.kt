@@ -16,6 +16,7 @@ data class EditRequest(
   val model: String,
   val instruction: String,
   val input: String,
+  val n: Int,
 )
 
 enum class ChatModel(val value: String) {

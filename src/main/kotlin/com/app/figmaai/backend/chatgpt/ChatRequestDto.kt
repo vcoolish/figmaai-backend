@@ -4,6 +4,7 @@ class ChatCopyrightRequestDto(
   val text: String,
   val mode: CopyrightMode,
   val language: ChatGptLanguage?,
+  val tone: ChatGptTone?,
 )
 
 class UxRequestDto(
@@ -11,12 +12,12 @@ class UxRequestDto(
   val mode: UxMode,
 )
 
-enum class CopyrightMode(val request: String) {
-  paraphrase("paraphrase the following text"),
-  enlonger("make the following text longer"),
-  enshorter("make the following text shorter"),
-  translate("translation into %s"),
-  fix("correct grammatical errors in the following text"),
+enum class CopyrightMode(val request: String, val copies: Int) {
+  paraphrase("paraphrase the following text", 3),
+  enlonger("make the following text longer", 3),
+  enshorter("make the following text shorter", 3),
+  translate("translation into %s", 1),
+  fix("correct grammatical errors in the following text", 1),
 }
 
 enum class UxMode(val value: String) {

@@ -193,3 +193,8 @@ ALTER TABLE users
   ADD COLUMN generations BIGINT NOT NULL DEFAULT 0,
   ADD COLUMN next_subscription_validation TIMESTAMP WITH TIME ZONE;
 --rollback ALTER TABLE users;
+
+--changeset vcoolish:20230529143804
+ALTER TABLE users
+  ALTER COLUMN subscription_provider DROP NOT NULL;
+--rollback ALTER TABLE users;

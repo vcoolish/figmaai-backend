@@ -62,8 +62,8 @@ data class PaypalSubscription(
   }
 
   data class BillingInfo(
-    val cycle_executions: List<CycleExecution>,
-    val next_billing_time: String,
+    val cycle_executions: List<CycleExecution>?,
+    val next_billing_time: String?,
   ) {
 
     data class CycleExecution(

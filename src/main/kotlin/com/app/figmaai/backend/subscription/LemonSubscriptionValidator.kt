@@ -51,7 +51,7 @@ class LemonSubscriptionValidator(
       )
     } else {
       val orderId = restTemplate.exchange(
-        "${appProperties.paypalUrl}/v1/license-keys?key=$id",
+        "${appProperties.paypalUrl}/v1/license-keys?key=$licenseId",
         HttpMethod.GET,
         requestEntity,
         LemonListResponse::class.java,

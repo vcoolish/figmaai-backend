@@ -88,7 +88,7 @@ class ChatGptService(
       httpEntity,
       EditResponse::class.java
     )
-    return response.body?.choises?.firstOrNull()?.text
+    return response.body?.choices?.firstOrNull()?.text
       ?: throw BadRequestException("Failed to create edit")
   }
 }

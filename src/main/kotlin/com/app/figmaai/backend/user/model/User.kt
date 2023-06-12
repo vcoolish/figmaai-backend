@@ -84,4 +84,5 @@ class User : com.app.figmaai.backend.common.model.AbstractJpaPersistable<Long>()
   var nextSubscriptionValidation: ZonedDateTime? = null
 
   var generations: Long = 0L
+  var maxGenerations: Long = 0L
 }

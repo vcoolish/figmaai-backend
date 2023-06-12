@@ -40,9 +40,11 @@ class SubscriptionService(
     val type = SubscriptionType.values().find { it.lemonId == subscription.variant_id }
 
     if (user.subscriptionId != subscription.id) {
+      val maxGenerations = type?.tokens?.toLong() ?: 800L
       user.subscriptionId = subscription.id
       user.subscriptionProvider = provider
-      user.generations = type?.tokens?.toLong() ?: 800L
+      user.generations = maxGenerations
+      user.maxGenerations = maxGenerations
     }
     eventPublisher.publishEvent(UserSubscribedEvent())
     repository.save(user)
@@ -60,6 +62,7 @@ class SubscriptionService(
       SubscriptionProvider.apple -> {
         Subscription(id, "active")
       }
+      else -> throw BadRequestException("User ${user.email} has no subscription")
     }
   }
 
@@ -70,8 +73,10 @@ class SubscriptionService(
       val now = ZonedDateTime.now()
       val shouldRenew = user.isSubscribed && (now.minusMonths(1).isAfter(user.lastSubscriptionData))
       if (shouldRenew) {
-        user.generations = SubscriptionType.values().find { it.lemonId == subscription.variant_id }?.tokens?.toLong()
+        val maxGenerations = SubscriptionType.values().find { it.lemonId == subscription.variant_id }?.tokens?.toLong()
           ?: 800
+        user.generations = maxGenerations
+        user.maxGenerations = maxGenerations
       }
 
       user.nextEnergyRenew = now.plus(appProperties.subscriptionValidationRate)

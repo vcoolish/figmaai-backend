@@ -198,3 +198,8 @@ ALTER TABLE users
 ALTER TABLE users
   ALTER COLUMN subscription_provider DROP NOT NULL;
 --rollback ALTER TABLE users;
+
+--changeset vcoolish:20230530143804
+ALTER TABLE users
+  ADD COLUMN max_generations BIGINT NOT NULL DEFAULT 0;
+--rollback ALTER TABLE users;

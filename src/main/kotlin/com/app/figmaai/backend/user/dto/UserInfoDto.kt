@@ -8,4 +8,5 @@ open class UserInfoDto {
   lateinit var maxEnergy: BigDecimal
   var nextEnergyRenew: ZonedDateTime? = null
   var generations: Long = 0L
+  var maxGenerations: Long = 0L
 }

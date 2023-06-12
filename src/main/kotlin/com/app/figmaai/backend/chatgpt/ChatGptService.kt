@@ -39,8 +39,8 @@ class ChatGptService(
     mode: UxMode,
     token: String,
   ): String {
-    val userUuid = tokenProvider.createParser().parseClaimsJws(token).body.subject
-    return requestChat(userUuid, text, mode.value)
+//    val userUuid = tokenProvider.createParser().parseClaimsJws(token).body.subject
+    return requestChat("userUuid", text, mode.value)
   }
 
   private fun requestChat(userUuid: String, prompt: String, instruction: String): String {

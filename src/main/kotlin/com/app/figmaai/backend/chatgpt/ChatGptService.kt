@@ -72,7 +72,7 @@ class ChatGptService(
   private fun requestEdit(prompt: String, instruction: String): String {
     val headers = LinkedMultiValueMap<String, String>()
     headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
-    headers.add("OpenAI-Organization", "org-PPCMBOiIcK9DBzlYoBqyNeFJ")
+//    headers.add("OpenAI-Organization", "org-PPCMBOiIcK9DBzlYoBqyNeFJ")
 
     val body = EditRequest(
       model = ChatModel.DAVINCI.value,

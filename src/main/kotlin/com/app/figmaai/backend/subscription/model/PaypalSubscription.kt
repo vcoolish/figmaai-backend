@@ -23,17 +23,17 @@ data class LemonSubscription(
 )
 
 data class SubscriptionAttributes(
-  val user_email: String,
-  val status: String,
-  val status_formatted: String,
-  val pause: String,
-  val cancelled: Boolean,
-  val trial_ends_at: String,
-  val urls: Any,
-  val renews_at: String,
-  val ends_at: String,
-  val created_at: String,
-  val variant_id: Int,
+  val user_email: String?,
+  val status: String?,
+  val status_formatted: String?,
+  val pause: String?,
+  val cancelled: Boolean?,
+  val trial_ends_at: String?,
+  val urls: Any?,
+  val renews_at: String?,
+  val ends_at: String?,
+  val created_at: String?,
+  val variant_id: Int?,
   val order_id: Int?,
 )
 

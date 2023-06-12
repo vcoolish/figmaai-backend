@@ -42,7 +42,7 @@ class LemonSubscriptionValidator(
       ).body?.data?.attributes ?: throw Exception("Subscription not found")
       return Subscription(
         id = id,
-        status = attrs.status,
+        status = attrs.status!!,
         renews_at = attrs.renews_at,
         ends_at = attrs.ends_at,
         created_at = attrs.created_at,
@@ -65,7 +65,7 @@ class LemonSubscriptionValidator(
       val attrs = response.attributes
       return Subscription(
         id = response.id,
-        status = attrs.status,
+        status = attrs.status!!,
         renews_at = attrs.renews_at,
         ends_at = attrs.ends_at,
         created_at = attrs.created_at,

@@ -12,11 +12,11 @@ class UxRequestDto(
 )
 
 enum class CopyrightMode(val request: String) {
-  paraphrase("Paraphrase the following text.\n"),
-  enlonger("Make the following text longer.\n"),
-  enshorter("Make the following text shorter.\n"),
-  translate("Translate the following text into %s language.\n"),
-  fix("Correct grammatical errors in the following text without paraphrasing.\n"),
+  paraphrase("Paraphrase the following text."),
+  enlonger("Make the following text longer."),
+  enshorter("Make the following text shorter."),
+  translate("Translate the following text into %s language."),
+  fix("Correct grammatical errors in the following text without paraphrasing."),
 }
 
 enum class UxMode(val value: String) {

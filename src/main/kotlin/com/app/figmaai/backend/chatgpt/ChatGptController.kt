@@ -12,7 +12,7 @@ class ChatGptController(
 ) {
 
   @PostMapping("/copyright")
-  fun updateSubscription(
+  fun copyright(
     @RequestBody @Valid copyrightDto: ChatCopyrightRequestDto,
   ): ResponseEntity<String> = ResponseEntity.ok(
     chatGptService.copyright(
@@ -23,7 +23,7 @@ class ChatGptController(
   )
 
   @PostMapping("/ux-builder")
-  fun updateSubscription(
+  fun uxBuilder(
     @RequestBody @Valid uxDto: UxRequestDto,
     @RequestHeader token: String,
   ): ResponseEntity<String> = ResponseEntity.ok(

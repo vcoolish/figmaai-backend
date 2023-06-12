@@ -6,6 +6,7 @@ import com.app.figmaai.backend.user.repository.UserRepository
 import com.app.figmaai.backend.user.service.TokenProvider
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
@@ -17,7 +18,12 @@ class ChatGptService(
   private val userRepository: UserRepository,
 ) {
 
-  val restTemplate = RestTemplate()
+  val restTemplate = RestTemplate(
+    HttpComponentsClientHttpRequestFactory().apply {
+      setReadTimeout(60000)
+      setConnectTimeout(30000)
+    }
+  )
 
   fun copyright(
     text: String,

@@ -3,7 +3,7 @@ package com.app.figmaai.backend.subscription
 import com.app.figmaai.backend.subscription.model.Subscription
 import com.app.figmaai.backend.subscription.model.SubscriptionLink
 import com.app.figmaai.backend.user.dto.UserExtendedDto
-import com.app.figmaai.backend.chatgpt.UserSubscriptionDto
+import com.app.figmaai.backend.user.dto.UserSubscriptionDto
 import com.app.figmaai.backend.user.mapper.UserMapper
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*

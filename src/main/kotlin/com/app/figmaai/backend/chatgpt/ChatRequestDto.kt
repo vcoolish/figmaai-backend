@@ -22,7 +22,7 @@ enum class CopyrightMode(val request: String) {
 enum class UxMode(val value: String) {
   map(
     """
-      Your goal is to create Mind Maps. When creating a mind map, you should always base yourself on the following rules and represent the result in JSON format:
+      Your goal is to create Mind Maps. When creating a mind map, you should always base yourself on the following rules and represent the result in JSON tree format:
       "Rules:
       1. Create a Mind Map based on the information provided, viz:
       - Goals/Objectives: The main goals or objectives of the project or business. - Success Metrics: Key Performance Indicators (KPIs) that will be used to

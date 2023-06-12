@@ -1,11 +1,10 @@
-package com.app.figmaai.backend.user.controller
+package com.app.figmaai.backend.subscription
 
 import com.app.figmaai.backend.subscription.model.Subscription
 import com.app.figmaai.backend.subscription.model.SubscriptionLink
 import com.app.figmaai.backend.user.dto.UserExtendedDto
-import com.app.figmaai.backend.user.dto.UserSubscriptionDto
+import com.app.figmaai.backend.chatgpt.UserSubscriptionDto
 import com.app.figmaai.backend.user.mapper.UserMapper
-import com.app.figmaai.backend.user.service.SubscriptionService
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid

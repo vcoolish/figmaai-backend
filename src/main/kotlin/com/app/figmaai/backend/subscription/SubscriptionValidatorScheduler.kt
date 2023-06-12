@@ -1,7 +1,6 @@
-package com.app.figmaai.backend.user.scheduler
+package com.app.figmaai.backend.subscription
 
 import com.app.figmaai.backend.user.data.UserSubscribedEvent
-import com.app.figmaai.backend.user.service.SubscriptionService
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.TaskScheduler

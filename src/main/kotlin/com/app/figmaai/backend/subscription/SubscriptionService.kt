@@ -1,9 +1,7 @@
-package com.app.figmaai.backend.user.service
+package com.app.figmaai.backend.subscription
 
 import com.app.figmaai.backend.config.properties.AppProperties
 import com.app.figmaai.backend.exception.BadRequestException
-import com.app.figmaai.backend.subscription.LemonSubscriptionValidator
-import com.app.figmaai.backend.subscription.PaypalSubscriptionValidator
 import com.app.figmaai.backend.subscription.model.Subscription
 import com.app.figmaai.backend.subscription.model.SubscriptionType
 import com.app.figmaai.backend.user.data.UserSubscribedEvent

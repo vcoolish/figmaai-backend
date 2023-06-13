@@ -40,7 +40,7 @@ class SubscriptionService(
     val type = SubscriptionType.values().find { it.lemonId == subscription.variant_id }
 
     if (user.subscriptionId != subscription.id) {
-      val maxGenerations = type?.tokens?.toLong() ?: 800L
+      val maxGenerations = type?.generations?.toLong() ?: 800L
       user.subscriptionId = subscription.id
       user.subscriptionProvider = provider
       user.generations = maxGenerations
@@ -73,7 +73,7 @@ class SubscriptionService(
       val now = ZonedDateTime.now()
       val shouldRenew = user.isSubscribed && (now.minusMonths(1).isAfter(user.lastSubscriptionData))
       if (shouldRenew) {
-        val maxGenerations = SubscriptionType.values().find { it.lemonId == subscription.variant_id }?.tokens?.toLong()
+        val maxGenerations = SubscriptionType.values().find { it.lemonId == subscription.variant_id }?.generations?.toLong()
           ?: 800
         user.generations = maxGenerations
         user.maxGenerations = maxGenerations

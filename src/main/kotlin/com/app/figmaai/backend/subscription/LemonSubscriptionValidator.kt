@@ -4,6 +4,7 @@ import com.app.figmaai.backend.config.properties.AppProperties
 import com.app.figmaai.backend.subscription.model.LemonListResponse
 import com.app.figmaai.backend.subscription.model.LemonResponse
 import com.app.figmaai.backend.subscription.model.Subscription
+import com.app.figmaai.backend.subscription.model.SubscriptionType
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -63,8 +64,13 @@ class LemonSubscriptionValidator(
         LemonListResponse::class.java,
       ).body?.data?.firstOrNull() ?: throw Exception("Subscription not found")
       val attrs = response.attributes
+      val variant = attrs.variant_id.toString()
+      val type = SubscriptionType.values().first { it.lemonId == variant }
       return Subscription(
         id = response.id,
+        name = attrs.variant_name,
+        generations = type.generations,
+        tokens = type.tokens,
         status = attrs.status!!,
         renews_at = attrs.renews_at,
         ends_at = attrs.ends_at,

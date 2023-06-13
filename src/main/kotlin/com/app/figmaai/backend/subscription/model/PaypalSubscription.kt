@@ -3,6 +3,9 @@ package com.app.figmaai.backend.subscription.model
 data class Subscription(
   val id: String,
   val status: String,
+  val name: String? = null,
+  val generations: Int? = null,
+  val tokens: Int? = null,
   val renews_at: String? = null,
   val ends_at: String? = null,
   val created_at: String? = null,
@@ -33,6 +36,7 @@ data class SubscriptionAttributes(
   val renews_at: String?,
   val ends_at: String?,
   val created_at: String?,
+  val variant_name: String?,
   val variant_id: Int?,
   val order_id: Int?,
 )

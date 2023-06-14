@@ -1,5 +1,6 @@
 package com.app.figmaai.backend.subscription
 
+import com.app.figmaai.backend.common.util.logger
 import com.app.figmaai.backend.subscription.model.Subscription
 import com.app.figmaai.backend.subscription.model.SubscriptionLink
 import com.app.figmaai.backend.user.dto.UserExtendedDto
@@ -21,6 +22,14 @@ class SubscriptionController(
   ): UserExtendedDto = UserMapper.toExtendedDto(
     subscriptionService.updateSubscription(subscriptionDto.email, subscriptionDto.subscriptionId, subscriptionDto.provider),
   )
+
+  @PostMapping("/subscription-hook")
+  fun onSubscription(
+    @RequestBody body: Any,
+  ) {
+
+    logger().info("onSubscription: $body")
+  }
 
   @GetMapping("/subscription/{email}")
   fun getSubscription(

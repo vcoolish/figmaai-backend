@@ -1,6 +1,6 @@
 package com.app.figmaai.backend.subscription
 
-import com.app.figmaai.backend.common.util.logger
+import com.app.figmaai.backend.subscription.model.LemonResponse
 import com.app.figmaai.backend.subscription.model.Subscription
 import com.app.figmaai.backend.subscription.model.SubscriptionLink
 import com.app.figmaai.backend.user.dto.UserExtendedDto
@@ -25,10 +25,9 @@ class SubscriptionController(
 
   @PostMapping("/subscription-hook")
   fun onSubscription(
-    @RequestBody body: Any,
+    @RequestBody body: LemonResponse,
   ) {
-
-    logger().info("onSubscription: $body")
+    subscriptionService.updateSubscription(body)
   }
 
   @GetMapping("/subscription/{email}")

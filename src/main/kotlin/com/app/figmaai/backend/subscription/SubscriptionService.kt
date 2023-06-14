@@ -2,6 +2,7 @@ package com.app.figmaai.backend.subscription
 
 import com.app.figmaai.backend.config.properties.AppProperties
 import com.app.figmaai.backend.exception.BadRequestException
+import com.app.figmaai.backend.subscription.model.LemonResponse
 import com.app.figmaai.backend.subscription.model.Subscription
 import com.app.figmaai.backend.subscription.model.SubscriptionType
 import com.app.figmaai.backend.user.data.UserSubscribedEvent
@@ -46,6 +47,24 @@ class SubscriptionService(
       user.generations = maxGenerations
       user.maxGenerations = maxGenerations
     }
+    eventPublisher.publishEvent(UserSubscribedEvent())
+    repository.save(user)
+    return user
+  }
+
+  fun updateSubscription(body: LemonResponse): User {
+    val attrs = body.data.attributes
+    val user = getUserByEmail(attrs.user_email ?: error("User email is null"))
+    val type = SubscriptionType.values().find { it.lemonId == attrs.variant_id.toString() }
+    val subscriptionId = body.data.id
+    if (user.subscriptionId != subscriptionId) {
+      val maxGenerations = type?.generations?.toLong() ?: 800L
+      user.subscriptionId = subscriptionId
+      user.subscriptionProvider = SubscriptionProvider.lemon
+      user.generations = maxGenerations
+      user.maxGenerations = maxGenerations
+    }
+    user.isSubscribed = attrs.status == "active"
     eventPublisher.publishEvent(UserSubscribedEvent())
     repository.save(user)
     return user

@@ -31,7 +31,7 @@ class SubscriptionService(
     val user = getUserByEmail(email)
     val subscription = when (provider) {
       SubscriptionProvider.paypal -> paypalValidator.status(id, null)
-      SubscriptionProvider.lemon -> lemonValidator.status("", id)
+      SubscriptionProvider.lemon -> lemonValidator.status(id, null)
       SubscriptionProvider.google,
       SubscriptionProvider.apple -> {
         Subscription(id, "active")

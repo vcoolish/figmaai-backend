@@ -10,6 +10,7 @@ data class Subscription(
   val ends_at: String? = null,
   val created_at: String? = null,
   val trial_ends_at: String? = null,
+  val order_id: String? = null,
   val variant_id: String? = null,
   val urls: Any? = null,
 )

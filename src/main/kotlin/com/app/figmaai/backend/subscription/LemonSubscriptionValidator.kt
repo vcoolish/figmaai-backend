@@ -58,6 +58,7 @@ class LemonSubscriptionValidator(
         created_at = attrs.created_at,
         variant_id = variant,
         trial_ends_at = attrs.trial_ends_at,
+        order_id = attrs.order_id.toString(),
         urls = attrs.urls,
       )
     } else {

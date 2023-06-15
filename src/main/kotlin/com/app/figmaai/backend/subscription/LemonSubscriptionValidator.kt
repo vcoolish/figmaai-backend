@@ -54,6 +54,7 @@ class LemonSubscriptionValidator(
         created_at = attrs.created_at,
         variant_id = variant,
         trial_ends_at = attrs.trial_ends_at,
+        urls = attrs.urls,
       )
     } else {
       val orderId = restTemplate.exchange(
@@ -82,6 +83,7 @@ class LemonSubscriptionValidator(
         created_at = attrs.created_at,
         variant_id = attrs.variant_id.toString(),
         trial_ends_at = attrs.trial_ends_at,
+        urls = attrs.urls,
       )
     }
   }

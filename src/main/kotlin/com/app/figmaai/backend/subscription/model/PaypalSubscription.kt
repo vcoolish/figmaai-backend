@@ -11,6 +11,7 @@ data class Subscription(
   val created_at: String? = null,
   val trial_ends_at: String? = null,
   val variant_id: String? = null,
+  val urls: Any? = null,
 )
 data class LemonResponse(
   val data: LemonSubscription,

@@ -41,13 +41,18 @@ class LemonSubscriptionValidator(
         requestEntity,
         LemonResponse::class.java,
       ).body?.data?.attributes ?: throw Exception("Subscription not found")
+      val variant = attrs.variant_id.toString()
+      val type = SubscriptionType.values().first { it.lemonId == variant }
       return Subscription(
         id = id,
+        name = attrs.variant_name,
+        generations = type.generations,
+        tokens = type.tokens,
         status = attrs.status!!,
         renews_at = attrs.renews_at,
         ends_at = attrs.ends_at,
         created_at = attrs.created_at,
-        variant_id = attrs.variant_id.toString(),
+        variant_id = variant,
         trial_ends_at = attrs.trial_ends_at,
       )
     } else {

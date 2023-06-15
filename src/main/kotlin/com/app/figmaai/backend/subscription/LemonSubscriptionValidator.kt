@@ -1,5 +1,6 @@
 package com.app.figmaai.backend.subscription
 
+import com.app.figmaai.backend.common.util.logger
 import com.app.figmaai.backend.config.properties.AppProperties
 import com.app.figmaai.backend.subscription.model.LemonListResponse
 import com.app.figmaai.backend.subscription.model.LemonResponse
@@ -34,13 +35,16 @@ class LemonSubscriptionValidator(
 
     val requestEntity = HttpEntity<MultiValueMap<String, String>>(headers)
 
+    logger().info(id)
     if (licenseId.isNullOrEmpty()) {
-      val attrs = restTemplate.exchange(
+      val body = restTemplate.exchange(
         "${appProperties.lemonUrl}/v1/subscriptions/$id",
         HttpMethod.GET,
         requestEntity,
         LemonResponse::class.java,
-      ).body?.data?.attributes ?: throw Exception("Subscription not found")
+      ).body
+      val attrs = body?.data?.attributes ?: throw Exception("Subscription not found")
+      logger().info(body.toString())
       val variant = attrs.variant_id.toString()
       val type = SubscriptionType.values().first { it.lemonId == variant }
       return Subscription(

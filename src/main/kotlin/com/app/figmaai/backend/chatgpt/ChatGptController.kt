@@ -36,7 +36,9 @@ class ChatGptController(
   )
 
   @GetMapping("/copyright/modes")
-  fun getCopyrightModes(): Array<CopyrightMode> = CopyrightMode.values()
+  fun getCopyrightModes(): Map<String, String> = CopyrightMode.values().associate {
+    it.name to it.title
+  }
 
   @GetMapping("/copyright/languages")
   fun getCopyrightLanguages(): Map<String, String> = ChatGptLanguage.values().associate {
@@ -45,7 +47,7 @@ class ChatGptController(
 
   @GetMapping("/copyright/tones")
   fun getCopyrightTones(): Map<String, String> = ChatGptTone.values().associate {
-    it.name to it.value
+    it.name to it.title
   }
 
   @GetMapping("/ux-builder/modes")

@@ -39,7 +39,8 @@ class ChatGptService(
       else -> mode.request
     } + " ${tone?.value ?: ""}"
     val copies = mode.copies
-    return requestEdit(text, instruction.trim(), copies)
+//    return requestEdit(text, instruction.trim(), copies)
+    return requestChat("userUuid", text, instruction.trim(), copies)
   }
 
   fun uxBuilder(
@@ -51,7 +52,7 @@ class ChatGptService(
     return requestChat("userUuid", text, mode.value)
   }
 
-  private fun requestChat(userUuid: String, prompt: String, instruction: String): List<String> {
+  private fun requestChat(userUuid: String, prompt: String, instruction: String, copies: Int = 1): List<String> {
     val headers = LinkedMultiValueMap<String, String>()
     headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
 
@@ -68,6 +69,7 @@ class ChatGptService(
         ),
       ),
       user = userUuid,
+      n = copies,
     )
     headers.add("Content-Type", "application/json")
     val httpEntity: HttpEntity<*> = HttpEntity<Any>(body, headers)

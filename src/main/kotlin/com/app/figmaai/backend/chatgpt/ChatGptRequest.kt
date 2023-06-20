@@ -4,6 +4,7 @@ data class ChatGptRequest(
   val model: String,
   val user: String,
   val messages: List<CharMessage>,
+  val n: Int,
 ) {
 
   data class CharMessage(

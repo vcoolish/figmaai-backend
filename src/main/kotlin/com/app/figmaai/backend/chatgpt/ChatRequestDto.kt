@@ -20,32 +20,15 @@ enum class CopyrightMode(val request: String, val copies: Int, val title: String
   translate("translation into %s", 1, "Translate to"),
 }
 
-enum class UxMode(val value: String) {
-  map(
-    """
-      Your goal is to create Mind Maps. When creating a mind map, you should always base yourself on the following rules and represent the result in JSON tree format:
-      "Rules:
-      1. Create a Mind Map based on the information provided, viz:
-      - Goals/Objectives: The main goals or objectives of the project or business. - Success Metrics: Key Performance Indicators (KPIs) that will be used to
-      measure the success of the project or business.
-      - Stakeholders: People or groups who are interested or involved in the project or
-      business.
-      2. Identify the central node: This node is the main theme or idea of the mind map. It will be defined based on the information provided (goals/objectives, success metrics, stakeholders). The central node should always fit into a concise sentence, ideally 3-4 words. Label it "Central Node:".
-      3. Main branches diverging from the central node: The main branches diverging from the central node will be determined based on the specific context of the information provided. Main nodes should also fit into 1-3 words if possible. Label them as "Main Node 1:", "Main Node 2:", etc.
-      4. Add sub-nodes: These sub-nodes represent the details of the main branches. The number and depth of the sub-nodes depends on the complexity of the information provided. There is no limit to the number of sub-nodes. Label them as "Node 1.1:", "Node 1.2:", etc.
-      5. Add sub-nodes: These sub-nodes represent the details of the sub-nodes. The number and depth of the sub-branches depends on the complexity of the information provided. There is no limit to the number of sub-branches. Label them as "Sub-branch 1.1:", "Sub-branch 1.2:", etc.
-      6. Describe each sub-industry in detail: Each sub-industry should be described in detail based on the information provided and how it relates to the main industry from which it originated.
-      7. Visual representation: The map should visually represent the hierarchy and connections between the central node, major branches and sub-branches.
-      8. Whenever I tell you to create a mental map, always follow all the rules without exception.
-      9. If I don't give any information on goals/objectives, indicators of success, or stakeholders, don't create a map.
-      10. Every time I tell you to make a mental map, you must follow the latest updated version of the rules. Remember to follow every rule item.
-      11. Every time you are told to create a mind map, create it the way a senior UX designer with 10 years of experience would.
-      12. If some of the information from the Goals/Objectives, Success Metrics, Stakeholders sections is not provided, still try to create a mind map, but remember to do it within the given limits.
-      13. Since the structure of the map can vary depending on the information provided, always create the map according to the following scheme: 1 central
-      node, 4 main nodes, 3 sub-nodes for each main node, 3 sub-branches for each sub-node.
-      14. Use the information provided in the Goals/Actions, Metrics for Success, Stakeholders sections as a context for analysis to determine the structure of the mind map. Do not include this information directly into the mind map.
-      15. The central node in the mind map must fit into 3-4 words at most." . Always follow each point of these rules without exception.
-    """.trimIndent()
+enum class UxMode(val value: String, val title: String, val inputs: Map<String, String>) {
+  userflow(
+    "",
+    "User flow",
+    mapOf(
+      "Product description" to "A mobile app for safely buying, sending, and storing your crypto assets",
+      "User persona" to "32-year-old crypto investor from London wants to find a way to safely store his assets. Flow Scenario",
+      "Flow Scenario" to "Connect a wallet when using the app for the first time",
+    ),
   ),
   ujm(
     """
@@ -71,9 +54,15 @@ enum class UxMode(val value: String) {
       with 10 years of experience would.
       9. Always create a UJM based on the last updated version of the rules." .
       Always follow each point of these rules without exception.
-    """.trimIndent()
+    """.trimIndent(),
+    "UJM",
+    mapOf(
+      "Product description" to "A mobile app for safely buying, sending, and storing your crypto assets",
+      "User persona" to "32-year-old crypto investor from London wants to find a way to safely store his assets. Flow Scenario",
+      "Scenario" to "User browsing the App Store for crypto apps",
+    ),
   ),
-  persona(
+  userpersona(
     """
     Your goal is to create user personas based on the following template and represent the result in JSON format: «**1. Persona Name**
       * The name of the persona.
@@ -117,6 +106,51 @@ enum class UxMode(val value: String) {
       10. Every time I tell you to create a user persona, always create it based on the latest version of the user persona creation rules.
       11. Whenever I tell you to create a user persona, make sure that you are going to follow all the rules without exception." .
       Always follow each point of these rules without exception.
-     """.trimIndent()
+     """.trimIndent(),
+    "User persona",
+    mapOf(
+      "Product description" to "A mobile app for safely buying, sending, and storing your crypto assets",
+    ),
+  ),
+  mindmap(
+    """
+      Your goal is to create Mind Maps. When creating a mind map, you should always base yourself on the following rules and represent the result in JSON tree format:
+      "Rules:
+      1. Create a Mind Map based on the information provided, viz:
+      - Goals/Objectives: The main goals or objectives of the project or business. - Success Metrics: Key Performance Indicators (KPIs) that will be used to
+      measure the success of the project or business.
+      - Stakeholders: People or groups who are interested or involved in the project or
+      business.
+      2. Identify the central node: This node is the main theme or idea of the mind map. It will be defined based on the information provided (goals/objectives, success metrics, stakeholders). The central node should always fit into a concise sentence, ideally 3-4 words. Label it "Central Node:".
+      3. Main branches diverging from the central node: The main branches diverging from the central node will be determined based on the specific context of the information provided. Main nodes should also fit into 1-3 words if possible. Label them as "Main Node 1:", "Main Node 2:", etc.
+      4. Add sub-nodes: These sub-nodes represent the details of the main branches. The number and depth of the sub-nodes depends on the complexity of the information provided. There is no limit to the number of sub-nodes. Label them as "Node 1.1:", "Node 1.2:", etc.
+      5. Add sub-nodes: These sub-nodes represent the details of the sub-nodes. The number and depth of the sub-branches depends on the complexity of the information provided. There is no limit to the number of sub-branches. Label them as "Sub-branch 1.1:", "Sub-branch 1.2:", etc.
+      6. Describe each sub-industry in detail: Each sub-industry should be described in detail based on the information provided and how it relates to the main industry from which it originated.
+      7. Visual representation: The map should visually represent the hierarchy and connections between the central node, major branches and sub-branches.
+      8. Whenever I tell you to create a mental map, always follow all the rules without exception.
+      9. If I don't give any information on goals/objectives, indicators of success, or stakeholders, don't create a map.
+      10. Every time I tell you to make a mental map, you must follow the latest updated version of the rules. Remember to follow every rule item.
+      11. Every time you are told to create a mind map, create it the way a senior UX designer with 10 years of experience would.
+      12. If some of the information from the Goals/Objectives, Success Metrics, Stakeholders sections is not provided, still try to create a mind map, but remember to do it within the given limits.
+      13. Since the structure of the map can vary depending on the information provided, always create the map according to the following scheme: 1 central
+      node, 4 main nodes, 3 sub-nodes for each main node, 3 sub-branches for each sub-node.
+      14. Use the information provided in the Goals/Actions, Metrics for Success, Stakeholders sections as a context for analysis to determine the structure of the mind map. Do not include this information directly into the mind map.
+      15. The central node in the mind map must fit into 3-4 words at most." . Always follow each point of these rules without exception.
+    """.trimIndent(),
+    "Mind map",
+    mapOf(
+      "Goals/Objectives" to "Create AI support chat-bot as a SaaS application for businesses",
+      "Metrics for Success" to "5000 active users by the end of the year",
+      "Stakeholders" to "Business Owners, Clients of businesses",
+    ),
+  ),
+  sitemap(
+    "",
+    "Sitemap",
+    mapOf(
+      "Main sections and pages of the site" to "Home page, Login page, User office, Privacy policy, Terms of use, Blog.",
+      "Navigation structure" to "Home page-Login page-User office",
+      "User flow" to "User logs in to his account and goes to his personal cabinet to manage the subscription",
+    ),
   )
 }

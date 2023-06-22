@@ -51,5 +51,7 @@ class ChatGptController(
   }
 
   @GetMapping("/ux-builder/modes")
-  fun getUxModes(): Array<UxMode> = UxMode.values()
+  fun getUxModes(): List<ModeResponse> = UxMode.values().map {
+    ModeResponse(it.name, it.title, it.inputs)
+  }
 }

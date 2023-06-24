@@ -31,16 +31,21 @@ class ChatGptService(
     language: String?,
     tone: ChatGptTone?,
   ): List<String> {
-    val instruction = when (mode) {
+    val request = when (mode) {
       CopyrightMode.translate -> {
         require(!language.isNullOrEmpty()) { "Language must be specified for translate mode" }
-        String.format(mode.request, language)
+        String.format(mode.request, language, tone?.value ?: "", text)
       }
-      else -> mode.request
-    } + " ${tone?.value ?: ""}"
+      else -> String.format(mode.request, tone?.value ?: "", text)
+    }
     val copies = mode.copies
 //    return requestEdit(text, instruction.trim(), copies)
-    return requestChat("userUuid", text, instruction.trim(), copies)
+    return requestChat(
+      userUuid = "userUuid",
+      prompt = request.trim(),
+      instruction = mode.system,
+      copies = copies,
+    )
   }
 
   fun uxBuilder(

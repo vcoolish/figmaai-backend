@@ -237,25 +237,25 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
                 "title": "Sub Node 1 title",
                 "sub_sub_nodes": [
                   {
-                    "title": "Sub Sub Node 1 title",
+                    "title": "Sub Sub Node 1 title"
                   },
                   {
-                    "title": "Sub Sub Node 2 title",
-                  },
-                ],
+                    "title": "Sub Sub Node 2 title"
+                  }
+                ]
               },
               {
                 "title": "Sub Node 2 title",
                 "sub_sub_nodes": [
                   {
-                    "title": "Sub Sub Node 1 title",
+                    "title": "Sub Sub Node 1 title"
                   },
                   {
-                    "title": "Sub Sub Node 2 title",
-                  },
-                ],
-              },
-            ],
+                    "title": "Sub Sub Node 2 title"
+                  }
+                ]
+              }
+            ]
           },
           {
             "title": "Main Node 2 title",
@@ -264,26 +264,26 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
                 "title": "Sub Node 1 title",
                 "sub_sub_nodes": [
                   {
-                    "title": "Sub Sub Node 1 title",
+                    "title": "Sub Sub Node 1 title"
                   },
                   {
-                    "title": "Sub Sub Node 2 title",
-                  },
-                ],
+                    "title": "Sub Sub Node 2 title"
+                  }
+                ]
               },
               {
                 "title": "Sub Node 2 title",
                 "sub_sub_nodes": [
                   {
-                    "title": "Sub Sub Node 1 title",
+                    "title": "Sub Sub Node 1 title"
                   },
                   {
-                    "title": "Sub Sub Node 2 title",
-                  },
-                ],
-              },
-            ],
-          },
+                    "title": "Sub Sub Node 2 title"
+                  }
+                ]
+              }
+            ]
+          }
         ]
       }
       "Rules:

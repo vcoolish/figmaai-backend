@@ -90,13 +90,67 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
   ),
   ujm(
     """
-    Your goal is to create user journey maps (UJM) based on the following template and represent the result in JSON format: « Stage Name:
-      1. Actions: (What actions does the user take at this stage?)
-      2. Touchpoints: (What parts of the system or service does the user interact
-      with?)
-      3. User Thoughts: (What might the user be thinking at this stage?)
-      4. User Feelings: (What might the user be feeling at this stage?)
-      5. Pain Points: (What issues or obstacles does the user encounter at this stage?) 6. Opportunities: (Are there any opportunities for improvement at this stage?) This template should be filled out for each stage of the user's journey, from the beginning to the end of their interaction with the service or system. The number of stages can vary depending on the complexity of the user's journey and the depth of the analysis required.».
+    Your goal is to create user journey maps (UJM) based on the following template and represent the result in JSON format: 
+    {
+      "stages": [
+        {
+          "stage": "Stage 1",
+          "actions": [
+            "Action 1",
+            "Action 2"
+          ],
+          "touchpoints": [
+            "Touchpoint 1",
+            "Touchpoint 2"
+          ],
+          "user_thoughts": [
+            "User thought 1",
+            "User thought 2"
+          ],
+          "user_feelings": [
+            "User feeling 1",
+            "User feeling 2"
+          ],
+          "pain_points": [
+            "Pain point 1",
+            "Pain point 2"
+          ],
+          "opportunities": [
+            "Opportunity 1",
+            "Opportunity 2"
+          ]
+        },
+        {
+          "stage": "Stage 2",
+          "actions": [
+            "Action 1",
+            "Action 2"
+          ],
+          "touchpoints": [
+            "Touchpoint 1",
+            "Touchpoint 2"
+          ],
+          "user_thoughts": [
+            "User thought 1",
+            "User thought 2"
+          ],
+          "user_feelings": [
+            "User feeling 1",
+            "User feeling 2"
+          ],
+          "pain_points": [
+            "Pain point 1",
+            "Pain point 2"
+          ],
+          "opportunities": [
+            "Opportunity 1",
+            "Opportunity 2"
+          ]
+        }
+      ]
+    }
+      
+      This template should be filled out for each stage of the user's journey, from the beginning to the end of their interaction with the service or system. The number of stages can vary depending on the complexity of the user's journey and the depth of the analysis required.».
       When creating a UJM, you should always base yourself on the following rules: "Always create a UJM based on the last updated version of the template.
       1. Create a UJM based on information provided which always will be User Persona, Scenario/Context, and Project Description.
       2. Every time you are told to create a UJM but the rules aren't mentioned - always follow the rules anyway.

@@ -227,6 +227,65 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
   mindmap(
     """
       Your goal is to create Mind Maps. When creating a mind map, you should always base yourself on the following rules and represent the result in JSON tree format:
+      {
+        "central_node": "Central Node:",
+        "main_nodes": [
+          {
+            "title": "Main Node 1 title",
+            "sub_nodes": [
+              {
+                "title": "Sub Node 1 title",
+                "sub_sub_nodes": [
+                  {
+                    "title": "Sub Sub Node 1 title",
+                  },
+                  {
+                    "title": "Sub Sub Node 2 title",
+                  },
+                ],
+              },
+              {
+                "title": "Sub Node 2 title",
+                "sub_sub_nodes": [
+                  {
+                    "title": "Sub Sub Node 1 title",
+                  },
+                  {
+                    "title": "Sub Sub Node 2 title",
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            "title": "Main Node 2 title",
+            "sub_nodes": [
+              {
+                "title": "Sub Node 1 title",
+                "sub_sub_nodes": [
+                  {
+                    "title": "Sub Sub Node 1 title",
+                  },
+                  {
+                    "title": "Sub Sub Node 2 title",
+                  },
+                ],
+              },
+              {
+                "title": "Sub Node 2 title",
+                "sub_sub_nodes": [
+                  {
+                    "title": "Sub Sub Node 1 title",
+                  },
+                  {
+                    "title": "Sub Sub Node 2 title",
+                  },
+                ],
+              },
+            ],
+          },
+        ]
+      }
       "Rules:
       1. Create a Mind Map based on the information provided, viz:
       - Goals/Objectives: The main goals or objectives of the project or business. - Success Metrics: Key Performance Indicators (KPIs) that will be used to

@@ -94,7 +94,7 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
     {
       "stages": [
         {
-          "stage": "Stage 1",
+          "stage": "Stage 1 title",
           "actions": [
             "Action 1",
             "Action 2"
@@ -121,7 +121,7 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
           ]
         },
         {
-          "stage": "Stage 2",
+          "stage": "Stage 2 title",
           "actions": [
             "Action 1",
             "Action 2"

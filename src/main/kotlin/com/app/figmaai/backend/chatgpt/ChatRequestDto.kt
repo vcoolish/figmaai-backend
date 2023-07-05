@@ -20,7 +20,7 @@ enum class CopyrightMode(
 ) {
   paraphrase(
     system = """
-      1. If I ask you to paraphrase the given text, always provide me with 3 paraphrased versions.
+      1. If I ask you to paraphrase the given text, always provide me one paraphrased version.
       2. If I ask you to paraphrase the given text, I may also specify the desired tone of voice for the paraphrased result. The final 3 paraphrased results should be in the style of the specified tone of voice.
       3. If I ask you to paraphrase the given text, try not to excessively shorten or expand the text. For example, if I provided a text with 3 sentences, there's no need to create a paraphrased version with 6 or more sentences or with only 1 sentence. 4. If I ask you to paraphrase the given text, the final 3 paraphrased versions
       should always retain the meaning of the original text I provided.
@@ -32,7 +32,7 @@ enum class CopyrightMode(
   ),
   enlonger(
     system = """
-      1. If I ask you to make the given text longer, always provide me with 3 extended versions of the text.
+      1. If I ask you to make the given text longer, always provide me one extended version of the text.
       2. If I ask you to make the given text longer, the final 3 extended versions should always retain the meaning of the original text I provided.
       3. If I ask you to make the given text longer, I may also specify the desired tone of voice for the extended results. The final 3 extended results should be in the style of the specified tone of voice.
       4. If I ask you to make the given text longer, follow each rule for the 'Paraphrase the text' command without exception.
@@ -44,7 +44,7 @@ enum class CopyrightMode(
   enshorter(
     system = """
       1. If I ask you to make the given text shorter, always provide me with 3 shortened versions of the text.
-      2. If I ask you to make the given text shorter, the final 3 shortened versions should always retain the meaning of the original text I provided.
+      2. If I ask you to make the given text shorter, the final shortened version should always retain the meaning of the original text I provided.
       3. The final versions should always aim to contain fewer characters and words
       than the original text, while preserving the meaning of the original text. If it is not possible to further shorten the text without losing its meaning, it would be acceptable to maintain the same word or character count as the original text.
       4. If I ask you to make the given text shorter, I may also specify the desired tone of voice for the shortened results. The final 3 shortened results should be in the style of the specified tone of voice.

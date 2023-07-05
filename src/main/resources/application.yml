@@ -75,6 +75,8 @@ web-security:
         - /figma/*
         - /images/**
         - /authorize
+        - /copyright
+        - /ux-builder
     - methods: PATCH
       paths:
         - /figma/**
@@ -86,6 +88,8 @@ web-security:
     - methods: GET
       paths:
         - /images/**
+        - /copyright/**
+        - /ux-builder/**
 
 application:
   sig-key: ${SIG_KEY}

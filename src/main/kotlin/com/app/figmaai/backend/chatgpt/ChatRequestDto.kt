@@ -43,7 +43,7 @@ enum class CopyrightMode(
   ),
   enshorter(
     system = """
-      1. If I ask you to make the given text shorter, always provide me with 3 shortened versions of the text.
+      1. If I ask you to make the given text shorter, always provide me one shortened version of the text.
       2. If I ask you to make the given text shorter, the final shortened version should always retain the meaning of the original text I provided.
       3. The final versions should always aim to contain fewer characters and words
       than the original text, while preserving the meaning of the original text. If it is not possible to further shorten the text without losing its meaning, it would be acceptable to maintain the same word or character count as the original text.

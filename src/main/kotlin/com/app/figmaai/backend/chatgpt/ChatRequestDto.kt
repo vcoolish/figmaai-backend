@@ -20,7 +20,7 @@ enum class CopyrightMode(
 ) {
   paraphrase(
     system = """
-      1. If I ask you to paraphrase the given text, always provide me one paraphrased version.
+      1. If I ask you to paraphrase the given text, always provide me one paraphrased version. No other content should be in your answer.
       2. If I ask you to paraphrase the given text, I may also specify the desired tone of voice for the paraphrased result. The final 3 paraphrased results should be in the style of the specified tone of voice.
       3. If I ask you to paraphrase the given text, try not to excessively shorten or expand the text. For example, if I provided a text with 3 sentences, there's no need to create a paraphrased version with 6 or more sentences or with only 1 sentence. 4. If I ask you to paraphrase the given text, the final 3 paraphrased versions
       should always retain the meaning of the original text I provided.
@@ -32,7 +32,7 @@ enum class CopyrightMode(
   ),
   enlonger(
     system = """
-      1. If I ask you to make the given text longer, always provide me one extended version of the text.
+      1. If I ask you to make the given text longer, always provide me one extended version of the text. No other content should be in your answer.
       2. If I ask you to make the given text longer, the final 3 extended versions should always retain the meaning of the original text I provided.
       3. If I ask you to make the given text longer, I may also specify the desired tone of voice for the extended results. The final 3 extended results should be in the style of the specified tone of voice.
       4. If I ask you to make the given text longer, follow each rule for the 'Paraphrase the text' command without exception.
@@ -43,7 +43,7 @@ enum class CopyrightMode(
   ),
   enshorter(
     system = """
-      1. If I ask you to make the given text shorter, always provide me one shortened version of the text.
+      1. If I ask you to make the given text shorter, always provide me one shortened version of the text. No other content should be in your answer.
       2. If I ask you to make the given text shorter, the final shortened version should always retain the meaning of the original text I provided.
       3. The final versions should always aim to contain fewer characters and words
       than the original text, while preserving the meaning of the original text. If it is not possible to further shorten the text without losing its meaning, it would be acceptable to maintain the same word or character count as the original text.
@@ -56,7 +56,7 @@ enum class CopyrightMode(
   ),
   fix(
     system = """
-      1. If I ask you to correct errors in the given text, you should correct grammatical errors in that text. For example, if a word is misspelled, if a word is in the wrong position within the sentence, if a comma is missing, and so on.
+      1. If I ask you to correct errors in the given text, you should correct grammatical errors in that text. For example, if a word is misspelled, if a word is in the wrong position within the sentence, if a comma is missing, and so on. No other content should be in your answer.
       2. If I ask you to correct errors in the given text, you should not paraphrase the text by replacing words with synonyms.
       3. If I ask you to correct errors in the given text, always provide me with 1 corrected version of the original text.
       4. If I ask you to correct errors in the given text, follow each rule for the 'Correct errors in the text' command.
@@ -67,7 +67,7 @@ enum class CopyrightMode(
   ),
   translate(
     system = """
-      1. If I ask you to translate the given text into the specified language, you should provide me with 1 translated result.
+      1. If I ask you to translate the given text into the specified language, you should provide me with 1 translated result. No other content should be in your answer.
       2. If I ask you to translate the given text into the specified language, keep in mind that I can provide the text in any language and specify which language to translate it into.
       3.If I ask you to translate the given text into the specifiled language, the final paraphrased version should always retain the meaning of the original text I provided.
       3. If I ask you to translate the given text into the specified language, follow each rule for the 'Translate the text into another language' command without exception.

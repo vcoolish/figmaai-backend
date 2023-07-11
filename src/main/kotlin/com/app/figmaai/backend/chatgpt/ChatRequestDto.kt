@@ -36,6 +36,7 @@ enum class CopyrightMode(
       2. If I ask you to make the given text longer, the final 3 extended versions should always retain the meaning of the original text I provided.
       3. If I ask you to make the given text longer, I may also specify the desired tone of voice for the extended results. The final 3 extended results should be in the style of the specified tone of voice.
       4. If I ask you to make the given text longer, follow each rule for the 'Paraphrase the text' command without exception.
+      5. The final extended version you will have to create should not be longer than 3 times the number of words, characters, sentences or paragraphs based on the length of the source text. You should always create one version that is %s times longer than the original.
     """.trimIndent(),
     request = "Make the text longer %s: %s",
     copies = 3,
@@ -48,7 +49,7 @@ enum class CopyrightMode(
       3. The final versions should always aim to contain fewer characters and words
       than the original text, while preserving the meaning of the original text. If it is not possible to further shorten the text without losing its meaning, it would be acceptable to maintain the same word or character count as the original text.
       4. If I ask you to make the given text shorter, I may also specify the desired tone of voice for the shortened results. The final 3 shortened results should be in the style of the specified tone of voice.
-      5. If I ask you to make the given text shorter, follow each rule for the 'Paraphrase the text' command without exception.
+      5. If I ask you to make the given text shorter, follow each rule for the 'Make the text shorter' command without exception.
     """.trimIndent(),
     request = "Make the text shorter %s: %s",
     copies = 3,

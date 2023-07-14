@@ -44,12 +44,19 @@ class ChatGptService(
     val userUuid = tokenProvider.createParser().parseClaimsJws(token).body.subject
     val user = userRepository.findByUserUuid(userUuid)
 //    return requestEdit(text, instruction.trim(), copies)
-    return requestChat(
+    if (user.credits < 100) {
+      throw IllegalStateException("Not enough credits, please renew your subscription")
+    }
+    val response = requestChat(
       user = user,
       prompt = request.trim(),
       instruction = mode.system,
       copies = copies,
     )
+    user.credits -= response?.usage?.total_tokens ?: 0
+    userRepository.save(user)
+    return response?.choices?.map { it.message?.content ?: "" }
+      ?: throw BadRequestException("Failed to create edit")
   }
 
   fun uxBuilder(
@@ -59,7 +66,14 @@ class ChatGptService(
   ): List<String> {
     val userUuid = tokenProvider.createParser().parseClaimsJws(token).body.subject
     val user = userRepository.findByUserUuid(userUuid)
-    return requestChat(user, text, mode.value)
+    if (user.uxCredits < 100) {
+      throw IllegalStateException("Not enough credits, please renew your subscription")
+    }
+    val response = requestChat(user, text, mode.value)
+    user.uxCredits -= response?.usage?.total_tokens ?: 0
+    userRepository.save(user)
+    return response?.choices?.map { it.message?.content ?: "" }
+      ?: throw BadRequestException("Failed to create edit")
   }
 
   private fun requestChat(
@@ -67,10 +81,7 @@ class ChatGptService(
     prompt: String,
     instruction: String,
     copies: Int = 1
-  ): List<String> {
-    if (user.credits < 100) {
-      throw IllegalStateException("Not enough credits, please renew your subscription")
-    }
+  ): EditResponse? {
     val headers = LinkedMultiValueMap<String, String>()
     headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
 
@@ -98,10 +109,7 @@ class ChatGptService(
       httpEntity,
       EditResponse::class.java
     )
-    user.credits -= response.body?.usage?.total_tokens ?: 0
-    userRepository.save(user)
-    return response.body?.choices?.map { it.message?.content ?: "" }
-      ?: throw BadRequestException("Failed to create edit")
+    return response.body
   }
 
   private fun requestEdit(prompt: String, instruction: String, copies: Int): List<String> {

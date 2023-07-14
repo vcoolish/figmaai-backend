@@ -209,3 +209,8 @@ ALTER TABLE users
   ADD COLUMN credits BIGINT NOT NULL DEFAULT 0,
   ADD COLUMN max_credits BIGINT NOT NULL DEFAULT 0;
 --rollback ALTER TABLE users;
+
+--changeset vcoolish:20230701143804
+ALTER TABLE users
+  ADD COLUMN ux_credits BIGINT NOT NULL DEFAULT 0;
+--rollback ALTER TABLE users;

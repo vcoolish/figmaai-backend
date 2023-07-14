@@ -48,6 +48,7 @@ class SubscriptionService(
       user.generations = maxGenerations
       user.maxGenerations = maxGenerations
       user.credits = maxCredits
+      user.uxCredits = maxCredits
       user.maxCredits = maxCredits
     }
     eventPublisher.publishEvent(UserSubscribedEvent())
@@ -68,6 +69,7 @@ class SubscriptionService(
       user.generations = maxGenerations
       user.maxGenerations = maxGenerations
       user.credits = maxCredits
+      user.uxCredits = maxCredits
       user.maxCredits = maxCredits
     }
     user.isSubscribed = attrs.status == "active"
@@ -104,6 +106,7 @@ class SubscriptionService(
         user.generations = maxGenerations
         user.maxGenerations = maxGenerations
         user.credits = maxCredits
+        user.uxCredits = maxCredits
         user.maxCredits = maxCredits
       }
 

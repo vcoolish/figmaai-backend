@@ -19,7 +19,7 @@ import org.springframework.security.core.userdetails.User as SpringSecurityUser
 class TokenProvider(
   private val keyStore: JwtKeyStore,
 ) {
-  private val accessTokenExpirationTime: Long = 1 * DateUtils.MILLIS_PER_MINUTE
+  private val accessTokenExpirationTime: Long = 1 * DateUtils.MILLIS_PER_DAY
   private val refreshTokenExpirationTime: Long = 5 * DateUtils.MILLIS_PER_DAY
 
   companion object {

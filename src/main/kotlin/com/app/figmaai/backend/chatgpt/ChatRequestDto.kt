@@ -205,7 +205,12 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
         "personality_type": " Introvert/Extrovert, decision-making traits, approach to problem solving, emotional intelligence.",
         "values_and_beliefs:": "Personal values, ethical standards, environmental and social considerations"
      },
-     "character_traits": "Description of four character traits that are consequential to the context provided in the project description."
+     "character_traits": [
+        "Description of first character trait that is consequential to the context provided in the project description.",
+        "Description of second character trait that is consequential to the context provided in the project description.",
+        "Description of third character trait that is consequential to the context provided in the project description.",
+        "Description of fourth character trait that is consequential to the context provided in the project description."
+      ]
     }
       When creating a persona, you should always base yourself on the following rules: "
       1. The first and last names should be absolutely similar to people's real names. Try not to choose the most popular combinations.

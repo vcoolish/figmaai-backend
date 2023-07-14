@@ -42,10 +42,13 @@ class SubscriptionService(
 
     if (user.subscriptionId != subscription.id) {
       val maxGenerations = type?.generations?.toLong() ?: 800L
+      val maxCredits = type?.tokens?.toLong() ?: 116000L
       user.subscriptionId = subscription.id
       user.subscriptionProvider = provider
       user.generations = maxGenerations
       user.maxGenerations = maxGenerations
+      user.credits = maxCredits
+      user.maxCredits = maxCredits
     }
     eventPublisher.publishEvent(UserSubscribedEvent())
     repository.save(user)
@@ -59,10 +62,13 @@ class SubscriptionService(
     val subscriptionId = body.data.id
     if (user.subscriptionId != subscriptionId) {
       val maxGenerations = type?.generations?.toLong() ?: 800L
+      val maxCredits = type?.tokens?.toLong() ?: 116000L
       user.subscriptionId = subscriptionId
       user.subscriptionProvider = SubscriptionProvider.lemon
       user.generations = maxGenerations
       user.maxGenerations = maxGenerations
+      user.credits = maxCredits
+      user.maxCredits = maxCredits
     }
     user.isSubscribed = attrs.status == "active"
     eventPublisher.publishEvent(UserSubscribedEvent())
@@ -92,10 +98,13 @@ class SubscriptionService(
       val now = ZonedDateTime.now()
       val shouldRenew = user.isSubscribed && (now.minusMonths(1).isAfter(user.lastSubscriptionData))
       if (shouldRenew) {
-        val maxGenerations = SubscriptionType.values().find { it.lemonId == subscription.variant_id }?.generations?.toLong()
-          ?: 800
+        val subscriptionType = SubscriptionType.values().find { it.lemonId == subscription.variant_id }
+        val maxGenerations = subscriptionType?.generations?.toLong() ?: 800
+        val maxCredits = subscriptionType?.tokens?.toLong() ?: 116000L
         user.generations = maxGenerations
         user.maxGenerations = maxGenerations
+        user.credits = maxCredits
+        user.maxCredits = maxCredits
       }
 
       user.nextEnergyRenew = now.plus(appProperties.subscriptionValidationRate)

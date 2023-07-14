@@ -1,6 +1,5 @@
 package com.app.figmaai.backend.user.service
 
-import com.app.figmaai.backend.common.util.logger
 import com.blueconic.browscap.BrowsCapField
 import com.blueconic.browscap.UserAgentService
 import org.apache.commons.codec.digest.DigestUtils
@@ -98,8 +97,8 @@ class HttpServletRequestTokenHelper {
           .append(it.getValue(BrowsCapField.BROWSER_MAJOR_VERSION))
           .append(":")
           .append(it.getValue(BrowsCapField.BROWSER_BITS))
-          .append(":")
-          .append(ipAddress)
+//          .append(":")
+//          .append(ipAddress)
           .toString()
       }.let(DigestUtils::md5Hex)
 

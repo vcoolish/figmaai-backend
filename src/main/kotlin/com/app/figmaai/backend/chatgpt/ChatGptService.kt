@@ -2,6 +2,7 @@ package com.app.figmaai.backend.chatgpt
 
 import com.app.figmaai.backend.config.properties.AppProperties
 import com.app.figmaai.backend.exception.BadRequestException
+import com.app.figmaai.backend.user.model.User
 import com.app.figmaai.backend.user.repository.UserRepository
 import com.app.figmaai.backend.user.service.TokenProvider
 import org.springframework.http.HttpEntity
@@ -30,6 +31,7 @@ class ChatGptService(
     mode: CopyrightMode,
     language: String?,
     tone: ChatGptTone?,
+    token: String,
   ): List<String> {
     val request = when (mode) {
       CopyrightMode.translate -> {
@@ -39,9 +41,11 @@ class ChatGptService(
       else -> String.format(mode.request, tone?.value ?: "", text)
     }
     val copies = mode.copies
+    val userUuid = tokenProvider.createParser().parseClaimsJws(token).body.subject
+    val user = userRepository.findByUserUuid(userUuid)
 //    return requestEdit(text, instruction.trim(), copies)
     return requestChat(
-      userUuid = "userUuid",
+      user = user,
       prompt = request.trim(),
       instruction = mode.system,
       copies = copies,
@@ -53,11 +57,20 @@ class ChatGptService(
     mode: UxMode,
     token: String,
   ): List<String> {
-//    val userUuid = tokenProvider.createParser().parseClaimsJws(token).body.subject
-    return requestChat("userUuid", text, mode.value)
+    val userUuid = tokenProvider.createParser().parseClaimsJws(token).body.subject
+    val user = userRepository.findByUserUuid(userUuid)
+    return requestChat(user, text, mode.value)
   }
 
-  private fun requestChat(userUuid: String, prompt: String, instruction: String, copies: Int = 1): List<String> {
+  private fun requestChat(
+    user: User,
+    prompt: String,
+    instruction: String,
+    copies: Int = 1
+  ): List<String> {
+    if (user.credits < 100) {
+      throw IllegalStateException("Not enough credits, please renew your subscription")
+    }
     val headers = LinkedMultiValueMap<String, String>()
     headers.add("Authorization", "Bearer ${appProperties.dalleKey}")
 
@@ -73,7 +86,7 @@ class ChatGptService(
           content = prompt,
         ),
       ),
-      user = userUuid,
+      user = user.userUuid,
       n = copies,
     )
     headers.add("Content-Type", "application/json")
@@ -85,6 +98,8 @@ class ChatGptService(
       httpEntity,
       EditResponse::class.java
     )
+    user.credits -= response.body?.usage?.total_tokens ?: 0
+    userRepository.save(user)
     return response.body?.choices?.map { it.message?.content ?: "" }
       ?: throw BadRequestException("Failed to create edit")
   }

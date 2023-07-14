@@ -203,3 +203,9 @@ ALTER TABLE users
 ALTER TABLE users
   ADD COLUMN max_generations BIGINT NOT NULL DEFAULT 0;
 --rollback ALTER TABLE users;
+
+--changeset vcoolish:20230630143804
+ALTER TABLE users
+  ADD COLUMN credits BIGINT NOT NULL DEFAULT 0,
+  ADD COLUMN max_credits BIGINT NOT NULL DEFAULT 0;
+--rollback ALTER TABLE users;

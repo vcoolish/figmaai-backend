@@ -14,12 +14,14 @@ class ChatGptController(
   @PostMapping("/copyright")
   fun copyright(
     @RequestBody @Valid copyrightDto: ChatCopyrightRequestDto,
+    @RequestHeader token: String,
   ): ResponseEntity<List<String>> = ResponseEntity.ok(
     chatGptService.copyright(
       text = copyrightDto.text,
       mode = copyrightDto.mode,
       language = copyrightDto.language?.name,
       tone = copyrightDto.tone,
+      token = token,
     ),
   )
 

@@ -66,6 +66,7 @@ class AuthController(
   )
   @PostMapping("/refresh-token")
   fun refreshToken(
+    @RequestHeader(REFRESH_TOKEN_HEADER) refreshToken: String,
     request: HttpServletRequest
   ): ResponseEntity<TokensDto> =
     authService.updateRefreshTokens(request)

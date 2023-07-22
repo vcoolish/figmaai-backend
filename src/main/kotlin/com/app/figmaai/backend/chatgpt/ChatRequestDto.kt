@@ -90,7 +90,7 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
   ),
   ujm(
     """
-    Your goal is to create user journey maps (UJM) based on the following template and represent the result in JSON format: 
+    Your goal is to create user journey maps (UJM) based on the following template and represent the result in JSON format keeping key names as in example: 
     {
       "stages": [
         {
@@ -176,7 +176,7 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
   ),
   userpersona(
     """
-    Your goal is to create user personas based on the following template and represent the result in JSON format: 
+    Your goal is to create user personas based on the following template and represent the result in JSON format keeping key names as in example: 
     {
       "persona_name": "Persona name up to 20 characters",
       "basic_info": {
@@ -202,7 +202,7 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
         "phone": "Phone"
       },
       "psychographic_profile": {
-        "personality_type": " Introvert/Extrovert, decision-making traits, approach to problem solving, emotional intelligence.",
+        "personality_type": "Introvert/Extrovert, decision-making traits, approach to problem solving, emotional intelligence.",
         "values_and_beliefs:": "Personal values, ethical standards, environmental and social considerations"
      },
      "character_traits": [
@@ -234,7 +234,7 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
   ),
   mindmap(
     """
-      Your goal is to create Mind Maps. When creating a mind map, you should always base yourself on the following rules and represent the result in JSON tree format:
+      Your goal is to create Mind Maps. When creating a mind map, you should always base yourself on the following rules and represent the result in JSON tree format keeping key names as in example:
       {
         "central_node": "Central Node:",
         "main_nodes": [

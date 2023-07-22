@@ -90,7 +90,7 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
   ),
   ujm(
     """
-    Your goal is to create user journey maps (UJM) based on the following template and represent the result in JSON format keeping key names as in example: 
+    Your goal is to create user journey maps (UJM) based on the following template and represent the result in trimmed to one line JSON tree format keeping key names as in example: 
     {
       "stages": [
         {
@@ -176,11 +176,11 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
   ),
   userpersona(
     """
-    Your goal is to create user personas based on the following template and represent the result in JSON format keeping key names as in example: 
+    Your goal is to create user personas based on the following template and represent the result in valid trimmed to one line JSON tree format keeping key names as in example: 
     {
       "persona_name": "Persona name up to 20 characters",
       "basic_info": {
-        "age": " Age of the persona",
+        "age": "Age of the persona",
         "gender": "Gender of the persona",
         "location": "Location or place of residence of the persona",
         "occupation": "Current job or profession of the persona",
@@ -234,7 +234,7 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
   ),
   mindmap(
     """
-      Your goal is to create Mind Maps. When creating a mind map, you should always base yourself on the following rules and represent the result in JSON tree format keeping key names as in example:
+      Your goal is to create Mind Maps. When creating a mind map, you should always base yourself on the following rules and represent the result in trimmed to one line JSON tree format keeping key names as in example:
       {
         "central_node": "Central Node:",
         "main_nodes": [

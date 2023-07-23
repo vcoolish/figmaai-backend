@@ -84,11 +84,11 @@ class SubscriptionService(
   }
 
   fun deleteSubscription(request: HttpServletRequest): User {
-    val refreshJwt = httpServletRequestTokenHelper.getRefreshToken(request)
-    if (refreshJwt.isBlank()) {
+    val jwt = httpServletRequestTokenHelper.resolveToken(request)
+    if (jwt.isNullOrEmpty()) {
       throw BadRequestException(message = "Refresh token not valid")
     }
-    val claims = tokenProvider.getClaimsFromToken(refreshJwt)
+    val claims = tokenProvider.getClaimsFromToken(jwt)
     val userUuid: String = claims.subject
     val user = repository.findByUserUuid(userUuid)
     when (user.subscriptionProvider) {

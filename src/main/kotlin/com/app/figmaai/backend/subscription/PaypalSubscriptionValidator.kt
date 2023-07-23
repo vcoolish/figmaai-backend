@@ -65,4 +65,8 @@ class PaypalSubscriptionValidator(
     )
     return response.body?.access_token ?: ""
   }
+
+  override fun delete(id: String) {
+    TODO("Not yet implemented")
+  }
 }

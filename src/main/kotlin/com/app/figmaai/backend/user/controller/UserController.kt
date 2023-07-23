@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 
 @Validated
@@ -37,9 +38,9 @@ class UserController(
 
   @GetMapping("/user")
   fun getUser(
-    @Figma @RequestHeader figma: String
+    request: HttpServletRequest
   ): UserExtendedDto = UserMapper.toExtendedDto(
-    userService.get(figma),
+    userService.get(request),
   )
 
   @GetMapping("/preview")

@@ -93,4 +93,19 @@ class LemonSubscriptionValidator(
     }
   }
 
+  override fun delete(id: String) {
+    val headers = HttpHeaders()
+    headers.add("Accept", "application/vnd.api+json")
+    headers.add("Content-Type", "application/vnd.api+json")
+    headers.add("Authorization", "Bearer ${appProperties.lemonKey}")
+
+    val requestEntity = HttpEntity<MultiValueMap<String, String>>(headers)
+
+    restTemplate.exchange(
+      "${appProperties.lemonUrl}/v1/subscriptions/$id",
+      HttpMethod.DELETE,
+      requestEntity,
+      Any::class.java,
+    ).body ?: throw Exception("Couldn't delete")
+  }
 }

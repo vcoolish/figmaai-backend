@@ -8,6 +8,7 @@ import com.app.figmaai.backend.user.dto.UserSubscriptionDto
 import com.app.figmaai.backend.user.mapper.UserMapper
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 
 @Validated
@@ -21,6 +22,13 @@ class SubscriptionController(
     @RequestBody @Valid subscriptionDto: UserSubscriptionDto,
   ): UserExtendedDto = UserMapper.toExtendedDto(
     subscriptionService.updateSubscription(subscriptionDto.email, subscriptionDto.subscriptionId, subscriptionDto.provider),
+  )
+
+  @DeleteMapping("/subscription")
+  fun deleteSubscription(
+    request: HttpServletRequest
+  ): UserExtendedDto = UserMapper.toExtendedDto(
+    subscriptionService.deleteSubscription(request)
   )
 
   @PostMapping("/subscription-hook")

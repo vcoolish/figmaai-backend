@@ -11,12 +11,15 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
 import java.util.*
+import javax.servlet.http.HttpServletRequest
 import javax.validation.ConstraintViolationException
 
 @Service
 class UserService(
   private val repository: UserRepository,
   private val passwordEncoder: PasswordEncoder,
+  private val tokenProvider: TokenProvider,
+  private val httpServletRequestTokenHelper: HttpServletRequestTokenHelper,
 ) {
 
   fun getByEmail(email: String): User = repository.findOneByEmail(email)
@@ -25,6 +28,16 @@ class UserService(
     repository.findOne(spec).orElse(null)
 
   fun get(figma: String): User = repository.findByFigma(figma).first()
+
+  fun get(request: HttpServletRequest): User {
+    val refreshJwt = httpServletRequestTokenHelper.getRefreshToken(request)
+    if (refreshJwt.isBlank()) {
+      throw BadRequestException(message = "Refresh token not valid")
+    }
+    val claims = tokenProvider.getClaimsFromToken(refreshJwt)
+    val userUuid: String = claims.subject
+    return getByUuid(userUuid)
+  }
 
   fun getByUuid(userUuid: String): User = repository.findByUserUuid(userUuid)
 

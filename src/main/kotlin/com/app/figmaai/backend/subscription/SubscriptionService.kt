@@ -9,9 +9,12 @@ import com.app.figmaai.backend.user.data.UserSubscribedEvent
 import com.app.figmaai.backend.user.dto.SubscriptionProvider
 import com.app.figmaai.backend.user.model.User
 import com.app.figmaai.backend.user.repository.UserRepository
+import com.app.figmaai.backend.user.service.HttpServletRequestTokenHelper
+import com.app.figmaai.backend.user.service.TokenProvider
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import java.time.ZonedDateTime
+import javax.servlet.http.HttpServletRequest
 
 @Service
 class SubscriptionService(
@@ -20,6 +23,8 @@ class SubscriptionService(
   private val lemonValidator: LemonSubscriptionValidator,
   private val paypalValidator: PaypalSubscriptionValidator,
   private val eventPublisher: ApplicationEventPublisher,
+  private val tokenProvider: TokenProvider,
+  private val httpServletRequestTokenHelper: HttpServletRequestTokenHelper,
 ) {
 
   private val sync: com.app.figmaai.backend.common.synchronization.SyncTemplate<String> =
@@ -74,6 +79,26 @@ class SubscriptionService(
     }
     user.isSubscribed = attrs.status == "active"
     eventPublisher.publishEvent(UserSubscribedEvent())
+    repository.save(user)
+    return user
+  }
+
+  fun deleteSubscription(request: HttpServletRequest): User {
+    val refreshJwt = httpServletRequestTokenHelper.getRefreshToken(request)
+    if (refreshJwt.isBlank()) {
+      throw BadRequestException(message = "Refresh token not valid")
+    }
+    val claims = tokenProvider.getClaimsFromToken(refreshJwt)
+    val userUuid: String = claims.subject
+    val user = repository.findByUserUuid(userUuid)
+    when (user.subscriptionProvider) {
+      SubscriptionProvider.paypal -> paypalValidator.delete(user.subscriptionId ?: error("Subscription not found"))
+      SubscriptionProvider.lemon -> lemonValidator.delete(user.subscriptionId ?: error("Subscription not found"))
+      else -> {
+        throw IllegalArgumentException("Not supported")
+      }
+    }
+    user.isSubscribed = false
     repository.save(user)
     return user
   }

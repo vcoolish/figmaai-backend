@@ -103,7 +103,7 @@ class AuthService(
       throw BadRequestException(message = "Token not logged in")
     }
     val figma = oauth.figma
-      ?: throw BadRequestException(message = "Figma not found")
+      ?: throw NotFoundException(message = "Figma not found")
     return userService.get(figma).also {
       oauthRepository.delete(oauth)
     }

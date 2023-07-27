@@ -1,5 +1,6 @@
 package com.app.figmaai.backend.user.controller
 
+import com.app.figmaai.backend.exception.BadRequestException
 import com.app.figmaai.backend.user.dto.*
 import com.app.figmaai.backend.user.service.AuthService
 import com.app.figmaai.backend.user.service.SecurityContextService
@@ -54,8 +55,12 @@ class AuthController(
   fun readTokenAuth(
     @RequestBody @Valid readDto: ReadTokenDto,
     request: HttpServletRequest?,
-  ): ResponseEntity<TokensDto> {
-    val user = authService.oauthLogin(readDto.readToken)
+  ): ResponseEntity<TokensDto?> {
+    val user = try {
+      authService.oauthLogin(readDto.readToken)
+    } catch (ex: BadRequestException) {
+      return ResponseEntity.status(403).body(null)
+    }
     return authService.loginUser(user, request)
       .let { ResponseEntity.ok(it) }
   }

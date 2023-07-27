@@ -2,7 +2,7 @@ package com.app.figmaai.backend.user.controller
 
 import com.app.figmaai.backend.common.util.PreviewImage
 import com.app.figmaai.backend.common.util.previewImages
-import com.app.figmaai.backend.constraint.Figma
+import com.app.figmaai.backend.exception.BadRequestException
 import com.app.figmaai.backend.user.dto.UserExtendedDto
 import com.app.figmaai.backend.user.dto.UserRegistrationDto
 import com.app.figmaai.backend.user.mapper.UserMapper
@@ -10,8 +10,12 @@ import com.app.figmaai.backend.user.service.UserRegistrationService
 import com.app.figmaai.backend.user.service.UserService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 
@@ -39,9 +43,13 @@ class UserController(
   @GetMapping("/user")
   fun getUser(
     request: HttpServletRequest
-  ): UserExtendedDto = UserMapper.toExtendedDto(
-    userService.get(request),
-  )
+  ): ResponseEntity<UserExtendedDto?> = try {
+    ResponseEntity.ok(
+      UserMapper.toExtendedDto(userService.get(request))
+    )
+  } catch (ex: BadRequestException) {
+    ResponseEntity.status(403).body(null)
+  }
 
   @GetMapping("/preview")
   fun getPreview(): List<String> = previewImages.map { it.image }

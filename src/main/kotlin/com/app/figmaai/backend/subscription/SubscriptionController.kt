@@ -1,11 +1,13 @@
 package com.app.figmaai.backend.subscription
 
+import com.app.figmaai.backend.exception.BadRequestException
 import com.app.figmaai.backend.subscription.model.LemonResponse
 import com.app.figmaai.backend.subscription.model.Subscription
 import com.app.figmaai.backend.subscription.model.SubscriptionLink
 import com.app.figmaai.backend.user.dto.UserExtendedDto
 import com.app.figmaai.backend.user.dto.UserSubscriptionDto
 import com.app.figmaai.backend.user.mapper.UserMapper
+import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletRequest
@@ -27,9 +29,13 @@ class SubscriptionController(
   @DeleteMapping("/subscription")
   fun deleteSubscription(
     request: HttpServletRequest
-  ): UserExtendedDto = UserMapper.toExtendedDto(
-    subscriptionService.deleteSubscription(request)
-  )
+  ): ResponseEntity<UserExtendedDto?> = try {
+    ResponseEntity.ok(
+      UserMapper.toExtendedDto(subscriptionService.deleteSubscription(request))
+    )
+  } catch (ex: BadRequestException) {
+    ResponseEntity.status(403).body(null)
+  }
 
   @PostMapping("/subscription-hook")
   fun onSubscription(

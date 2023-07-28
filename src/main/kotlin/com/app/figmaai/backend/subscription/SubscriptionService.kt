@@ -98,11 +98,12 @@ class SubscriptionService(
         throw IllegalArgumentException("Not supported")
       }
     }
-    user.isSubscribed = false
-    user.subscriptionId = ""
-    user.generations = 0
-    user.credits = 0
-    repository.save(user)
+// user has subscription access till end of month?
+//    user.isSubscribed = false
+//    user.subscriptionId = ""
+//    user.generations = 0
+//    user.credits = 0
+//    repository.save(user)
     return user
   }
 

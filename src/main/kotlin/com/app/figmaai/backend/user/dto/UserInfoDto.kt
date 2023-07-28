@@ -12,4 +12,5 @@ open class UserInfoDto {
   var copyCredits: Long = 0L
   var uxCredits: Long = 0L
   var maxCredits: Long = 0L
+  var isSubscribed: Boolean = false
 }

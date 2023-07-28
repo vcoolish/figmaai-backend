@@ -99,6 +99,9 @@ class SubscriptionService(
       }
     }
     user.isSubscribed = false
+    user.subscriptionId = ""
+    user.generations = 0
+    user.credits = 0
     repository.save(user)
     return user
   }

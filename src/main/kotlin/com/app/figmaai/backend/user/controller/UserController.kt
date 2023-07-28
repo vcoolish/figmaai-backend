@@ -8,6 +8,7 @@ import com.app.figmaai.backend.user.dto.UserRegistrationDto
 import com.app.figmaai.backend.user.mapper.UserMapper
 import com.app.figmaai.backend.user.service.UserRegistrationService
 import com.app.figmaai.backend.user.service.UserService
+import io.jsonwebtoken.ExpiredJwtException
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.ResponseEntity
@@ -48,6 +49,8 @@ class UserController(
       UserMapper.toExtendedDto(userService.get(request))
     )
   } catch (ex: BadRequestException) {
+    ResponseEntity.status(403).body(null)
+  } catch (ex: ExpiredJwtException) {
     ResponseEntity.status(403).body(null)
   }
 

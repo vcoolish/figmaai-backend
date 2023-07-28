@@ -47,6 +47,9 @@ class ChatGptService(
     if (user.credits < 100) {
       throw IllegalStateException("Not enough credits, please renew your subscription")
     }
+    if (!user.isSubscribed) {
+      throw BadRequestException("Subscription expired")
+    }
     val response = requestChat(
       user = user,
       prompt = request.trim(),
@@ -68,6 +71,9 @@ class ChatGptService(
     val user = userRepository.findByUserUuid(userUuid)
     if (user.uxCredits < 100) {
       throw IllegalStateException("Not enough credits, please renew your subscription")
+    }
+    if (!user.isSubscribed) {
+      throw BadRequestException("Subscription expired")
     }
     val response = requestChat(user, text, mode.value)
     user.uxCredits -= response?.usage?.total_tokens ?: 0

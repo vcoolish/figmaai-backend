@@ -92,7 +92,7 @@ class ImageService(
       throw BadRequestException("You ran out of generations. Start new subscription to get more.")
     }
 
-    if (!hasSubscription(id)) {
+    if (!user.isSubscribed) {
       throw BadRequestException("Subscription expired")
     }
     logger.info("{${prompt}}")

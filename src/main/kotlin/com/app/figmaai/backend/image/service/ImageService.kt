@@ -141,8 +141,6 @@ class ImageService(
     }
   }
 
-  private fun hasSubscription(id: String): Boolean = true
-
   private fun requestMidjourneyImage(prompt: String, user: User): ImageAI {
     restTemplate.postForEntity(
       "https://surnft-ai-collection.herokuapp.com/task",

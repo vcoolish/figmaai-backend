@@ -34,10 +34,11 @@ enum class CopyrightMode(
     system = """
       1. If I ask you to make the given text longer, always provide me one extended version of the text. No other content should be in your answer.
       2. If I ask you to make the given text longer, the final 3 extended versions should always retain the meaning of the original text I provided.
-      3. If I ask you to make the given text longer, I may also specify the desired tone of voice for the extended results. The final 3 extended results should be in the style of the specified tone of voice.
+      3. If I ask you to make the given text longer, I may also specify the desired tone of voice for the extended results. The final extended results should be in the style of the specified tone of voice.
+      3. If I ask you to make the given text longer, always make the text not longer than 2 times the original text.
       4. If I ask you to make the given text longer, follow each rule for the 'Paraphrase the text' command without exception.
     """.trimIndent(),
-    request = "Make the text up to 2x size longer %s: %s",
+    request = "Make the text longer %s: %s",
     copies = 3,
     title = "Expand",
   ),

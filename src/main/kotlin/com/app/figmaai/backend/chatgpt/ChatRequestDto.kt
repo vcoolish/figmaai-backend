@@ -37,7 +37,7 @@ enum class CopyrightMode(
       3. If I ask you to make the given text longer, I may also specify the desired tone of voice for the extended results. The final 3 extended results should be in the style of the specified tone of voice.
       4. If I ask you to make the given text longer, follow each rule for the 'Paraphrase the text' command without exception.
     """.trimIndent(),
-    request = "Make the text longer %s: %s",
+    request = "Make the text up to 2x size longer %s: %s",
     copies = 3,
     title = "Expand",
   ),

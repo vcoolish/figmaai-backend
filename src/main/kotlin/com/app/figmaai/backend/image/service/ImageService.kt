@@ -180,33 +180,38 @@ class ImageService(
       .joinToString(" ")
       .trim()
 
-    val initImage = createStabilityImage(prompt, height, width, 100)
-    val initEntity = uploadBase64Pic(user, initImage.first())
-    generateGif(initEntity, user, prompt, height, width)
+    val initImages = (1..3).map {
+      val initImage = createStabilityImage(prompt, height, width, 100)
+      uploadBase64Pic(user, initImage.first(), it == 1)
+    }
+    generateGif(initImages, user, prompt, height, width)
 
-    return initEntity
+    return initImages.first()
   }
 
   @Async
   fun generateGif(
-    initEntity: ImageAI,
+    initEntities: List<ImageAI>,
     user: User,
     prompt: String,
     height: Int,
     width: Int,
   ) {
+    val entity = initEntities.first()
     val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
 
-    val images = createStabilityImage("${initEntity.image} $prompt", height, width, 50, 10)
+    val images = initEntities.flatMap {
+      createStabilityImage("${it.image} $prompt", height, width, 50, 4)
+    }
     logger.info("images ${images.size}")
     val file = File.createTempFile(UUID.randomUUID().toString(), ".gif")
     val output = FileImageOutputStream(file)
     logger.info("read file")
-    val firstImage = ImageIO.read(URL(initEntity.image))
+    val initImagesIO = initEntities.map { ImageIO.read(URL(it.image)) }
 
-    val writer = GifSequenceWriter(output, firstImage.type, 200, true)
+    val writer = GifSequenceWriter(output, initImagesIO.first().type, 200, true)
 
-    writer.writeToSequence(firstImage)
+    initImagesIO.forEach { writer.writeToSequence(it) }
     images.forEach {
       logger.info("write image")
       val nextImage: BufferedImage = ImageIO.read(Base64.getDecoder().decode(it).inputStream())
@@ -218,12 +223,12 @@ class ImageService(
     val gif = uploadBytesToS3(file.readBytes(), MediaType.IMAGE_GIF)
     file.delete()
 
-    initEntity.name = "Image #${initEntity.imageId}"
-    initEntity.prompt = cleanPrompt
-    initEntity.gif = gif
+    entity.name = "Image #${entity.imageId}"
+    entity.prompt = cleanPrompt
+    entity.gif = gif
     logger.info(gif)
 
-    imageRepository.save(initEntity)
+    imageRepository.save(entity)
     if (user.subscriptionId.isNullOrEmpty()) {
       userEnergyService.spendEnergy(user, BigDecimal.valueOf(30))
     } else {
@@ -310,7 +315,7 @@ class ImageService(
       ?: throw BadRequestException("Failed to create image")
   }
 
-  private fun uploadBase64Pic(user: User, bytes: String): ImageAI {
+  private fun uploadBase64Pic(user: User, bytes: String, save: Boolean = true): ImageAI {
     val filename = UUID.randomUUID().toString()
     val url = awsS3Service.generatePreSignedUrl(
       filePath = filename,
@@ -329,7 +334,7 @@ class ImageService(
       Any::class.java,
     )
     return imageCreationService.create(user)
-      .let(imageRepository::saveAndFlush).apply {
+      .let { if (save) imageRepository.saveAndFlush(it) else it }.apply {
         image = "https://surpics-ai.s3.amazonaws.com/$filename"
       }
   }

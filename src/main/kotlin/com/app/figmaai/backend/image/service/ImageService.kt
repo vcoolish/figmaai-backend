@@ -141,7 +141,7 @@ class ImageService(
     return image
   }
 
-  @Transactional
+  @Transactional(timeout = 60)
   fun createAnimated(
     id: String,
     prompt: String,
@@ -199,6 +199,7 @@ class ImageService(
     initEntity.name = "Image #${initEntity.imageId}"
     initEntity.prompt = cleanPrompt
     initEntity.gif = gif
+    logger.info(gif)
 
     imageRepository.save(initEntity)
     if (user.subscriptionId.isNullOrEmpty()) {

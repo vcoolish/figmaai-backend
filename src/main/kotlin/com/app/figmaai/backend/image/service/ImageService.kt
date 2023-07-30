@@ -309,15 +309,15 @@ class ImageService(
       val httpEntity: HttpEntity<*> = HttpEntity<Any>(
         StabilityRequest(
           listOf(StabilityPrompt(prompt.substringAfter(" "))),
-          height * 2,
-          width * 2,
+          height,
+          width,
           samples
         ),
         headers,
       )
 
       restTemplate.exchange(
-        "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image",
+        "https://api.stability.ai/v1/generation/stable-diffusion-xl-beta-v2-2-2/text-to-image",
         HttpMethod.POST,
         httpEntity,
         StabilityResponse::class.java

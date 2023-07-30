@@ -185,11 +185,11 @@ class ImageService(
       val firstEntity = uploadBase64Pic(user, firstImage.first(), true)
       add(firstEntity)
 
-      val secondImage = createStabilityImage("${firstEntity.image} $prompt", height, width, 20)
+      val secondImage = createStabilityImage("${firstEntity.image} $prompt", height, width, 40)
       val secondEntity = uploadBase64Pic(user, secondImage.first(), false)
       add(secondEntity)
 
-      val thirdImage = createStabilityImage("${secondEntity.image} $prompt", height, width, 20)
+      val thirdImage = createStabilityImage("${secondEntity.image} $prompt", height, width, 40)
       val thirdEntity = uploadBase64Pic(user, thirdImage.first(), false)
       add(thirdEntity)
     }

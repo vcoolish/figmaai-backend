@@ -14,6 +14,7 @@ import com.app.figmaai.backend.image.repository.extra.ImageSpecification.created
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.findByPrompt
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.imageIsEmpty
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.userEqual
+import com.app.figmaai.backend.image.utils.AnimatedGifEncoder
 import com.app.figmaai.backend.user.model.User
 import com.app.figmaai.backend.user.service.TokenProvider
 import com.app.figmaai.backend.user.service.UserEnergyService
@@ -29,12 +30,14 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.io.ByteArrayOutputStream
+import java.math.BigDecimal
 import java.net.URI
 import java.net.URL
 import java.time.Clock
 import java.time.ZonedDateTime
 import java.util.*
 import javax.imageio.ImageIO
+import javax.microedition.lcdui.Image
 
 @Service
 class ImageService(
@@ -49,6 +52,7 @@ class ImageService(
 
   private val logger = logger()
   private val restTemplate = RestTemplate()
+  private val gifEncoder = AnimatedGifEncoder()
 
   fun getAll(pageable: Pageable, request: GetAllNftRequest, token: String): Page<ImageAI> {
     val spec: Specification<ImageAI> = if (request.figma.isNullOrEmpty()) {
@@ -114,8 +118,10 @@ class ImageService(
     val image = when (provider) {
         AiProvider.MIDJOURNEY ->
           requestMidjourneyImage(prompt, user)
-        AiProvider.STABILITY ->
-          createStabilityImage(prompt, user, height, width, strength)
+        AiProvider.STABILITY -> {
+          val bytes = createStabilityImage(prompt, height, width, strength).first()
+          uploadBase64Pic(user, bytes)
+        }
         else ->
           createDalleImage(prompt, user)
     }
@@ -132,6 +138,73 @@ class ImageService(
     userService.save(user)
 
     return image
+  }
+
+  @Transactional
+  fun createAnimated(
+    id: String,
+    prompt: String,
+    height: Int,
+    width: Int,
+  ): ImageAI {
+    validatePrompt(prompt)
+    val user = userService.get(id)
+    checkImageCount(user)
+
+    val spec: Specification<ImageAI> = imageIsEmpty()
+      .and(userEqual(user.userUuid))
+      .and(createdAtGreaterOrEqual(ZonedDateTime.now(Clock.systemUTC()).minusMinutes(5)))
+    val inProgress = imageRepository.exists(spec)
+    if (inProgress) {
+      throw BadRequestException("You already have an image in progress")
+    }
+    val energy = BigDecimal.valueOf(30)
+    if (user.subscriptionId.isNullOrEmpty() && user.energy < energy) {
+      throw BadRequestException("Not enough energy. Start your subscription for unlimited generations")
+    }
+    if (!user.subscriptionId.isNullOrEmpty() && user.generations <= 0) {
+      throw BadRequestException("You ran out of generations. Start new subscription to get more.")
+    }
+
+    if (!user.isSubscribed) {
+      throw BadRequestException("Subscription expired")
+    }
+    logger.info("{${prompt}}")
+
+    val prompt = prompt
+      .split(" ")
+      .filter { it.isNotBlank() }
+      .joinToString(" ")
+      .trim()
+
+    val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
+    val initImage = createStabilityImage(prompt, height, width, 100)
+    val initEntity = uploadBase64Pic(user, initImage.first())
+    val images = createStabilityImage("$initEntity $prompt", height, width, 20, 10)
+    val bos = ByteArrayOutputStream()
+    gifEncoder.start(bos)
+    images.forEach {
+      Base64.getDecoder().decode(it).inputStream().use { stream ->
+        gifEncoder.addFrame(Image.createImage(stream))
+      }
+    }
+    gifEncoder.finish()
+    val gif = uploadBytesToS3(bos.toByteArray(), MediaType.IMAGE_GIF)
+
+    initEntity.name = "Image #${initEntity.imageId}"
+    initEntity.prompt = cleanPrompt
+    initEntity.gif = gif
+
+    imageRepository.save(initEntity)
+    if (user.subscriptionId.isNullOrEmpty()) {
+      userEnergyService.spendEnergy(user, energy)
+    } else {
+      user.generations -= 1
+    }
+
+    userService.save(user)
+
+    return initEntity
   }
 
   private fun checkImageCount(user: User) {
@@ -155,11 +228,11 @@ class ImageService(
 
   private fun createStabilityImage(
     prompt: String,
-    user: User,
     height: Int,
     width: Int,
-    strength: Int
-  ): ImageAI {
+    strength: Int,
+    samples: Int = 1,
+  ): List<String> {
     val headers = LinkedMultiValueMap<String, String>()
     headers.add("Authorization", appProperties.stableKey)
     headers.add("Accept", "application/json")
@@ -180,6 +253,7 @@ class ImageService(
       body.add("init_image", fileEntity)
       body.add("text_prompts[0][text]", prompt.substringAfter(" "))
       body.add("image_strength", strength / 100f)
+      body.add("samples", samples)
 
       headers.add("Content-Type", "multipart/form-data")
       Pair(
@@ -189,7 +263,12 @@ class ImageService(
     } else {
       headers.add("Content-Type", "application/json")
       Pair(
-        StabilityRequest(listOf(StabilityPrompt(prompt.substringAfter(" "))), height, width),
+        StabilityRequest(
+          listOf(StabilityPrompt(prompt.substringAfter(" "))),
+          height,
+          width,
+          samples
+        ),
         "text-to-image",
       )
     }
@@ -201,9 +280,11 @@ class ImageService(
       httpEntity,
       StabilityResponse::class.java
     )
-    val createdPicBytes = response.body?.artifacts?.firstOrNull()?.base64
+    return response.body?.artifacts?.map { it.base64 }
       ?: throw BadRequestException("Failed to create image")
+  }
 
+  private fun uploadBase64Pic(user: User, bytes: String): ImageAI {
     val filename = UUID.randomUUID().toString()
     val url = awsS3Service.generatePreSignedUrl(
       filePath = filename,
@@ -211,7 +292,7 @@ class ImageService(
       httpMethod = com.amazonaws.HttpMethod.PUT,
     )
     val entity = HttpEntity(
-      Base64.getDecoder().decode(createdPicBytes),
+      Base64.getDecoder().decode(bytes),
       HttpHeaders().apply { contentType = MediaType.IMAGE_PNG }
     )
 
@@ -322,6 +403,14 @@ class ImageService(
 
   fun uploadImageToS3(picUrl: String): String {
     val image = ImageIO.read(URL(picUrl))
+    //image bytes
+    val imageBytes = ByteArrayOutputStream()
+    ImageIO.write(image, "png", imageBytes)
+
+    return uploadBytesToS3(imageBytes.toByteArray(), MediaType.IMAGE_PNG)
+  }
+
+  fun uploadBytesToS3(bytes: ByteArray, contentType: MediaType): String {
     val filename = UUID.randomUUID().toString()
     val url = awsS3Service.generatePreSignedUrl(
       filePath = filename,
@@ -329,11 +418,8 @@ class ImageService(
       httpMethod = com.amazonaws.HttpMethod.PUT,
     )
     val headers = HttpHeaders()
-    headers.contentType = MediaType.IMAGE_PNG
-    //image bytes
-    val imageBytes = ByteArrayOutputStream()
-    ImageIO.write(image, "png", imageBytes)
-    val entity = HttpEntity(imageBytes.toByteArray(), headers)
+    headers.contentType = contentType
+    val entity = HttpEntity(bytes, headers)
 
     restTemplate.exchange(
       URI.create(url),

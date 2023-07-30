@@ -214,3 +214,8 @@ ALTER TABLE users
 ALTER TABLE users
   ADD COLUMN ux_credits BIGINT NOT NULL DEFAULT 0;
 --rollback ALTER TABLE users;
+
+--changeset vcoolish:20230702143804
+ALTER TABLE images
+  ADD COLUMN gif VARCHAR(2048);
+--rollback ALTER TABLE images;

@@ -29,6 +29,7 @@ object ImageMapper {
     dto.name = image.name ?: ""
     dto.description = image.description
     dto.image = image.image
+    dto.gif = image.gif
 
     return dto
   }

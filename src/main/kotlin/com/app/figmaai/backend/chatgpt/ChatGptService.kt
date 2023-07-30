@@ -77,6 +77,7 @@ class ChatGptService(
     if (!user.isSubscribed) {
       throw BadRequestException("Subscription expired")
     }
+
     val response = requestChat(user, text, mode.value)
     user.uxCredits -= response?.usage?.total_tokens ?: 0
     userRepository.save(user)

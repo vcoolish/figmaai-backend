@@ -6,6 +6,7 @@ import com.app.figmaai.backend.ai.AiVersion
 import com.app.figmaai.backend.constraint.Figma
 import com.app.figmaai.backend.image.dto.GetAllNftRequest
 import com.app.figmaai.backend.image.dto.ImageInternalDto
+import com.app.figmaai.backend.image.dto.PurchaseAnimatedImageRequest
 import com.app.figmaai.backend.image.dto.PurchaseImageRequest
 import com.app.figmaai.backend.image.mapper.ImageMapper
 import com.app.figmaai.backend.image.model.UploadResult
@@ -63,6 +64,19 @@ class ImageController(
       height = request.height,
       width = request.width,
       strength = request.strengthPercent,
+    ).let { ImageMapper.toInternalDto(it) }
+  }
+
+  @PatchMapping("/generate/animated")
+  fun purchaseAnimated(
+    @Figma @RequestHeader figma: String,
+    @Valid @RequestBody request: PurchaseAnimatedImageRequest,
+  ): ImageInternalDto {
+    return imageService.createAnimated(
+      id = figma,
+      prompt = request.prompt.trim(),
+      height = request.height,
+      width = request.width,
     ).let { ImageMapper.toInternalDto(it) }
   }
 

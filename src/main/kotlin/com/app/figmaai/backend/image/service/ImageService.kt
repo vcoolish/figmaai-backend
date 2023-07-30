@@ -185,11 +185,11 @@ class ImageService(
       val firstEntity = uploadBase64Pic(user, firstImage.first(), true)
       add(firstEntity)
 
-      val secondImage = createStabilityImage("${firstEntity.image} $prompt", height, width, 30)
+      val secondImage = createStabilityImage("${firstEntity.image} $prompt", height, width, 40)
       val secondEntity = uploadBase64Pic(user, secondImage.first(), false)
       add(secondEntity)
 
-      val thirdImage = createStabilityImage("${firstEntity.image} $prompt", height, width, 30)
+      val thirdImage = createStabilityImage("${firstEntity.image} $prompt", height, width, 40)
       val thirdEntity = uploadBase64Pic(user, thirdImage.first(), false)
       add(thirdEntity)
     }
@@ -210,7 +210,7 @@ class ImageService(
     val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
 
     val images = initEntities.flatMap {
-      createStabilityImage("${it.image} $prompt", height, width, 70, 4)
+      createStabilityImage("${it.image} $prompt", height, width, 65, 4)
     }
     logger.info("images ${images.size}")
     val file = File.createTempFile(UUID.randomUUID().toString(), ".gif")
@@ -221,7 +221,7 @@ class ImageService(
     val writer = GifSequenceWriter(output, initImagesIO.first().type, 200, true)
 
     initImagesIO.forEach { writer.writeToSequence(it) }
-    images.forEach {
+    images.shuffled().forEach {
       logger.info("write image")
       val nextImage: BufferedImage = ImageIO.read(Base64.getDecoder().decode(it).inputStream())
       writer.writeToSequence(nextImage)

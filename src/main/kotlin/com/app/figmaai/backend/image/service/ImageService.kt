@@ -182,17 +182,21 @@ class ImageService(
     val initImage = createStabilityImage(prompt, height, width, 100)
     val initEntity = uploadBase64Pic(user, initImage.first())
     val images = createStabilityImage("$initEntity $prompt", height, width, 20, 10)
+    logger.info("images ${images.size}")
     val file = File.createTempFile(UUID.randomUUID().toString(), ".gif")
     val output = FileImageOutputStream(file)
+    logger.info("read file")
     val firstImage = ImageIO.read(Base64.getDecoder().decode(images.first()).inputStream())
 
     val writer = GifSequenceWriter(output, firstImage.type, 200, true)
     images.drop(1).forEach {
+      logger.info("write image")
       val nextImage: BufferedImage = ImageIO.read(Base64.getDecoder().decode(it).inputStream())
       writer.writeToSequence(nextImage)
     }
     writer.close()
     output.close()
+    logger.info("upload gif image")
     val gif = uploadBytesToS3(file.readBytes(), MediaType.IMAGE_GIF)
     file.delete()
 

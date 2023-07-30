@@ -194,7 +194,7 @@ class ImageService(
   ) {
     val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
 
-    val images = createStabilityImage("${initEntity.image} $prompt", height, width, 40, 6)
+    val images = createStabilityImage("${initEntity.image} $prompt", height, width, 30, 6)
     logger.info("images ${images.size}")
     val file = File.createTempFile(UUID.randomUUID().toString(), ".gif")
     val output = FileImageOutputStream(file)
@@ -296,7 +296,7 @@ class ImageService(
     val httpEntity: HttpEntity<*> = HttpEntity<Any>(body, headers)
 
     val response = restTemplate.exchange(//1024-v1-0
-      "https://api.stability.ai/v1/generation/stable-diffusion-xl-beta-v2-2-2/$path",
+      "https://api.stability.ai/v1/generation/stable-diffusion-v1-5/$path",
       HttpMethod.POST,
       httpEntity,
       StabilityResponse::class.java

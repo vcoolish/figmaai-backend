@@ -273,7 +273,7 @@ class ImageService(
       val body: MultiValueMap<String, Any> = LinkedMultiValueMap()
       body.add("init_image", fileEntity)
       body.add("text_prompts[0][text]", prompt.substringAfter(" "))
-      body.add("image_strength", strength.toFloat() / 100f)
+      body.add("image_strength", strength.toDouble() / 100.0)
       body.add("samples", samples)
 
       headers.add("Content-Type", "multipart/form-data")

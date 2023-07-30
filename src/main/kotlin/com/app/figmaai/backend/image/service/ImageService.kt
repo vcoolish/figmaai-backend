@@ -194,15 +194,17 @@ class ImageService(
   ) {
     val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
 
-    val images = createStabilityImage("${initEntity.image} $prompt", height, width, 50, 6)
+    val images = createStabilityImage("${initEntity.image} $prompt", height, width, 80, 10)
     logger.info("images ${images.size}")
     val file = File.createTempFile(UUID.randomUUID().toString(), ".gif")
     val output = FileImageOutputStream(file)
     logger.info("read file")
-    val firstImage = ImageIO.read(Base64.getDecoder().decode(images.first()).inputStream())
+    val firstImage = ImageIO.read(URL(initEntity.image))
 
     val writer = GifSequenceWriter(output, firstImage.type, 200, true)
-    images.drop(1).forEach {
+
+    writer.writeToSequence(firstImage)
+    images.forEach {
       logger.info("write image")
       val nextImage: BufferedImage = ImageIO.read(Base64.getDecoder().decode(it).inputStream())
       writer.writeToSequence(nextImage)

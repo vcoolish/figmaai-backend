@@ -1,6 +1,8 @@
 package com.app.figmaai.backend.chatgpt
 
+import com.app.figmaai.backend.exception.InsufficientBalanceException
 import org.springframework.http.ResponseEntity
+import org.springframework.social.ExpiredAuthorizationException
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
@@ -15,27 +17,39 @@ class ChatGptController(
   fun copyright(
     @RequestBody @Valid copyrightDto: ChatCopyrightRequestDto,
     @RequestHeader token: String,
-  ): ResponseEntity<List<String>> = ResponseEntity.ok(
-    chatGptService.copyright(
-      text = copyrightDto.text,
-      mode = copyrightDto.mode,
-      language = copyrightDto.language?.name,
-      tone = copyrightDto.tone,
-      token = token,
-    ),
-  )
+  ): ResponseEntity<List<String>?> = try {
+    ResponseEntity.ok(
+      chatGptService.copyright(
+        text = copyrightDto.text,
+        mode = copyrightDto.mode,
+        language = copyrightDto.language?.name,
+        tone = copyrightDto.tone,
+        token = token,
+      ),
+    )
+  } catch (ex: ExpiredAuthorizationException) {
+    ResponseEntity.status(405).body(null)
+  } catch (ex: InsufficientBalanceException) {
+    ResponseEntity.status(407).body(null)
+  }
 
   @PostMapping("/ux-builder")
   fun uxBuilder(
     @RequestBody @Valid uxDto: UxRequestDto,
     @RequestHeader token: String,
-  ): ResponseEntity<List<String>> = ResponseEntity.ok(
-    chatGptService.uxBuilder(
-      text = uxDto.text,
-      mode = uxDto.mode,
-      token = token,
-    ),
-  )
+  ): ResponseEntity<List<String>?> = try {
+    ResponseEntity.ok(
+      chatGptService.uxBuilder(
+        text = uxDto.text,
+        mode = uxDto.mode,
+        token = token,
+      ),
+    )
+  } catch (ex: ExpiredAuthorizationException) {
+    ResponseEntity.status(405).body(null)
+  } catch (ex: InsufficientBalanceException) {
+    ResponseEntity.status(407).body(null)
+  }
 
   @GetMapping("/copyright/modes")
   fun getCopyrightModes(): List<ModeResponse> = CopyrightMode.values().map {

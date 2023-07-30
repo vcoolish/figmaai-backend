@@ -7,6 +7,8 @@ import com.app.figmaai.backend.common.util.bannedWords
 import com.app.figmaai.backend.common.util.logger
 import com.app.figmaai.backend.config.properties.AppProperties
 import com.app.figmaai.backend.exception.BadRequestException
+import com.app.figmaai.backend.exception.InProgressException
+import com.app.figmaai.backend.exception.InsufficientBalanceException
 import com.app.figmaai.backend.image.dto.GetAllNftRequest
 import com.app.figmaai.backend.image.model.ImageAI
 import com.app.figmaai.backend.image.repository.ImageRepository
@@ -24,6 +26,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.http.*
 import org.springframework.scheduling.annotation.Async
+import org.springframework.social.ExpiredAuthorizationException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.LinkedMultiValueMap
@@ -88,17 +91,17 @@ class ImageService(
       .and(createdAtGreaterOrEqual(ZonedDateTime.now(Clock.systemUTC()).minusMinutes(5)))
     val inProgress = imageRepository.exists(spec)
     if (inProgress) {
-      throw BadRequestException("You already have an image in progress")
+      throw InProgressException("You already have an image in progress")
     }
     if (user.subscriptionId.isNullOrEmpty() && user.energy < provider.energy.toBigDecimal()) {
-      throw BadRequestException("Not enough energy. Start your subscription for unlimited generations")
+      throw InsufficientBalanceException("Not enough energy. Start your subscription for unlimited generations")
     }
     if (!user.subscriptionId.isNullOrEmpty() && user.generations <= 0) {
-      throw BadRequestException("You ran out of generations. Start new subscription to get more.")
+      throw InsufficientBalanceException("You ran out of generations. Start new subscription to get more.")
     }
 
     if (!user.isSubscribed) {
-      throw BadRequestException("Subscription expired")
+      throw ExpiredAuthorizationException("Subscription expired")
     }
     logger.info("{${prompt}}")
 
@@ -156,18 +159,18 @@ class ImageService(
       .and(createdAtGreaterOrEqual(ZonedDateTime.now(Clock.systemUTC()).minusMinutes(5)))
     val inProgress = imageRepository.exists(spec)
     if (inProgress) {
-      throw BadRequestException("You already have an image in progress")
+      throw InProgressException("You already have an image in progress")
     }
     val energy = BigDecimal.valueOf(30)
     if (user.subscriptionId.isNullOrEmpty() && user.energy < energy) {
-      throw BadRequestException("Not enough energy. Start your subscription for unlimited generations")
+      throw InsufficientBalanceException("Not enough energy. Start your subscription for unlimited generations")
     }
     if (!user.subscriptionId.isNullOrEmpty() && user.generations <= 0) {
-      throw BadRequestException("You ran out of generations. Start new subscription to get more.")
+      throw InsufficientBalanceException("You ran out of generations. Start new subscription to get more.")
     }
 
     if (!user.isSubscribed) {
-      throw BadRequestException("Subscription expired")
+      throw ExpiredAuthorizationException("Subscription expired")
     }
     logger.info("{${prompt}}")
 

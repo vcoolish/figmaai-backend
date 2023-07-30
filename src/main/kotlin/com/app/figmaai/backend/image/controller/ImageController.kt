@@ -4,6 +4,8 @@ import com.amazonaws.HttpMethod
 import com.app.figmaai.backend.ai.AiProvider
 import com.app.figmaai.backend.ai.AiVersion
 import com.app.figmaai.backend.constraint.Figma
+import com.app.figmaai.backend.exception.InProgressException
+import com.app.figmaai.backend.exception.InsufficientBalanceException
 import com.app.figmaai.backend.image.dto.GetAllNftRequest
 import com.app.figmaai.backend.image.dto.ImageInternalDto
 import com.app.figmaai.backend.image.dto.PurchaseAnimatedImageRequest
@@ -17,6 +19,8 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
+import org.springframework.http.ResponseEntity
+import org.springframework.social.ExpiredAuthorizationException
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -52,11 +56,11 @@ class ImageController(
   fun purchase(
     @Figma @RequestHeader figma: String,
     @Valid @RequestBody request: PurchaseImageRequest,
-  ): ImageInternalDto {
+  ): ResponseEntity<ImageInternalDto?> = try {
     val provider = com.app.figmaai.backend.ai.AiProvider.values().find {
       it.name.equals(request.provider, true)
     } ?: AiProvider.MIDJOURNEY
-    return imageService.create(
+    imageService.create(
       id = figma,
       prompt = request.prompt.trim(),
       provider = provider,
@@ -64,20 +68,32 @@ class ImageController(
       height = request.height,
       width = request.width,
       strength = request.strengthPercent,
-    ).let { ImageMapper.toInternalDto(it) }
+    ).let { ResponseEntity.ok(ImageMapper.toInternalDto(it)) }
+  } catch (ex: ExpiredAuthorizationException) {
+    ResponseEntity.status(405).body(null)
+  } catch (ex: InProgressException) {
+    ResponseEntity.status(406).body(null)
+  } catch (ex: InsufficientBalanceException) {
+    ResponseEntity.status(407).body(null)
   }
 
   @PatchMapping("/generate/animated")
   fun purchaseAnimated(
     @Figma @RequestHeader figma: String,
     @Valid @RequestBody request: PurchaseAnimatedImageRequest,
-  ): ImageInternalDto {
-    return imageService.createAnimated(
+  ): ResponseEntity<ImageInternalDto?> = try {
+    imageService.createAnimated(
       id = figma,
       prompt = request.prompt.trim(),
       height = request.height,
       width = request.width,
-    ).let { ImageMapper.toInternalDto(it) }
+    ).let { ResponseEntity.ok(ImageMapper.toInternalDto(it)) }
+  } catch (ex: ExpiredAuthorizationException) {
+    ResponseEntity.status(405).body(null)
+  } catch (ex: InProgressException) {
+    ResponseEntity.status(406).body(null)
+  } catch (ex: InsufficientBalanceException) {
+    ResponseEntity.status(407).body(null)
   }
 
   @DeleteMapping("/{id}")

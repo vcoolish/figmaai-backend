@@ -2,6 +2,7 @@ package com.app.figmaai.backend.chatgpt
 
 import com.app.figmaai.backend.config.properties.AppProperties
 import com.app.figmaai.backend.exception.BadRequestException
+import com.app.figmaai.backend.exception.InsufficientBalanceException
 import com.app.figmaai.backend.user.model.User
 import com.app.figmaai.backend.user.repository.UserRepository
 import com.app.figmaai.backend.user.service.TokenProvider
@@ -10,6 +11,7 @@ import com.google.gson.JsonParser
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
+import org.springframework.social.ExpiredAuthorizationException
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
@@ -47,10 +49,10 @@ class ChatGptService(
     val user = userRepository.findByUserUuid(userUuid)
 
     if (user.credits < 100) {
-      throw IllegalStateException("Not enough credits, please renew your subscription")
+      throw InsufficientBalanceException("Not enough credits, please renew your subscription")
     }
     if (!user.isSubscribed) {
-      throw BadRequestException("Subscription expired")
+      throw ExpiredAuthorizationException("Subscription expired")
     }
     val response = requestChat(
       user = user,
@@ -72,10 +74,10 @@ class ChatGptService(
     val userUuid = tokenProvider.createParser().parseClaimsJws(token).body.subject
     val user = userRepository.findByUserUuid(userUuid)
     if (user.uxCredits < 100) {
-      throw IllegalStateException("Not enough credits, please renew your subscription")
+      throw InsufficientBalanceException("Not enough credits, please renew your subscription")
     }
     if (!user.isSubscribed) {
-      throw BadRequestException("Subscription expired")
+      throw ExpiredAuthorizationException("Subscription expired")
     }
 
     val response = requestChat(user, text, mode.value)

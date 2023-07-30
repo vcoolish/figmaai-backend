@@ -14,7 +14,7 @@ import com.app.figmaai.backend.image.repository.extra.ImageSpecification.created
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.findByPrompt
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.imageIsEmpty
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.userEqual
-import com.app.figmaai.backend.image.utils.AnimatedGifEncoder
+import com.app.figmaai.backend.image.utils.GifSequenceWriter
 import com.app.figmaai.backend.user.model.User
 import com.app.figmaai.backend.user.service.TokenProvider
 import com.app.figmaai.backend.user.service.UserEnergyService
@@ -29,7 +29,9 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
+import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.math.BigDecimal
 import java.net.URI
 import java.net.URL
@@ -37,7 +39,7 @@ import java.time.Clock
 import java.time.ZonedDateTime
 import java.util.*
 import javax.imageio.ImageIO
-import javax.microedition.lcdui.Image
+import javax.imageio.stream.FileImageOutputStream
 
 @Service
 class ImageService(
@@ -52,7 +54,6 @@ class ImageService(
 
   private val logger = logger()
   private val restTemplate = RestTemplate()
-  private val gifEncoder = AnimatedGifEncoder()
 
   fun getAll(pageable: Pageable, request: GetAllNftRequest, token: String): Page<ImageAI> {
     val spec: Specification<ImageAI> = if (request.figma.isNullOrEmpty()) {
@@ -181,15 +182,19 @@ class ImageService(
     val initImage = createStabilityImage(prompt, height, width, 100)
     val initEntity = uploadBase64Pic(user, initImage.first())
     val images = createStabilityImage("$initEntity $prompt", height, width, 20, 10)
-    val bos = ByteArrayOutputStream()
-    gifEncoder.start(bos)
-    images.forEach {
-      Base64.getDecoder().decode(it).inputStream().use { stream ->
-        gifEncoder.addFrame(Image.createImage(stream))
-      }
+    val file = File.createTempFile(UUID.randomUUID().toString(), ".gif")
+    val output = FileImageOutputStream(file)
+    val firstImage = ImageIO.read(Base64.getDecoder().decode(images.first()).inputStream())
+
+    val writer = GifSequenceWriter(output, firstImage.type, 200, true)
+    images.drop(1).forEach {
+      val nextImage: BufferedImage = ImageIO.read(Base64.getDecoder().decode(it).inputStream())
+      writer.writeToSequence(nextImage)
     }
-    gifEncoder.finish()
-    val gif = uploadBytesToS3(bos.toByteArray(), MediaType.IMAGE_GIF)
+    writer.close()
+    output.close()
+    val gif = uploadBytesToS3(file.readBytes(), MediaType.IMAGE_GIF)
+    file.delete()
 
     initEntity.name = "Image #${initEntity.imageId}"
     initEntity.prompt = cleanPrompt

@@ -5,6 +5,8 @@ import com.app.figmaai.backend.exception.BadRequestException
 import com.app.figmaai.backend.user.model.User
 import com.app.figmaai.backend.user.repository.UserRepository
 import com.app.figmaai.backend.user.service.TokenProvider
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
@@ -43,7 +45,7 @@ class ChatGptService(
     val copies = mode.copies
     val userUuid = tokenProvider.createParser().parseClaimsJws(token).body.subject
     val user = userRepository.findByUserUuid(userUuid)
-//    return requestEdit(text, instruction.trim(), copies)
+
     if (user.credits < 100) {
       throw IllegalStateException("Not enough credits, please renew your subscription")
     }
@@ -78,8 +80,23 @@ class ChatGptService(
     val response = requestChat(user, text, mode.value)
     user.uxCredits -= response?.usage?.total_tokens ?: 0
     userRepository.save(user)
-    return response?.choices?.map { it.message?.content ?: "" }
+    val choices = response?.choices?.map { it.message?.content ?: "" }
       ?: throw BadRequestException("Failed to create edit")
+    return if (mode == UxMode.userpersona) {
+      listOf(addPersonaImage(choices.first()))
+    } else {
+      choices
+    }
+  }
+
+  private fun addPersonaImage(choice: String): String {
+    val map = JsonParser().parse(choice).asJsonObject
+    val info = map.getAsJsonObject("basic_info")
+    val gender = info.get("gender").asString.lowercase()
+    val age = info.get("age").asString.toInt()
+    val assets = if (gender == "male") menPics else womenPics
+    map.addProperty("image", assets.entries.find { age in it.key }?.value?.random() ?: "")
+    return Gson().toJson(map)
   }
 
   private fun requestChat(

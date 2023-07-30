@@ -181,8 +181,8 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
     {
       "persona_name": "Persona name up to 20 characters",
       "basic_info": {
-        "age": "Age of the persona",
-        "gender": "Gender of the persona",
+        "age": "Age of the persona as integer number",
+        "gender": "Gender of the persona in format of male or female",
         "location": "Location or place of residence of the persona",
         "occupation": "Current job or profession of the persona",
         "education": "Educational background of the persona",

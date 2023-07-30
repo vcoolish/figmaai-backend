@@ -141,7 +141,7 @@ class ImageService(
     return image
   }
 
-  @Transactional(timeout = 60)
+  @Async
   fun createAnimated(
     id: String,
     prompt: String,

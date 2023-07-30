@@ -181,7 +181,7 @@ class ImageService(
     val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
     val initImage = createStabilityImage(prompt, height, width, 100)
     val initEntity = uploadBase64Pic(user, initImage.first())
-    val images = createStabilityImage("$initEntity $prompt", height, width, 20, 10)
+    val images = createStabilityImage("$initEntity $prompt", height, width, 80, 10)
     logger.info("images ${images.size}")
     val file = File.createTempFile(UUID.randomUUID().toString(), ".gif")
     val output = FileImageOutputStream(file)

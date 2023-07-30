@@ -141,7 +141,6 @@ class ImageService(
     return image
   }
 
-  @Async
   fun createAnimated(
     id: String,
     prompt: String,
@@ -178,10 +177,24 @@ class ImageService(
       .joinToString(" ")
       .trim()
 
-    val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
     val initImage = createStabilityImage(prompt, height, width, 100)
     val initEntity = uploadBase64Pic(user, initImage.first())
-    val images = createStabilityImage("$initEntity $prompt", height, width, 80, 10)
+    generateGif(initEntity, user, prompt, height, width)
+
+    return initEntity
+  }
+
+  @Async
+  fun generateGif(
+    initEntity: ImageAI,
+    user: User,
+    prompt: String,
+    height: Int,
+    width: Int,
+  ) {
+    val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
+
+    val images = createStabilityImage("$initEntity $prompt", height, width, 90, 10)
     logger.info("images ${images.size}")
     val file = File.createTempFile(UUID.randomUUID().toString(), ".gif")
     val output = FileImageOutputStream(file)
@@ -207,14 +220,12 @@ class ImageService(
 
     imageRepository.save(initEntity)
     if (user.subscriptionId.isNullOrEmpty()) {
-      userEnergyService.spendEnergy(user, energy)
+      userEnergyService.spendEnergy(user, BigDecimal.valueOf(30))
     } else {
       user.generations -= 1
     }
 
     userService.save(user)
-
-    return initEntity
   }
 
   private fun checkImageCount(user: User) {

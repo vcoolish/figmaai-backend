@@ -299,7 +299,7 @@ class ImageService(
       )
 
       restTemplate.exchange(
-        "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image",
+        "https://api.stability.ai/v1/generation/stable-diffusion-xl-beta-v2-2-2/image-to-image",
         HttpMethod.POST,
         httpEntity,
         StabilityResponse::class.java
@@ -309,8 +309,8 @@ class ImageService(
       val httpEntity: HttpEntity<*> = HttpEntity<Any>(
         StabilityRequest(
           listOf(StabilityPrompt(prompt.substringAfter(" "))),
-          height,
-          width,
+          height * 2,
+          width * 2,
           samples
         ),
         headers,

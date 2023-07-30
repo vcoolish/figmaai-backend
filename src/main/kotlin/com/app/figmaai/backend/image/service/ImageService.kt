@@ -180,9 +180,18 @@ class ImageService(
       .joinToString(" ")
       .trim()
 
-    val initImages = (1..3).map {
-      val initImage = createStabilityImage(prompt, height, width, 100)
-      uploadBase64Pic(user, initImage.first(), it == 1)
+    val initImages = buildList {
+      val firstImage = createStabilityImage(prompt, height, width, 100)
+      val firstEntity = uploadBase64Pic(user, firstImage.first(), true)
+      add(firstEntity)
+
+      val secondImage = createStabilityImage("${firstEntity.image} $prompt", height, width, 20)
+      val secondEntity = uploadBase64Pic(user, secondImage.first(), false)
+      add(secondEntity)
+
+      val thirdImage = createStabilityImage("${secondEntity.image} $prompt", height, width, 20)
+      val thirdEntity = uploadBase64Pic(user, thirdImage.first(), false)
+      add(thirdEntity)
     }
     generateGif(initImages, user, prompt, height, width)
 

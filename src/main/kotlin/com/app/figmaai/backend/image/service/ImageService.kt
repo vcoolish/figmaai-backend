@@ -149,6 +149,7 @@ class ImageService(
     prompt: String,
     height: Int,
     width: Int,
+    strength: Int,
   ): ImageAI {
     validatePrompt(prompt)
     val user = userService.get(id)
@@ -181,17 +182,13 @@ class ImageService(
       .trim()
 
     val initImages = buildList {
-      val firstImage = createStabilityImage(prompt, height, width, 100)
+      val firstImage = createStabilityImage(prompt, height, width, strength)
       val firstEntity = uploadBase64Pic(user, firstImage.first(), true)
       add(firstEntity)
 
       val secondImage = createStabilityImage("${firstEntity.image} $prompt", height, width, 40)
       val secondEntity = uploadBase64Pic(user, secondImage.first(), false)
       add(secondEntity)
-
-//      val thirdImage = createStabilityImage("${firstEntity.image} $prompt", height, width, 40)
-//      val thirdEntity = uploadBase64Pic(user, thirdImage.first(), false)
-//      add(thirdEntity)
     }
     generateGif(initImages, user, prompt, height, width)
 
@@ -276,7 +273,7 @@ class ImageService(
     val headers = LinkedMultiValueMap<String, String>()
     headers.add("Authorization", appProperties.stableKey)
     headers.add("Accept", "application/json")
-    val (body, path) = if (prompt.startsWith("https://")) {
+    val response = if (prompt.startsWith("https://")) {
       val fileContent = URL(prompt.substringBefore(" ")).openStream().readAllBytes()
 
       val fileMap: MultiValueMap<String, String> = LinkedMultiValueMap()
@@ -296,30 +293,36 @@ class ImageService(
       body.add("samples", samples)
 
       headers.add("Content-Type", "multipart/form-data")
-      Pair(
+      val httpEntity: HttpEntity<*> = HttpEntity<Any>(
         body,
-        "image-to-image"
+        headers,
+      )
+
+      restTemplate.exchange(
+        "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image",
+        HttpMethod.POST,
+        httpEntity,
+        StabilityResponse::class.java
       )
     } else {
       headers.add("Content-Type", "application/json")
-      Pair(
+      val httpEntity: HttpEntity<*> = HttpEntity<Any>(
         StabilityRequest(
           listOf(StabilityPrompt(prompt.substringAfter(" "))),
           height,
           width,
           samples
         ),
-        "text-to-image",
+        headers,
+      )
+
+      restTemplate.exchange(
+        "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image",
+        HttpMethod.POST,
+        httpEntity,
+        StabilityResponse::class.java
       )
     }
-    val httpEntity: HttpEntity<*> = HttpEntity<Any>(body, headers)
-
-    val response = restTemplate.exchange(//1024-v1-0
-      "https://api.stability.ai/v1/generation/stable-diffusion-xl-beta-v2-2-2/$path",
-      HttpMethod.POST,
-      httpEntity,
-      StabilityResponse::class.java
-    )
     return response.body?.artifacts?.map { it.base64 }
       ?: throw BadRequestException("Failed to create image")
   }

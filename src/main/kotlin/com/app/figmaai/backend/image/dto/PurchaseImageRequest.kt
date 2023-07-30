@@ -13,4 +13,5 @@ class PurchaseAnimatedImageRequest(
   val prompt: String,
   val height: Int = 512,
   val width: Int = 512,
+  val strengthPercent: Int = 35,
 )

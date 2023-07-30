@@ -87,6 +87,7 @@ class ImageController(
       prompt = request.prompt.trim(),
       height = request.height,
       width = request.width,
+      strength = request.strengthPercent,
     ).let { ResponseEntity.ok(ImageMapper.toInternalDto(it)) }
   } catch (ex: ExpiredAuthorizationException) {
     ResponseEntity.status(405).body(null)

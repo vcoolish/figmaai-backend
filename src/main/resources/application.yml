@@ -76,7 +76,7 @@ web-security:
         - /images/**
         - /authorize
         - /copyright
-#        - /ux-builder
+        - /ux-builder
     - methods: PATCH
       paths:
         - /figma/**

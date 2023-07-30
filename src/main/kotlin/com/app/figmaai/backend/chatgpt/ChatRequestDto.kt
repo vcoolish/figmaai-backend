@@ -177,7 +177,7 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
   ),
   userpersona(
     """
-    Your goal is to create user personas based on the following template and represent the result in valid trimmed to one line JSON tree format keeping key names as in example: 
+    Your goal is to create user personas based on the following template and represent the result in valid trimmed to one line JSON tree format avoiding boolean values and keeping key names as in example: 
     {
       "persona_name": "Persona name up to 20 characters",
       "basic_info": {
@@ -199,8 +199,8 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
         "social_media": "Social media",
         "websites": "Websites",
         "mobile_applications: "Mobile applications",
-        "email: "Email",
-        "phone": "Phone"
+        "email: "Random Email example",
+        "phone": "Random Phone example"
       },
       "psychographic_profile": {
         "personality_type": "Introvert/Extrovert, decision-making traits, approach to problem solving, emotional intelligence.",

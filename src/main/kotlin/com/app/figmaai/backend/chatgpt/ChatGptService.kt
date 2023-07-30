@@ -53,7 +53,7 @@ class ChatGptService(
       throw BadRequestException("Subscription expired")
     }
     val response = requestChat(
-      user = user,
+//      user = user,
       prompt = request.trim(),
       instruction = mode.system,
       copies = copies,
@@ -69,17 +69,17 @@ class ChatGptService(
     mode: UxMode,
     token: String,
   ): List<String> {
-    val userUuid = tokenProvider.createParser().parseClaimsJws(token).body.subject
-    val user = userRepository.findByUserUuid(userUuid)
-    if (user.uxCredits < 100) {
-      throw IllegalStateException("Not enough credits, please renew your subscription")
-    }
-    if (!user.isSubscribed) {
-      throw BadRequestException("Subscription expired")
-    }
-    val response = requestChat(user, text, mode.value)
-    user.uxCredits -= response?.usage?.total_tokens ?: 0
-    userRepository.save(user)
+//    val userUuid = tokenProvider.createParser().parseClaimsJws(token).body.subject
+//    val user = userRepository.findByUserUuid(userUuid)
+//    if (user.uxCredits < 100) {
+//      throw IllegalStateException("Not enough credits, please renew your subscription")
+//    }
+//    if (!user.isSubscribed) {
+//      throw BadRequestException("Subscription expired")
+//    }
+    val response = requestChat(text, mode.value)
+//    user.uxCredits -= response?.usage?.total_tokens ?: 0
+//    userRepository.save(user)
     val choices = response?.choices?.map { it.message?.content ?: "" }
       ?: throw BadRequestException("Failed to create edit")
     return if (mode == UxMode.userpersona) {
@@ -100,7 +100,7 @@ class ChatGptService(
   }
 
   private fun requestChat(
-    user: User,
+//    user: User,
     prompt: String,
     instruction: String,
     copies: Int = 1
@@ -120,7 +120,7 @@ class ChatGptService(
           content = prompt,
         ),
       ),
-      user = user.userUuid,
+      user = "user.userUuid",
       n = copies,
     )
     headers.add("Content-Type", "application/json")

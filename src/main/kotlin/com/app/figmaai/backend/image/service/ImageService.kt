@@ -296,7 +296,7 @@ class ImageService(
     val httpEntity: HttpEntity<*> = HttpEntity<Any>(body, headers)
 
     val response = restTemplate.exchange(//1024-v1-0
-      "https://api.stability.ai/v1/generation/stable-diffusion-v1-5/$path",
+      "https://api.stability.ai/v1/generation/stable-diffusion-512-v2-1/$path",
       HttpMethod.POST,
       httpEntity,
       StabilityResponse::class.java

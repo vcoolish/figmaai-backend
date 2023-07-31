@@ -22,7 +22,7 @@ class LemonSubscriptionValidator(
 
   override fun validate(id: String) {
     val status = status(id, null).status
-    if (status != "active") {
+    if (status != "active" && status != "on_trial") {
       error("Subscription is not active")
     }
   }

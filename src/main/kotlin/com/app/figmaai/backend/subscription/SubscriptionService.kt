@@ -42,7 +42,7 @@ class SubscriptionService(
         Subscription(id, "active")
       }
     }
-    require(subscription.status == "active")
+    require(subscription.status == "active" || subscription.status == "on_trial")
     val type = SubscriptionType.values().find { it.lemonId == subscription.variant_id }
 
     if (user.subscriptionId != subscription.id) {
@@ -77,7 +77,7 @@ class SubscriptionService(
       user.uxCredits = maxCredits
       user.maxCredits = maxCredits
     }
-    user.isSubscribed = attrs.status == "active"
+    user.isSubscribed = attrs.status == "active" || attrs.status == "on_trial"
     eventPublisher.publishEvent(UserSubscribedEvent())
     repository.save(user)
     return user
@@ -125,7 +125,7 @@ class SubscriptionService(
   fun tryToValidateSubscription(user: User): User {
     sync.execute(user.id.toString()) {
       val subscription = getSubscription(user.email)
-      user.isSubscribed = subscription.status == "active" && !user.subscriptionId.isNullOrEmpty()
+      user.isSubscribed = (subscription.status == "active" || subscription.status == "on_trial") && !user.subscriptionId.isNullOrEmpty()
       val now = ZonedDateTime.now()
       val shouldRenew = user.isSubscribed && (now.minusMonths(1).isAfter(user.lastSubscriptionData))
       if (shouldRenew) {

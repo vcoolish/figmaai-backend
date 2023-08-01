@@ -85,6 +85,7 @@ class SubscriptionService(
       this.user = user
       this.subscriptionName = subscription.name
       this.tokens = subscription.tokens?.toLong() ?: 0L
+      this.generations = subscription.generations?.toLong() ?: 0L
       this.orderId = subscription.order_id
       this.variantId = subscription.variant_id
       this.updatePaymentMethodUrl = subscription.urls?.update_payment_method

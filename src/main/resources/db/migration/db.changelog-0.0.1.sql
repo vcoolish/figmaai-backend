@@ -219,3 +219,23 @@ ALTER TABLE users
 ALTER TABLE images
   ADD COLUMN gif VARCHAR(2048);
 --rollback ALTER TABLE images;
+
+--changeset vcoolish:20230703143804
+CREATE TABLE subscriptions
+(
+  subscription_id BIGSERIAL PRIMARY KEY NOT NULL,
+  user_id BIGINT NOT NULL,
+  status VARCHAR(255) NOT NULL,
+  provider VARCHAR(255) NOT NULL,
+  subscription_name VARCHAR(255) NOT NULL,
+  generations BIGINT NOT NULL,
+  tokens BIGINT NOT NULL,
+  renews_at TIMESTAMP WITH TIME ZONE,
+  ends_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  trial_ends_at TIMESTAMP WITH TIME ZONE,
+  order_id VARCHAR(255) NOT NULL,
+  variant_id VARCHAR(255) NOT NULL,
+  update_payment_method_url VARCHAR(2048) NOT NULL
+);
+--rollback CREATE TABLE subscriptions;

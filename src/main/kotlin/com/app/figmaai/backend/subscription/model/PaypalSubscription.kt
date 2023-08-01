@@ -1,6 +1,6 @@
 package com.app.figmaai.backend.subscription.model
 
-data class Subscription(
+data class SubscriptionDto(
   val id: String,
   val status: String,
   val name: String? = null,
@@ -12,8 +12,13 @@ data class Subscription(
   val trial_ends_at: String? = null,
   val order_id: String? = null,
   val variant_id: String? = null,
-  val urls: Any? = null,
+  val urls: LemonUrls? = null,
 )
+
+data class LemonUrls(
+  val update_payment_method: String?,
+)
+
 data class LemonResponse(
   val data: LemonSubscription,
 )
@@ -34,7 +39,7 @@ data class SubscriptionAttributes(
   val pause: String?,
   val cancelled: Boolean?,
   val trial_ends_at: String?,
-  val urls: Any?,
+  val urls: LemonUrls?,
   val renews_at: String?,
   val ends_at: String?,
   val created_at: String?,

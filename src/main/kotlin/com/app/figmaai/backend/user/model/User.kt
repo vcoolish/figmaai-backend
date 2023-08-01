@@ -1,6 +1,7 @@
 package com.app.figmaai.backend.user.model
 
 import com.app.figmaai.backend.image.model.ImageAI
+import com.app.figmaai.backend.subscription.model.Subscription
 import com.app.figmaai.backend.user.dto.SubscriptionProvider
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.hibernate.annotations.CreationTimestamp
@@ -47,6 +48,9 @@ class User : com.app.figmaai.backend.common.model.AbstractJpaPersistable<Long>()
 
   @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "user")
   var images: List<ImageAI> = listOf()
+
+  @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "user")
+  var subscription: Subscription? = null
 
   @Column(nullable = false, precision = 12, scale = 2)
   var maxEnergy: BigDecimal = BigDecimal.valueOf(30)

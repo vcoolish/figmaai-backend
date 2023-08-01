@@ -4,7 +4,7 @@ import com.app.figmaai.backend.common.util.logger
 import com.app.figmaai.backend.config.properties.AppProperties
 import com.app.figmaai.backend.subscription.model.LemonListResponse
 import com.app.figmaai.backend.subscription.model.LemonResponse
-import com.app.figmaai.backend.subscription.model.Subscription
+import com.app.figmaai.backend.subscription.model.SubscriptionDto
 import com.app.figmaai.backend.subscription.model.SubscriptionType
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -27,7 +27,7 @@ class LemonSubscriptionValidator(
     }
   }
 
-  override fun status(id: String, licenseId: String?): Subscription {
+  override fun status(id: String, licenseId: String?): SubscriptionDto {
     val headers = HttpHeaders()
     headers.add("Accept", "application/vnd.api+json")
     headers.add("Content-Type", "application/vnd.api+json")
@@ -47,7 +47,7 @@ class LemonSubscriptionValidator(
       logger().info(body.toString())
       val variant = attrs.variant_id.toString()
       val type = SubscriptionType.values().first { it.lemonId == variant }
-      return Subscription(
+      return SubscriptionDto(
         id = id,
         name = attrs.variant_name,
         generations = type.generations,
@@ -77,7 +77,7 @@ class LemonSubscriptionValidator(
       val attrs = response.attributes
       val variant = attrs.variant_id.toString()
       val type = SubscriptionType.values().first { it.lemonId == variant }
-      return Subscription(
+      return SubscriptionDto(
         id = response.id,
         name = attrs.variant_name,
         generations = type.generations,

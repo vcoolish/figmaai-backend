@@ -3,7 +3,7 @@ package com.app.figmaai.backend.subscription
 import com.app.figmaai.backend.config.properties.AppProperties
 import com.app.figmaai.backend.subscription.model.PaypalAccess
 import com.app.figmaai.backend.subscription.model.PaypalSubscription
-import com.app.figmaai.backend.subscription.model.Subscription
+import com.app.figmaai.backend.subscription.model.SubscriptionDto
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -27,7 +27,7 @@ class PaypalSubscriptionValidator(
     }
   }
 
-  override fun status(id: String, licenseId: String?): Subscription {
+  override fun status(id: String, licenseId: String?): SubscriptionDto {
     val headers = HttpHeaders()
     headers.contentType = MediaType.APPLICATION_JSON
     headers.add("Accept", "application/json")
@@ -41,7 +41,7 @@ class PaypalSubscriptionValidator(
       requestEntity,
       PaypalSubscription::class.java,
     ).body ?: throw Exception("Subscription not found")
-    return Subscription(
+    return SubscriptionDto(
       id = id,
       status = sub.status!!,
       renews_at = sub.billing_info?.next_billing_time,

@@ -179,39 +179,51 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
     """
     Your goal is to create user personas based on the following template and represent the result in valid trimmed to one line JSON tree format avoiding boolean values and keeping key names as in example: 
     {
-      "persona_name": "Persona name up to 20 characters",
-      "basic_info": {
-        "age": "Age of the persona as integer number",
-        "gender": "Gender of the persona in format of male or female",
-        "location": "Location or place of residence of the persona",
-        "occupation": "Current job or profession of the persona",
-        "education": "Educational background of the persona",
-        "tech_literacy": "Level of technological literacy (low, medium, high). * Economic Status: Economic or financial status of the persona"
-      },
-      "persona_quote": "A quote that could be attributed to the persona that represents their needs, goals, or personality",
-      "needs": "An analysis of the user's needs, tasks, or goals",
-      "pain_points": "Issues or problems the user persona might encounter",
-      "behaviors_and_preferences": {
-        "devices": "Devices (desktop, mobile, tablet, etc.)",
-        "operating_systems": "Operating systems",
-        "browsers": "Browsers",
-        "channels": "Channels (communication and interaction preferences)",
-        "social_media": "Social media",
-        "websites": "Websites",
-        "mobile_applications: "Mobile applications",
-        "email: "Random Email example",
-        "phone": "Random Phone example"
-      },
-      "psychographic_profile": {
-        "personality_type": "Introvert/Extrovert, decision-making traits, approach to problem solving, emotional intelligence.",
-        "values_and_beliefs:": "Personal values, ethical standards, environmental and social considerations"
-     },
-     "character_traits": [
-        "Description of first character trait that is consequential to the context provided in the project description.",
-        "Description of second character trait that is consequential to the context provided in the project description.",
-        "Description of third character trait that is consequential to the context provided in the project description.",
-        "Description of fourth character trait that is consequential to the context provided in the project description."
-      ]
+        "persona_name":"Persona name up to 20 characters",
+        "basic_info":{
+            "age":"Age of the persona as integer number",
+            "gender":"Gender of the persona in format of male or female",
+            "location":"Location or place of residence of the persona",
+            "occupation":"Current job or profession of the persona",
+            "education":"Educational background of the persona",
+            "tech_literacy":"Level of technological literacy (low, medium, high). * Economic Status: Economic or financial status of the persona"
+        },
+        "persona_quote":"A quote that could be attributed to the persona that represents their needs, goals, or personality",
+        "needs":"An analysis of the user's needs, tasks, or goals",
+        "pain_points":"Issues or problems the user persona might encounter",
+        "behaviors_and_preferences":{
+            "technical_preferences":{
+                "devices":"Devices (desktop, mobile, tablet, etc.)",
+                "operating_systems":"Operating systems",
+                "browsers":"Browsers"
+            },
+            "channels":{
+                "social_media":"Social media",
+                "websites":"Websites",
+                "mobile_applications":"Mobile applications",
+                "email":"Random Email example",
+                "phone":"Random Phone example"
+            }
+        },
+        "psychographic_profile":{
+            "personality_type":{
+                "personality":"Introvert/Extrovert etc",
+                "decision_making_traits":"Decision-making traits comma separated",
+                "problem_solving":"Approach to problem solving",
+                "emotional_intelligence":"Emotional intelligence"
+            },
+            "values_and_beliefs:":{
+                "personal_values":"Personal values",
+                "ethical_standards":"Ethical standards",
+                "social_considerations":"Social considerations"
+            }
+        },
+        "character_traits":[
+            "Description of first character trait that is consequential to the context provided in the project description.",
+            "Description of second character trait that is consequential to the context provided in the project description.",
+            "Description of third character trait that is consequential to the context provided in the project description.",
+            "Description of fourth character trait that is consequential to the context provided in the project description."
+        ]
     }
       When creating a persona, you should always base yourself on the following rules: "
       1. The first and last names should be absolutely similar to people's real names. Try not to choose the most popular combinations.

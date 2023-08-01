@@ -48,7 +48,7 @@ class SubscriptionService(
   }
 
   fun updateSubscription(user: User, subscription: SubscriptionDto, provider: SubscriptionProvider): User {
-    val cached = subscriptionRepository.findSubscriptionByUser(user)
+    val cached = subscriptionRepository.findSubscriptionsByUser(user).firstOrNull()
 
     val type = SubscriptionType.values().find { it.lemonId == subscription.variant_id }
 
@@ -143,7 +143,7 @@ class SubscriptionService(
     return when (user.subscriptionProvider) {
       SubscriptionProvider.paypal,
       SubscriptionProvider.lemon -> {
-        val subscription = subscriptionRepository.findSubscriptionByUser(user)
+        val subscription = subscriptionRepository.findSubscriptionsByUser(user).firstOrNull()
         if (subscription != null) {
           SubscriptionDto(
             id = subscription.id,

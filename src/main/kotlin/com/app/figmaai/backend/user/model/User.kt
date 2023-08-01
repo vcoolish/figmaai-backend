@@ -50,7 +50,7 @@ class User : com.app.figmaai.backend.common.model.AbstractJpaPersistable<Long>()
   var images: List<ImageAI> = listOf()
 
   @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "user")
-  var subscription: Subscription? = null
+  var subscription: List<Subscription> = listOf()
 
   @Column(nullable = false, precision = 12, scale = 2)
   var maxEnergy: BigDecimal = BigDecimal.valueOf(30)

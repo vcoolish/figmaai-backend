@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 
 interface SubscriptionRepository : JpaRepository<Subscription, String>, JpaSpecificationExecutor<Subscription> {
 
-  fun findSubscriptionByUser(user: User): Subscription?
+  fun findSubscriptionsByUser(user: User): List<Subscription>
 }

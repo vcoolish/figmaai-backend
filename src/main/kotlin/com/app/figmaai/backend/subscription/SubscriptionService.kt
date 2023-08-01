@@ -54,7 +54,7 @@ class SubscriptionService(
 
     if (cached?.subscriptionId != subscription.id || cached.status != subscription.status) {
       if (cached != null && cached.subscriptionId != subscription.id) {
-        subscriptionRepository.delete(cached)
+        runCatching { subscriptionRepository.deleteById(cached.id) }
       }
       user.subscriptionId = subscription.id
       user.subscriptionProvider = provider

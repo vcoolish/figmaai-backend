@@ -74,10 +74,10 @@ class SubscriptionService(
     val subscriptionEntity = (cached ?: Subscription()).apply {
       this.subscriptionId = subscription.id
       this.provider = provider
-      this.createdAt = ZonedDateTime.parse(subscription.created_at)
-      this.endsAt = ZonedDateTime.parse(subscription.ends_at)
-      this.trialEndsAt = ZonedDateTime.parse(subscription.trial_ends_at)
-      this.renewsAt = ZonedDateTime.parse(subscription.renews_at)
+      this.createdAt = runCatching { ZonedDateTime.parse(subscription.created_at) }.getOrNull()
+      this.endsAt = runCatching { ZonedDateTime.parse(subscription.ends_at) }.getOrNull()
+      this.trialEndsAt = runCatching { ZonedDateTime.parse(subscription.trial_ends_at) }.getOrNull()
+      this.renewsAt = runCatching { ZonedDateTime.parse(subscription.renews_at) }.getOrNull()
       this.status = subscription.status
       this.user = user
       this.subscriptionName = subscription.name
@@ -191,7 +191,9 @@ class SubscriptionService(
       val subscription = loadSubscription(user.email)
       val user = updateSubscription(user, subscription, user.subscriptionProvider!!)
       val isSubscribed = subscription.status == "active" || subscription.status == "on_trial"
-      val shouldRenew = isSubscribed && (now.minusDays(1).isBefore(ZonedDateTime.parse(subscription.renews_at)))
+      val shouldRenew = isSubscribed && (now.minusDays(1).isBefore(
+        runCatching { ZonedDateTime.parse(subscription.renews_at) }.getOrNull() ?: now
+      ))
       if (shouldRenew) {
         val subscriptionType = SubscriptionType.values().find { it.lemonId == subscription.variant_id }
         val maxGenerations = subscriptionType?.generations?.toLong() ?: 800

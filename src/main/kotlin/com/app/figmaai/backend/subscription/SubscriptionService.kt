@@ -138,21 +138,26 @@ class SubscriptionService(
       SubscriptionProvider.paypal,
       SubscriptionProvider.lemon -> {
         val subscription = subscriptionRepository.findSubscriptionByUser(user)
-          ?: throw BadRequestException("User ${user.email} has no subscription")
-        SubscriptionDto(
-          id = subscription.id,
-          name = subscription.subscriptionName,
-          generations = subscription.generations.toInt(),
-          tokens = subscription.tokens.toInt(),
-          status = subscription.status ?: "",
-          renews_at = subscription.renewsAt.toString(),
-          ends_at = subscription.endsAt.toString(),
-          created_at = subscription.createdAt.toString(),
-          variant_id = subscription.variantId,
-          trial_ends_at = subscription.trialEndsAt.toString(),
-          order_id = subscription.orderId.toString(),
-          urls = subscription.updatePaymentMethodUrl?.let { LemonUrls(it) },
-        )
+        if (subscription != null) {
+          SubscriptionDto(
+            id = subscription.id,
+            name = subscription.subscriptionName,
+            generations = subscription.generations.toInt(),
+            tokens = subscription.tokens.toInt(),
+            status = subscription.status ?: "",
+            renews_at = subscription.renewsAt.toString(),
+            ends_at = subscription.endsAt.toString(),
+            created_at = subscription.createdAt.toString(),
+            variant_id = subscription.variantId,
+            trial_ends_at = subscription.trialEndsAt.toString(),
+            order_id = subscription.orderId.toString(),
+            urls = subscription.updatePaymentMethodUrl?.let { LemonUrls(it) },
+          )
+        } else {
+          loadSubscription(email).also {
+            updateSubscription(user, it, user.subscriptionProvider!!)
+          }
+        }
       }
       SubscriptionProvider.google,
       SubscriptionProvider.apple -> {

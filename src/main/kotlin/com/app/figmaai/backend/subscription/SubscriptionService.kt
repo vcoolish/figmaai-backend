@@ -1,5 +1,6 @@
 package com.app.figmaai.backend.subscription
 
+import com.app.figmaai.backend.common.util.logger
 import com.app.figmaai.backend.config.properties.AppProperties
 import com.app.figmaai.backend.exception.BadRequestException
 import com.app.figmaai.backend.subscription.model.*
@@ -33,6 +34,7 @@ class SubscriptionService(
   fun getUserByEmail(email: String): User = userRepository.findOneByEmail(email)
 
   fun updateSubscription(email: String, id: String, provider: SubscriptionProvider): User {
+    logger().info(id)
     val user = getUserByEmail(email)
     val subscription = when (provider) {
       SubscriptionProvider.paypal -> paypalValidator.status(id, null)
@@ -92,6 +94,7 @@ class SubscriptionService(
   }
 
   fun updateSubscription(body: LemonResponse): User {
+    logger().info(body.toString())
     val attrs = body.data.attributes
     val type = SubscriptionType.values().find { it.lemonId == attrs.variant_id.toString() }
     val subscription = SubscriptionDto(

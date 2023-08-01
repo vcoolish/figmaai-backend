@@ -53,6 +53,9 @@ class SubscriptionService(
     val type = SubscriptionType.values().find { it.lemonId == subscription.variant_id }
 
     if (cached?.subscriptionId != subscription.id || cached.status != subscription.status) {
+      if (cached != null && cached.subscriptionId != subscription.id) {
+        subscriptionRepository.delete(cached)
+      }
       user.subscriptionId = subscription.id
       user.subscriptionProvider = provider
       if (subscription.status == "active" || subscription.status == "on_trial") {

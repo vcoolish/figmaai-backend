@@ -17,7 +17,7 @@ class Subscription : AbstractJpaPersistable<String>() {
   lateinit var subscriptionId: String
   override fun getId(): String = subscriptionId
 
-  @OneToOne
+  @ManyToOne
   @JoinColumn(name = "user_id")
   lateinit var user: User
   var status: String? = null

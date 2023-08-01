@@ -49,7 +49,7 @@ class User : com.app.figmaai.backend.common.model.AbstractJpaPersistable<Long>()
   @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "user")
   var images: List<ImageAI> = listOf()
 
-  @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "user")
+  @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "user")
   var subscription: Subscription? = null
 
   @Column(nullable = false, precision = 12, scale = 2)

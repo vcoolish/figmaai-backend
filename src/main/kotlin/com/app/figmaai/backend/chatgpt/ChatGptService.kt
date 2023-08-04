@@ -62,8 +62,20 @@ class ChatGptService(
     )
     user.credits -= response?.usage?.total_tokens ?: 0
     userRepository.save(user)
-    return response?.choices?.map { it.message?.content ?: "" }
-      ?: throw BadRequestException("Failed to create edit")
+    return when (mode) {
+      CopyrightMode.paraphrase,
+      CopyrightMode.enlonger,
+      CopyrightMode.enshorter,
+      -> {
+        val content = response?.choices?.firstOrNull()?.message?.content
+          ?: throw BadRequestException("Failed to create edit")
+        Gson().fromJson(content, Array<String>::class.java).toList()
+      }
+
+      else ->
+        response?.choices?.map { it.message?.content ?: "" }
+          ?: throw BadRequestException("Failed to create edit")
+    }
   }
 
   fun uxBuilder(

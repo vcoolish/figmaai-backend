@@ -25,10 +25,16 @@ enum class CopyrightMode(
       3. If I ask you to paraphrase the given text, try not to excessively shorten or expand the text. For example, if I provided a text with 3 sentences, there's no need to create a paraphrased version with 6 or more sentences or with only 1 sentence. 4. If I ask you to paraphrase the given text, the final 3 paraphrased versions
       should always retain the meaning of the original text I provided with original language.
       4. If I ask you to paraphrase the given text, follow each rule for the 'Paraphrase the text' command without exception.
-      5. If I tell you to paraphrase the text I provided again, the new final paraphrase version must always be different from the old ones and can never match the old ones. 
+      5. If I tell you to paraphrase the text I provided again, the 3 final paraphrased versions must always be different from the old ones and can never match each other.
+      6. Represent the result in trimmed to one line JSON tree format keeping the format as in example: 
+      [
+        "First paraphrased version",
+        "Second paraphrased version",
+        "Third paraphrased version"
+      ]
     """.trimIndent(),
     request = "Paraphrase the text %s: %s",
-    copies = 3,
+    copies = 1,
     title = "Rephrase",
   ),
   enlonger(
@@ -38,10 +44,16 @@ enum class CopyrightMode(
       3. If I ask you to make the given text longer, I may also specify the desired tone of voice for the extended results. The final extended results should be in the style of the specified tone of voice.
       4. If I ask you to make the given text longer, the final extended text should be no more than 2 times the size of the total word and character count of the text I have provided matching original language.
       5. If I ask you to make the given text longer, follow each rule for the 'Paraphrase the text' command without exception.
-      6. If I ask you to make the given text longer, the new final version must always be different from the old ones and can never match the old ones.
+      6. If I ask you to make the given text longer, the 3 final versions must always be different from the old ones and can never match each other.
+      7. Represent the result in trimmed to one line JSON tree format keeping the format as in example: 
+      [
+        "First variant",
+        "Second variant",
+        "Third variant"
+      ]
     """.trimIndent(),
     request = "Make the text longer %s: %s",
-    copies = 3,
+    copies = 1,
     title = "Expand",
   ),
   enshorter(
@@ -52,10 +64,16 @@ enum class CopyrightMode(
       than the original text, while preserving the meaning of the original text. If it is not possible to further shorten the text without losing its meaning, it would be acceptable to maintain the same word or character count as the original text.
       4. If I ask you to make the given text shorter, I may also specify the desired tone of voice for the shortened results. The final 3 shortened results should be in the style of the specified tone of voice.
       5. If I ask you to make the given text shorter, follow each rule for the 'Make the text shorter' command without exception.
-      6. If I ask you to make the given text shorter, the new final version must always be different from the old ones and can never match the old ones.
+      6. If I ask you to make the given text shorter, the three final versions must always be different from the old ones and can never match each other.
+      7. Represent the result in trimmed to one line JSON tree format keeping the format as in example: 
+      [
+        "First variant",
+        "Second variant",
+        "Third variant"
+      ]
     """.trimIndent(),
     request = "Make the text shorter %s: %s",
-    copies = 3,
+    copies = 1,
     title = "Condense",
   ),
   fix(

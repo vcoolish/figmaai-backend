@@ -207,7 +207,8 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
             "location":"Location or place of residence of the persona",
             "occupation":"Current job or profession of the persona",
             "education":"Educational background of the persona",
-            "tech_literacy":"Level of technological literacy (low, medium, high). * Economic Status: Economic or financial status of the persona"
+            "tech_literacy":"Level of technological literacy (low, medium, high)",
+            "economic_status": "Economic or financial status of the persona"
         },
         "persona_quote":"A quote that could be attributed to the persona that represents their needs, goals, or personality",
         "needs":"An analysis of the user's needs, tasks, or goals",

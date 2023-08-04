@@ -46,7 +46,13 @@ class SubscriptionService(
     }
     return updateSubscription(user, subscription, provider)
   }
-
+//  on_trial
+//  active
+//  paused
+//  past_due
+//  unpaid
+//  cancelled
+//  expired
   fun updateSubscription(user: User, subscription: SubscriptionDto, provider: SubscriptionProvider): User {
     val cached = subscriptionRepository.findSubscriptionsByUser(user).firstOrNull()
 
@@ -58,7 +64,11 @@ class SubscriptionService(
       }
       user.subscriptionId = subscription.id
       user.subscriptionProvider = provider
-      if (subscription.status == "active" || subscription.status == "on_trial") {
+      val isActive = subscription.status == "active" || subscription.status == "on_trial"
+      val isNew = cached?.status.isNullOrEmpty() && isActive
+      val isRenewed = isStatusInactive(cached?.status) && isActive
+      val isCancelledTrial = cached?.status == "on_trial" && subscription.status == "cancelled"
+      if (isNew || isRenewed) {
         val maxGenerations = type?.generations?.toLong() ?: 800L
         val maxCredits = type?.tokens?.toLong() ?: 116000L
         user.isSubscribed = true
@@ -67,7 +77,7 @@ class SubscriptionService(
         user.credits = maxCredits
         user.uxCredits = maxCredits
         user.maxCredits = maxCredits
-      } else {
+      } else if (isStatusInactive(subscription.status) || isCancelledTrial) {
         user.isSubscribed = false
         user.generations = 0L
         user.credits = 0L
@@ -96,6 +106,9 @@ class SubscriptionService(
     userRepository.save(user)
     return user
   }
+
+  fun isStatusInactive(status: String?) =
+    status == "expired" || status == "past_due" || status == "unpaid" || status == "paused"
 
   fun updateSubscription(body: LemonResponse): User {
     logger().info(body.toString())
@@ -194,11 +207,11 @@ class SubscriptionService(
       val now = ZonedDateTime.now()
       val subscription = loadSubscription(user.email)
       val user = updateSubscription(user, subscription, user.subscriptionProvider!!)
-      val isSubscribed = subscription.status == "active" || subscription.status == "on_trial"
-      val shouldRenew = isSubscribed && (now.minusDays(1).isBefore(
+      val isSubscribed = subscription.status == "active"
+      val shouldRenew = (now.minusDays(1).isBefore(
         runCatching { ZonedDateTime.parse(subscription.renews_at) }.getOrNull() ?: now
       ))
-      if (shouldRenew) {
+      if (isSubscribed && shouldRenew) {
         val subscriptionType = SubscriptionType.values().find { it.lemonId == subscription.variant_id }
         val maxGenerations = subscriptionType?.generations?.toLong() ?: 800
         val maxCredits = subscriptionType?.tokens?.toLong() ?: 116000L

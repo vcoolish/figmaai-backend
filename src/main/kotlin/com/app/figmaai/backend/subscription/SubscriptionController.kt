@@ -2,6 +2,7 @@ package com.app.figmaai.backend.subscription
 
 import com.app.figmaai.backend.exception.BadRequestException
 import com.app.figmaai.backend.subscription.model.LemonResponse
+import com.app.figmaai.backend.subscription.model.LemonUrls
 import com.app.figmaai.backend.subscription.model.SubscriptionDto
 import com.app.figmaai.backend.subscription.model.SubscriptionLink
 import com.app.figmaai.backend.user.dto.UserExtendedDto
@@ -48,6 +49,11 @@ class SubscriptionController(
   fun getSubscription(
     @PathVariable email: String,
   ): SubscriptionDto = subscriptionService.getSubscription(email)
+
+  @GetMapping("/subscription/{email}/manage")
+  fun getSubscriptionUrls(
+    @PathVariable email: String,
+  ): LemonUrls? = subscriptionService.loadSubscription(email).urls
 
   @GetMapping("/subscription/links")
   fun getSubscriptionLinks(): List<SubscriptionLink> = subscriptionService.getSubscriptionLinks()

@@ -46,13 +46,7 @@ class SubscriptionService(
     }
     return updateSubscription(user, subscription, provider)
   }
-//  on_trial
-//  active
-//  paused
-//  past_due
-//  unpaid
-//  cancelled
-//  expired
+
   fun updateSubscription(user: User, subscription: SubscriptionDto, provider: SubscriptionProvider): User {
     val cached = subscriptionRepository.findSubscriptionsByUser(user).firstOrNull()
 

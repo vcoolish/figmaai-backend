@@ -211,7 +211,7 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
             "economic_status": "Economic or financial status of the persona"
         },
         "persona_quote":"A quote that could be attributed to the persona that represents their needs, goals, or personality",
-        "needs":"An analysis of the user's needs, tasks, or goals",
+        "needs":"An analysis of the user's needs, tasks, or goals, minimum 3 items",
         "pain_points":"Issues or problems the user persona might encounter",
         "behaviors_and_preferences":{
             "technical_preferences":{
@@ -259,6 +259,7 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
       8. If I haven't provided the project description to create a user persona, but I told you to create a user persona, ask me for the project description information.
       9. Whenever I tell you to create a user persona, always create it based on the latest version of the template.
       10. Every time I tell you to create a user persona, always create it based on the latest version of the user persona creation rules.
+      10. If subcategory value is empty then mark it as None. Also, do not numerate list values.
       11. Whenever I tell you to create a user persona, make sure that you are going to follow all the rules without exception." .
       Always follow each point of these rules without exception.
      """.trimIndent(),

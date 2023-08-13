@@ -144,6 +144,24 @@ class SubscriptionService(
     return user
   }
 
+  fun pauseSubscription(request: HttpServletRequest): User {
+    val jwt = httpServletRequestTokenHelper.resolveToken(request)
+    if (jwt.isNullOrEmpty()) {
+      throw BadRequestException(message = "Access token not valid")
+    }
+    val claims = tokenProvider.getClaimsFromToken(jwt)
+    val userUuid: String = claims.subject
+    val user = userRepository.findByUserUuid(userUuid)
+    when (user.subscriptionProvider) {
+      SubscriptionProvider.paypal -> paypalValidator.pause(user.subscriptionId ?: error("Subscription not found"))
+      SubscriptionProvider.lemon -> lemonValidator.pause(user.subscriptionId ?: error("Subscription not found"))
+      else -> {
+        throw IllegalArgumentException("Not supported")
+      }
+    }
+    return user
+  }
+
   fun getSubscription(email: String): SubscriptionDto {
     val user = getUserByEmail(email)
     val id = user.subscriptionId

@@ -38,6 +38,17 @@ class SubscriptionController(
     ResponseEntity.status(403).body(null)
   }
 
+  @PatchMapping("/subscription/pause")
+  fun pauseSubscription(
+    request: HttpServletRequest
+  ): ResponseEntity<UserExtendedDto?> = try {
+    ResponseEntity.ok(
+      UserMapper.toExtendedDto(subscriptionService.pauseSubscription(request))
+    )
+  } catch (ex: BadRequestException) {
+    ResponseEntity.status(403).body(null)
+  }
+
   @PostMapping("/subscription-hook")
   fun onSubscription(
     @RequestBody body: LemonResponse,

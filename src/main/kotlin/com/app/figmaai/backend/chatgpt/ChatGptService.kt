@@ -15,6 +15,7 @@ import org.springframework.social.ExpiredAuthorizationException
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
+import kotlin.math.max
 
 @Service
 class ChatGptService(
@@ -61,6 +62,7 @@ class ChatGptService(
       copies = copies,
     )
     user.credits -= response?.usage?.total_tokens ?: 0
+    user.credits = max(user.credits, 0)
     userRepository.save(user)
     return when (mode) {
       CopyrightMode.paraphrase,
@@ -94,6 +96,7 @@ class ChatGptService(
 
     val response = requestChat(user, text, mode.value)
     user.uxCredits -= response?.usage?.total_tokens ?: 0
+    user.credits = max(user.credits, 0)
     userRepository.save(user)
     val choices = response?.choices?.map { it.message?.content ?: "" }
       ?: throw BadRequestException("Failed to create edit")

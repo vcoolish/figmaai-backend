@@ -10,8 +10,10 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
+import java.time.ZonedDateTime
 
 @Service
 class LemonSubscriptionValidator(
@@ -104,6 +106,36 @@ class LemonSubscriptionValidator(
     restTemplate.exchange(
       "${appProperties.lemonUrl}/v1/subscriptions/$id",
       HttpMethod.DELETE,
+      requestEntity,
+      Any::class.java,
+    ).body ?: throw Exception("Couldn't delete")
+  }
+
+  override fun pause(id: String) {
+    val headers = HttpHeaders()
+    headers.add("Accept", "application/vnd.api+json")
+    headers.add("Content-Type", "application/vnd.api+json")
+    headers.add("Authorization", "Bearer ${appProperties.lemonKey}")
+
+    val body = LinkedMultiValueMap<String, Any>()
+    body.add(
+      "data", mapOf(
+        "type" to "subscriptions",
+        "id" to id,
+        "attributes" to mapOf(
+          "pause" to mapOf(
+            "mode" to "free",
+            "resumes_at" to ZonedDateTime.now().plusDays(7)
+          ),
+        ),
+      ),
+    )
+
+    val requestEntity = HttpEntity<MultiValueMap<String, Any>>(body, headers)
+
+    restTemplate.exchange(
+      "${appProperties.lemonUrl}/v1/subscriptions/$id",
+      HttpMethod.PATCH,
       requestEntity,
       Any::class.java,
     ).body ?: throw Exception("Couldn't delete")

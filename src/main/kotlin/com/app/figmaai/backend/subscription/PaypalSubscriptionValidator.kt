@@ -69,4 +69,8 @@ class PaypalSubscriptionValidator(
   override fun delete(id: String) {
     TODO("Not yet implemented")
   }
+
+  override fun pause(id: String) {
+    TODO("Not yet implemented")
+  }
 }

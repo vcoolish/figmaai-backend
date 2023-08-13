@@ -3,6 +3,7 @@ package com.app.figmaai.backend.subscription
 import com.app.figmaai.backend.common.util.logger
 import com.app.figmaai.backend.config.properties.AppProperties
 import com.app.figmaai.backend.exception.BadRequestException
+import com.app.figmaai.backend.subscription.dto.PauseSubscriptionDto
 import com.app.figmaai.backend.subscription.model.*
 import com.app.figmaai.backend.subscription.repository.SubscriptionRepository
 import com.app.figmaai.backend.user.data.UserSubscribedEvent
@@ -144,7 +145,7 @@ class SubscriptionService(
     return user
   }
 
-  fun pauseSubscription(request: HttpServletRequest): User {
+  fun pauseSubscription(request: HttpServletRequest, dto: PauseSubscriptionDto): User {
     val jwt = httpServletRequestTokenHelper.resolveToken(request)
     if (jwt.isNullOrEmpty()) {
       throw BadRequestException(message = "Access token not valid")
@@ -153,8 +154,8 @@ class SubscriptionService(
     val userUuid: String = claims.subject
     val user = userRepository.findByUserUuid(userUuid)
     when (user.subscriptionProvider) {
-      SubscriptionProvider.paypal -> paypalValidator.pause(user.subscriptionId ?: error("Subscription not found"))
-      SubscriptionProvider.lemon -> lemonValidator.pause(user.subscriptionId ?: error("Subscription not found"))
+      SubscriptionProvider.paypal -> paypalValidator.pause(user.subscriptionId ?: error("Subscription not found"), dto.isUnpause)
+      SubscriptionProvider.lemon -> lemonValidator.pause(user.subscriptionId ?: error("Subscription not found"), dto.isUnpause)
       else -> {
         throw IllegalArgumentException("Not supported")
       }

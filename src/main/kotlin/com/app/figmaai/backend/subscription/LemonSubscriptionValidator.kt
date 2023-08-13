@@ -111,7 +111,7 @@ class LemonSubscriptionValidator(
     ).body ?: throw Exception("Couldn't delete")
   }
 
-  override fun pause(id: String) {
+  override fun pause(id: String, isUnpause: Boolean) {
     val headers = HttpHeaders()
     headers.add("Accept", "application/vnd.api+json")
     headers.add("Content-Type", "application/vnd.api+json")
@@ -123,10 +123,14 @@ class LemonSubscriptionValidator(
         "type" to "subscriptions",
         "id" to id,
         "attributes" to mapOf(
-          "pause" to mapOf(
-            "mode" to "free",
-            "resumes_at" to ZonedDateTime.now().plusDays(7)
-          ),
+          "pause" to if (isUnpause) {
+            null
+          } else {
+            mapOf(
+              "mode" to "free",
+              "resumes_at" to ZonedDateTime.now().plusDays(14)
+            )
+          },
         ),
       ),
     )

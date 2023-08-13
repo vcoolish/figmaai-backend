@@ -1,6 +1,7 @@
 package com.app.figmaai.backend.subscription
 
 import com.app.figmaai.backend.exception.BadRequestException
+import com.app.figmaai.backend.subscription.dto.PauseSubscriptionDto
 import com.app.figmaai.backend.subscription.model.LemonResponse
 import com.app.figmaai.backend.subscription.model.LemonUrls
 import com.app.figmaai.backend.subscription.model.SubscriptionDto
@@ -40,10 +41,11 @@ class SubscriptionController(
 
   @PatchMapping("/subscription/pause")
   fun pauseSubscription(
-    request: HttpServletRequest
+    request: HttpServletRequest,
+    @RequestBody body: PauseSubscriptionDto,
   ): ResponseEntity<UserExtendedDto?> = try {
     ResponseEntity.ok(
-      UserMapper.toExtendedDto(subscriptionService.pauseSubscription(request))
+      UserMapper.toExtendedDto(subscriptionService.pauseSubscription(request, body))
     )
   } catch (ex: BadRequestException) {
     ResponseEntity.status(403).body(null)

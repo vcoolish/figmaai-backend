@@ -7,5 +7,5 @@ interface SubscriptionValidator {
     fun status(id: String, licenseId: String?): SubscriptionDto
 
     fun delete(id: String)
-    fun pause(id: String)
+    fun pause(id: String, isUnpause: Boolean)
 }

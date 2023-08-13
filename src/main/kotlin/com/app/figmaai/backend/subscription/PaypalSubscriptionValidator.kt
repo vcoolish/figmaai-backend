@@ -70,7 +70,7 @@ class PaypalSubscriptionValidator(
     TODO("Not yet implemented")
   }
 
-  override fun pause(id: String) {
+  override fun pause(id: String, isUnpause: Boolean) {
     TODO("Not yet implemented")
   }
 }

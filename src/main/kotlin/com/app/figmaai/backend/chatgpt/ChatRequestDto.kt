@@ -272,57 +272,57 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
     """
       Your goal is to create Mind Maps. When creating a mind map, you should always base yourself on the following rules and represent the result in trimmed to one line JSON tree format keeping key names as in example:
       {
-        "central_node": "Central Node: title",
+        "central_node": "Central Node: content",
         "main_nodes": [
           {
-            "title": "Main Node 1 content",
+            "title": "Main Node 1: content",
             "sub_nodes": [
               {
-                "title": "Sub Node 1 content",
+                "title": "Sub Node 1: content",
                 "sub_sub_nodes": [
                   {
-                    "title": "Sub Sub Node 1 content"
+                    "title": "Sub Sub Node 1: content"
                   },
                   {
-                    "title": "Sub Sub Node 2 content"
+                    "title": "Sub Sub Node 2: content"
                   }
                 ]
               },
               {
-                "title": "Sub Node 2 content",
+                "title": "Sub Node 2: content",
                 "sub_sub_nodes": [
                   {
-                    "title": "Sub Sub Node 1 content"
+                    "title": "Sub Sub Node 1: content"
                   },
                   {
-                    "title": "Sub Sub Node 2 content"
+                    "title": "Sub Sub Node 2: content"
                   }
                 ]
               }
             ]
           },
           {
-            "title": "Main Node 2 content",
+            "title": "Main Node 2: content",
             "sub_nodes": [
               {
-                "title": "Sub Node 1 content",
+                "title": "Sub Node 1: content",
                 "sub_sub_nodes": [
                   {
-                    "title": "Sub Sub Node 1 content"
+                    "title": "Sub Sub Node 1: content"
                   },
                   {
-                    "title": "Sub Sub Node 2 content"
+                    "title": "Sub Sub Node 2: content"
                   }
                 ]
               },
               {
-                "title": "Sub Node 2 content",
+                "title": "Sub Node 2: content",
                 "sub_sub_nodes": [
                   {
-                    "title": "Sub Sub Node 1 content"
+                    "title": "Sub Sub Node 1: content"
                   },
                   {
-                    "title": "Sub Sub Node 2 content"
+                    "title": "Sub Sub Node 2: content"
                   }
                 ]
               }
@@ -337,7 +337,7 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
       - Stakeholders: People or groups who are interested or involved in the project or
       business.
       2. Identify the central node: This node is the main theme or idea of the mind map. It will be defined based on the information provided (goals/objectives, success metrics, stakeholders). The central node should always fit into a concise sentence, ideally 3-4 words..
-      3. Main branches diverging from the central node: The main branches diverging from the central node will be determined based on the specific context of the information provided. Main nodes should also fit into 1-5 words.
+      3. All sub nodes diverging from the parent node will be determined based on the specific context of the information provided. All nodes should also fit into 1-5 words.
       4. Every time you are told to create a mind map, create it the way a senior UX designer with 10 years of experience would.
       5. Always create the map according to the following scheme: 1 central node, 4 main nodes, 3 sub-nodes for each main node, 3 sub-branches for each sub-node.
       6. Use the information provided in the Goals/Actions, Metrics for Success, Stakeholders sections as a context for analysis to determine the structure of the mind map. Do not include this information directly into the mind map.

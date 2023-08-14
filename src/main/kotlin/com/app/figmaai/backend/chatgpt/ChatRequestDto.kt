@@ -275,54 +275,54 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
         "central_node": "Central Node: title",
         "main_nodes": [
           {
-            "title": "Main Node 1 title",
+            "title": "Main Node 1 content",
             "sub_nodes": [
               {
-                "title": "Sub Node 1 title",
+                "title": "Sub Node 1 content",
                 "sub_sub_nodes": [
                   {
-                    "title": "Sub Sub Node 1 title"
+                    "title": "Sub Sub Node 1 content"
                   },
                   {
-                    "title": "Sub Sub Node 2 title"
+                    "title": "Sub Sub Node 2 content"
                   }
                 ]
               },
               {
-                "title": "Sub Node 2 title",
+                "title": "Sub Node 2 content",
                 "sub_sub_nodes": [
                   {
-                    "title": "Sub Sub Node 1 title"
+                    "title": "Sub Sub Node 1 content"
                   },
                   {
-                    "title": "Sub Sub Node 2 title"
+                    "title": "Sub Sub Node 2 content"
                   }
                 ]
               }
             ]
           },
           {
-            "title": "Main Node 2 title",
+            "title": "Main Node 2 content",
             "sub_nodes": [
               {
-                "title": "Sub Node 1 title",
+                "title": "Sub Node 1 content",
                 "sub_sub_nodes": [
                   {
-                    "title": "Sub Sub Node 1 title"
+                    "title": "Sub Sub Node 1 content"
                   },
                   {
-                    "title": "Sub Sub Node 2 title"
+                    "title": "Sub Sub Node 2 content"
                   }
                 ]
               },
               {
-                "title": "Sub Node 2 title",
+                "title": "Sub Node 2 content",
                 "sub_sub_nodes": [
                   {
-                    "title": "Sub Sub Node 1 title"
+                    "title": "Sub Sub Node 1 content"
                   },
                   {
-                    "title": "Sub Sub Node 2 title"
+                    "title": "Sub Sub Node 2 content"
                   }
                 ]
               }

@@ -343,7 +343,7 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
          - Success Metrics: Key Performance Indicators (KPIs) that will be used to measure the success of the project or business.
          - Stakeholders: People or groups who are interested or involved in the project or business.
       2. Identify the central node: This node is the main theme or idea of the mind map. It will be defined based on the information provided (goals/objectives, success metrics, stakeholders). The central node should always fit into a concise sentence, ideally 3-4 words. Label it "Central Node:".
-      3. Main nodes diverging from the central node: The main nodes diverging from the central node will be determined based on the specific context of the information provided. Main nodes should also fit into 1-3 words if possible. Always create 4 main nodes each that come out of the center node. Label them as "Main node 1:", "Main node 2:", etc.
+      3. Main nodes diverging from the central node: The main nodes diverging from the central node will be determined based on the specific context of the information provided. Main nodes should also fit into 1-3 word. Always create 4 main nodes each that come out of the center node. Label them as "Main node 1:", "Main node 2:", etc.
       4. Add sub-nodes: Sub-nodes diverging from the Main nodes and represent the details of the main nodes. Always create 3 sub-nodes for each Main nodes. Label them as "Sub-node 1.1:", "Sub-node 1.2:", etc.
       5. Add Sub-branches: These Sub-branches represent the details of the sub-nodes. The number and depth of the sub-branches depends on the complexity of the information provided. Always create 3 sub-branches for each sub-nodes. Label them as "Sub-branch 1.1:", "Sub-branch 1.2:", etc.
       6. Representation: The map should be represented in JSON tree format as in example.
@@ -351,8 +351,8 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
       8. If I don't give any information on goals/objectives, metrics of success, or stakeholders, don't create a map.
       9. Every time you are told to create a mind map, create it the way a senior UX designer with 10 years of experience would.
       10. If some of the information from the Goals/Objectives, Success Metrics, Stakeholders sections is not provided, still try to create a mind map, but remember to do it within the given information.
-      11. Whatever information about Goals/Actions, Metrics for Success, Stakeholders I have not given you to create a mind map, always create the map according to the following scheme: 1 central node, 4 main nodes, 3 sub-nodes for each main node, 3 sub-branches for each sub-node.
-      12. Never Main node, Sub-node, and Sub-branch can be called one of the following: "Goals/Objectives", "Success Metrics", «Stakeholders"
+      11. Always create a mind map adhere to this structure: 1 central node, 4 main nodes, 3 sub-nodes for each main node, and 3 sub-branches for each sub-node. It is strictly forbidden not to create any of the map elements or to add additional ones. 
+      12. Main nodes, Sub-node, or Sub-branch can not be called one of the following: "Goals/Objectives", "Success Metrics", «Stakeholders». 
       13. Use the information provided in the Goals/Actions, Metrics for Success, Stakeholders sections only as a context for analysis to determine the structure of the mind map.
       14. Always follow each point of these rules without exception.
     """.trimIndent(),

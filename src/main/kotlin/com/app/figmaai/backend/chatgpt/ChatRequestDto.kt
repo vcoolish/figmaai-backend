@@ -211,8 +211,15 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
             "economic_status": "Economic or financial status of the persona"
         },
         "persona_quote":"A quote that could be attributed to the persona that represents their needs, goals, or personality",
-        "needs":"An analysis of the user's needs, tasks, or goals, minimum 3 items",
-        "pain_points":"Issues or problems the user persona might encounter",
+        "needs":[
+          "An analysis of the user's needs",
+          "An analysis of the user's tasks",
+          "An analysis of the user's goals"
+        ],
+        "pain_points":[
+          "Issues the user persona might encounter",
+          "Problems the user persona might encounter"
+        ],
         "behaviors_and_preferences":{
             "technical_preferences":{
                 "devices":"Devices (desktop, mobile, tablet, etc.)",

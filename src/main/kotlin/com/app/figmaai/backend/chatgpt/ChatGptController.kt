@@ -30,7 +30,7 @@ class ChatGptController(
   } catch (ex: ExpiredAuthorizationException) {
     ResponseEntity.status(405).body(null)
   } catch (ex: InsufficientBalanceException) {
-    ResponseEntity.status(407).body(null)
+    ResponseEntity.status(415).body(null)
   }
 
   @PostMapping("/ux-builder")
@@ -48,7 +48,7 @@ class ChatGptController(
   } catch (ex: ExpiredAuthorizationException) {
     ResponseEntity.status(405).body(null)
   } catch (ex: InsufficientBalanceException) {
-    ResponseEntity.status(407).body(null)
+    ResponseEntity.status(415).body(null)
   }
 
   @GetMapping("/copyright/modes")

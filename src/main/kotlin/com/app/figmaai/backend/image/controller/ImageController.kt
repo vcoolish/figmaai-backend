@@ -74,7 +74,7 @@ class ImageController(
   } catch (ex: InProgressException) {
     ResponseEntity.status(406).body(null)
   } catch (ex: InsufficientBalanceException) {
-    ResponseEntity.status(407).body(null)
+    ResponseEntity.status(415).body(null)
   }
 
   @PatchMapping("/generate/animated")
@@ -94,7 +94,7 @@ class ImageController(
   } catch (ex: InProgressException) {
     ResponseEntity.status(406).body(null)
   } catch (ex: InsufficientBalanceException) {
-    ResponseEntity.status(407).body(null)
+    ResponseEntity.status(415).body(null)
   }
 
   @DeleteMapping("/{id}")

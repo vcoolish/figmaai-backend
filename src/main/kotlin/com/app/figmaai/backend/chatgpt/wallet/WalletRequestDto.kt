@@ -29,7 +29,7 @@ enum class PlayMode(val value: String, val title: String, val inputs: Map<String
         "amount": "0.1", // amount of asset, set 0 if not specified, should be present only for transfer
         "is_fiat": "false" // is amount in fiat or not, false by default, should be present only for transfer
       }
-      3. If I ask  you some question, you should create a JSON tree with given information as in example
+      3. If I ask  you some question, you should create a JSON tree with given information as in example and only answer information related to Trust Wallet application and what you can do with this app
       {
         "type": "question",
         "text": "Short answer to the question",

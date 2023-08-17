@@ -14,8 +14,9 @@ enum class PlayMode(val value: String, val title: String, val inputs: Map<String
       1. Create a JSON tree based on the provided information
       2. If ask you to do some action with cryptocurrency, coin, token or some asset, you should create a JSON tree with given information as in example
       {
-        "type": "send", // can be send, buy, swap, receive, stake, open, market
+        "type": "send", // can be send, buy, swap, receive, stake, market or open if not specified
         "asset": "Bitcoin", // asset name, set empty string if not specified
+        "recipient": "vitalik", // recipient, only applicable for send
         "to_asset": "Ethereum", // asset name to swap, set empty string if not specified, should be present only for swap
         "amount": "0.1", // amount of asset, set 0 if not specified, should be present only for transfer
         "is_fiat": "false" // is amount in fiat or not, false by default, should be present only for transfer

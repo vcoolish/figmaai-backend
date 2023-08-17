@@ -20,20 +20,13 @@ enum class PlayMode(val value: String, val title: String, val inputs: Map<String
         "amount": "0.1", // amount of asset, set 0 if not specified, should be present only for transfer
         "is_fiat": "false" // is amount in fiat or not, false by default, should be present only for transfer
       }
-      3. if I ask you to search some dapp or url you should create a JSON tree with given information as in example. Not applicable for open asset actions.
-      {
-        "type": "open_url",
-        "network": "ethereum", // only if network specified or set empty string
-        "query": "website name", // if only website name or description specified
-        "url": "https://www.google.com" // if url is specified
-      }
-      4. If I ask  you some question, you should create a JSON tree with given information as in example
+      3. If I ask  you some question, you should create a JSON tree with given information as in example
       {
         "type": "question",
         "text": "Short answer to the question",
         "link": "Link to read more if present or empty"
       }
-      5. If I ask you something else, you should create a JSON tree with given information as in example
+      4. If I ask you something else, you should create a JSON tree with given information as in example
       {
         "type": "error",
         "text": "I couldn't process the request, please try again"

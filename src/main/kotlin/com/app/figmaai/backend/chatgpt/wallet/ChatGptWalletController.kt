@@ -20,13 +20,13 @@ class ChatGptWalletController(
     MediaType.MULTIPART_FORM_DATA_VALUE
   )
   fun uxBuilder(
-    @RequestBody @Valid uxDto: WalletRequestDto,
+    @RequestParam mode: PlayMode,
     @RequestPart audio: MultipartFile,
   ): ResponseEntity<List<String>?> = try {
     ResponseEntity.ok(
       chatGptService.play(
         audio = audio.bytes,
-        mode = uxDto.mode,
+        mode = mode,
       ),
     )
   } catch (ex: ExpiredAuthorizationException) {

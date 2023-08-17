@@ -46,7 +46,7 @@ class ChatGptWalletService(
     val contentDisposition = ContentDisposition
       .builder("form-data")
       .name("file")
-      .filename("audio.webm")
+      .filename("audio.ogg")
       .build()
 
     fileMap.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())

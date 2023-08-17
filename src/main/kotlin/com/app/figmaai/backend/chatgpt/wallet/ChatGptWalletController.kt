@@ -22,16 +22,8 @@ class ChatGptWalletController(
   fun uxBuilder(
     @RequestParam mode: PlayMode,
     @RequestPart audio: MultipartFile,
-  ): ResponseEntity<List<String>?> = try {
-    ResponseEntity.ok(
-      chatGptService.play(
-        audio = audio.bytes,
-        mode = mode,
-      ),
-    )
-  } catch (ex: ExpiredAuthorizationException) {
-    ResponseEntity.status(405).body(null)
-  } catch (ex: InsufficientBalanceException) {
-    ResponseEntity.status(415).body(null)
-  }
+  ): String = chatGptService.play(
+    audio = audio.bytes,
+    mode = mode,
+  )
 }

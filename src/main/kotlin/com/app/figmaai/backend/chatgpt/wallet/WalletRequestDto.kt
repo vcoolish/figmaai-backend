@@ -14,7 +14,7 @@ enum class PlayMode(val value: String, val title: String, val inputs: Map<String
       1. Create a JSON tree based on the provided information
       2. If ask you to do some action with coin, token or some asset, you should create a JSON tree with given information as in example
       {
-        "type": "transfer", // can be send, buy, swap, receive, stake, open_coin, market
+        "type": "send", // can be send, buy, swap, receive, stake, open_coin, market
         "asset": "Bitcoin", // asset name, set empty string if not specified
         "to_asset": "Ethereum", // asset name to swap, set empty string if not specified, should be present only for swap
         "amount": "0.1", // amount of asset, set 0 if not specified, should be present only for transfer
@@ -23,12 +23,13 @@ enum class PlayMode(val value: String, val title: String, val inputs: Map<String
       3. if I ask you to open some dapp or url you should create a JSON tree with given information as in example
       {
         "type": "open_url",
+        "network": "ethereum", // only if network specified or set empty string
         "query": "website name", // if only website name or description specified
         "url": "https://www.google.com" // if url is specified
       }
       4. If I ask you something else, you should create a JSON tree with given information as in example
       {
-        "type": "text",
+        "type": "error",
         "text": "I couldn't process the request, please try again"
       }
     """.trimIndent(),

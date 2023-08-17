@@ -31,11 +31,11 @@ class ChatGptWalletService(
   fun play(
     audio: ByteArray,
     mode: PlayMode,
-  ): List<String> {
+  ): String {
     val response = requestChat(transcribe(audio), mode.value)
     val choices = response?.choices?.map { it.message?.content ?: "" }
       ?: throw BadRequestException("Failed to create edit")
-    return choices
+    return choices.first()
   }
 
   private fun transcribe(audio: ByteArray): String {

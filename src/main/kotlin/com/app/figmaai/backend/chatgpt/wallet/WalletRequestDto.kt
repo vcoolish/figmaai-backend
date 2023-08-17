@@ -27,7 +27,13 @@ enum class PlayMode(val value: String, val title: String, val inputs: Map<String
         "query": "website name", // if only website name or description specified
         "url": "https://www.google.com" // if url is specified
       }
-      4. If I ask you something else, you should create a JSON tree with given information as in example
+      4. If I ask  you some question, you should create a JSON tree with given information as in example
+      {
+        "type": "question",
+        "text": "Short answer to the question",
+        "link": "Link to read more if present or empty"
+      }
+      5. If I ask you something else, you should create a JSON tree with given information as in example
       {
         "type": "error",
         "text": "I couldn't process the request, please try again"

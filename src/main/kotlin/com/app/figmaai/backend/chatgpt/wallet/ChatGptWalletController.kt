@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.social.ExpiredAuthorizationException
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import javax.validation.Valid
 
 @Validated
@@ -20,10 +21,11 @@ class ChatGptWalletController(
   )
   fun uxBuilder(
     @RequestBody @Valid uxDto: WalletRequestDto,
+    @RequestPart audio: MultipartFile,
   ): ResponseEntity<List<String>?> = try {
     ResponseEntity.ok(
       chatGptService.play(
-        audio = uxDto.audio.bytes,
+        audio = audio.bytes,
         mode = uxDto.mode,
       ),
     )

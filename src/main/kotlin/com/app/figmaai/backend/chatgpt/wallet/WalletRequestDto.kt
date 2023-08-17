@@ -3,7 +3,6 @@ package com.app.figmaai.backend.chatgpt.wallet
 import org.springframework.web.multipart.MultipartFile
 
 class WalletRequestDto(
-  val audio: MultipartFile,
   val mode: PlayMode,
 )
 

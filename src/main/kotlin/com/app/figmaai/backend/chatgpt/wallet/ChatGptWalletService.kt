@@ -45,7 +45,7 @@ class ChatGptWalletService(
     val fileMap: MultiValueMap<String, String> = LinkedMultiValueMap()
     val contentDisposition = ContentDisposition
       .builder("form-data")
-      .name("audio")
+      .name("file")
       .filename("audio.mp3")
       .build()
 

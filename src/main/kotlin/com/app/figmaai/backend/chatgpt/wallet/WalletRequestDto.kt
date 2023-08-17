@@ -12,7 +12,7 @@ enum class PlayMode(val value: String, val title: String, val inputs: Map<String
       Your goal is to create translate request into JSON tree:
       "Rules:
       1. Create a JSON tree based on the provided information
-      2. If ask you to do some action with coin, token or some asset, you should create a JSON tree with given information as in example
+      2. If ask you to do some action with cryptocurrency, coin, token or some asset, you should create a JSON tree with given information as in example
       {
         "type": "send", // can be send, buy, swap, receive, stake, open_coin, market
         "asset": "Bitcoin", // asset name, set empty string if not specified
@@ -20,7 +20,7 @@ enum class PlayMode(val value: String, val title: String, val inputs: Map<String
         "amount": "0.1", // amount of asset, set 0 if not specified, should be present only for transfer
         "is_fiat": "false" // is amount in fiat or not, false by default, should be present only for transfer
       }
-      3. if I ask you to open some dapp or url you should create a JSON tree with given information as in example
+      3. if I ask you to open some dapp or url you should create a JSON tree with given information as in example. Not applicable for asset actions.
       {
         "type": "open_url",
         "network": "ethereum", // only if network specified or set empty string

@@ -1,6 +1,7 @@
 package com.app.figmaai.backend.chatgpt
 
 import com.app.figmaai.backend.exception.InsufficientBalanceException
+import org.springdoc.api.annotations.ParameterObject
 import org.springframework.http.ResponseEntity
 import org.springframework.social.ExpiredAuthorizationException
 import org.springframework.validation.annotation.Validated
@@ -69,5 +70,16 @@ class ChatGptController(
   @GetMapping("/ux-builder/modes")
   fun getUxModes(): List<ModeResponse> = UxMode.values().map {
     ModeResponse(it.name, it.title, it.inputs)
+  }
+
+  @GetMapping("/ux-builder/example")
+  fun getChatExample(
+    @ParameterObject uxDto: UxExampleRequestDto,
+  ): List<String> = when (uxDto.mode) {
+    UxMode.ujm -> listOf(ujmExamples.random())
+    UxMode.userpersona -> listOf(personaExamples.random())
+    UxMode.mindmap -> listOf(mindMapExamples.random())
+    UxMode.userflow -> TODO()
+    UxMode.sitemap -> TODO()
   }
 }

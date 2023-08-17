@@ -12,6 +12,10 @@ class UxRequestDto(
   val mode: UxMode,
 )
 
+class UxExampleRequestDto(
+  val mode: UxMode,
+)
+
 enum class CopyrightMode(
   val system: String,
   val request: String,

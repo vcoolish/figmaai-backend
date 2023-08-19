@@ -96,7 +96,7 @@ class ChatGptService(
 
     val response = requestChat(user, text, mode.value)
     user.uxCredits -= response?.usage?.total_tokens ?: 0
-    user.credits = max(user.credits, 0)
+    user.uxCredits = max(user.uxCredits, 0)
     userRepository.save(user)
     val choices = response?.choices?.map { it.message?.content ?: "" }
       ?: throw BadRequestException("Failed to create edit")

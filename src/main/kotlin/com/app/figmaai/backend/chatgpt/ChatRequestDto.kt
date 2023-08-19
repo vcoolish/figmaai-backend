@@ -14,6 +14,12 @@ class UxRequestDto(
 
 class UxExampleRequestDto(
   val mode: UxMode,
+  val index: Int = 0,
+)
+
+class UxExampleResponseDto(
+  val inputs: List<String>,
+  val response: String,
 )
 
 enum class CopyrightMode(
@@ -179,18 +185,14 @@ enum class UxMode(val value: String, val title: String, val inputs: Map<String, 
       This template should be filled out for each stage of the user's journey, from the beginning to the end of their interaction with the service or system. The number of stages can vary depending on the complexity of the user's journey and the depth of the analysis required.».
       When creating a UJM, you should always base yourself on the following rules: "Always create a UJM based on the last updated version of the template.
       1. Create a UJM based on information provided which always will be User Persona, Scenario/Context, and Project Description.
-      2. Every time you are told to create a UJM but the rules aren't mentioned - always follow the rules anyway.
+      2. Every time you are told to create a UJM but the rules aren't mentioned - always follow all the rules anyway.
       3. Every time you are told to create a UJM but the template isn't mentioned, always create the UJM strictly from the template anyway.
       4. If any of the necessary information (User Persona, Scenario/Context, Project Description) isn't provided, ask for it.
-      5. Every time you create a UJM, follow every rule without exception.
-      6. Always create as many stages for UJM as needed to show the user journey
-      as accurately as possible, not limiting to any fixed number of stages.
-      7. Even if information provided about user persona, project description, and
-      scenario is not complete enough, use the provided information to the
-      maximum to achieve the best result in UJM creation.
-      8. Every time you are told to create a UJM, create it as a Senior UX designer
-      with 10 years of experience would.
-      9. Always create a UJM based on the last updated version of the rules." .
+      5. Always create as many stages for UJM as needed to show the user journey as accurately as possible. The minimum number of stages is 3 and the maximum is unlimited. Even if information provided about user persona, project description, and scenario is not complete enough, use the provided information to the maximum to achieve the best result in UJM creation.
+      6. Every time you are told to create a UJM, create it as a Senior UX designer with 10 years of experience would.
+      7. Always create a UJM based on the last updated version of the rules.
+      8. Regardless of the number of stages, all Actions, Touchpoints, User Thoughts, User Feelings, Pain Points, Opportunities must be completed for each stage. It is strictly forbidden not to do so.
+      9. Always follow each point of these rules without exception.
       Always follow each point of these rules without exception.
     """.trimIndent(),
     "UJM",

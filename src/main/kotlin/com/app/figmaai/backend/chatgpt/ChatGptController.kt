@@ -75,11 +75,14 @@ class ChatGptController(
   @GetMapping("/ux-builder/example")
   fun getChatExample(
     @ParameterObject uxDto: UxExampleRequestDto,
-  ): List<String> = when (uxDto.mode) {
-    UxMode.ujm -> listOf(ujmExamples.random())
-    UxMode.userpersona -> listOf(personaExamples.random())
-    UxMode.mindmap -> listOf(mindMapExamples.random())
-    UxMode.userflow -> TODO()
-    UxMode.sitemap -> TODO()
+  ): UxExampleResponseDto {
+    val id = (uxDto.index % 3) - 1
+    return when (uxDto.mode) {
+      UxMode.ujm -> UxExampleResponseDto(ujmInputExamples[id], ujmExamples[id])
+      UxMode.userpersona -> UxExampleResponseDto(personaInputExamples[id], personaExamples[id])
+      UxMode.mindmap -> UxExampleResponseDto(mindMapInputExamples[id], mindMapExamples[id])
+      UxMode.userflow -> TODO()
+      UxMode.sitemap -> TODO()
+    }
   }
 }

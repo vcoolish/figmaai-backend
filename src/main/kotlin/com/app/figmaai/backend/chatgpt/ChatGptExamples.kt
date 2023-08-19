@@ -1,50 +1,50 @@
 package com.app.figmaai.backend.chatgpt
 
 val mindMapInputExamples = listOf(
-  listOf(
-    "Keep users engaged over time, reducing churn rate.",
-    "The quarterly revenue of the project increased by 2 times.",
-    "Investors",
+  mapOf(
+    UxMode.mindmap.inputs.keys.elementAt(0) to "Keep users engaged over time, reducing churn rate.",
+    UxMode.mindmap.inputs.keys.elementAt(1) to "The quarterly revenue of the project increased by 2 times.",
+    UxMode.mindmap.inputs.keys.elementAt(2) to "Investors",
   ),
-  listOf(
-    "Increase the percentage of graduates finding employment in tech fields.",
-    "Increased percentage of graduates successfully placed in tech jobs.",
-    "Tech Companies",
+  mapOf(
+    UxMode.mindmap.inputs.keys.elementAt(0) to "Increase the percentage of graduates finding employment in tech fields.",
+    UxMode.mindmap.inputs.keys.elementAt(1) to "Increased percentage of graduates successfully placed in tech jobs.",
+    UxMode.mindmap.inputs.keys.elementAt(2) to "Tech Companies",
   ),
-  listOf(
-    "Inspire users to adopt more sustainable habits and eco-friendly choices.",
-    "Users adoption of sustainable practices and positive eco-friendly actions.",
-    "Advertisers of Eco-Friendly Products: Target an audience interested in environmentally friendly products.",
+  mapOf(
+    UxMode.mindmap.inputs.keys.elementAt(0) to "Inspire users to adopt more sustainable habits and eco-friendly choices.",
+    UxMode.mindmap.inputs.keys.elementAt(1) to "Users adoption of sustainable practices and positive eco-friendly actions.",
+    UxMode.mindmap.inputs.keys.elementAt(2) to "Advertisers of Eco-Friendly Products: Target an audience interested in environmentally friendly products.",
   ),
 )
 
 val ujmInputExamples = listOf(
-  listOf(
-    "A social network for fitness enthusiasts, connecting global workout communities.",
-    "Mike: 35, personal trainer, LA; forging an online fitness community.",
-    "Mike learns about FitConnect from a colleague, joins to connect and share workouts.",
+  mapOf(
+    UxMode.ujm.inputs.keys.elementAt(0) to "A social network for fitness enthusiasts, connecting global workout communities.",
+    UxMode.ujm.inputs.keys.elementAt(1) to "Mike: 35, personal trainer, LA; forging an online fitness community.",
+    UxMode.ujm.inputs.keys.elementAt(2) to "Mike learns about FitConnect from a colleague, joins to connect and share workouts.",
   ),
-  listOf(
-    "An online academy for coding, data science, and web development skills.",
-    "Sam: 22, recent grad, Boston; coding for a competitive edge.",
-    "Sam discovers TechHaven online, enrolls in a coding course for tech career growth.",
+  mapOf(
+    UxMode.ujm.inputs.keys.elementAt(0) to "An online academy for coding, data science, and web development skills.",
+    UxMode.ujm.inputs.keys.elementAt(1) to "Sam: 22, recent grad, Boston; coding for a competitive edge.",
+    UxMode.ujm.inputs.keys.elementAt(2) to "Sam discovers TechHaven online, enrolls in a coding course for tech career growth.",
     ),
-  listOf(
-    "A mobile app for greener living with practical tips and eco-friendly insights.",
-    "Olivia: 28, remote designer, Seattle; embracing sustainability in daily life.",
-    "Olivia finds EcoFolio on social media, downloads it to explore greener living tips.",
+  mapOf(
+    UxMode.ujm.inputs.keys.elementAt(0) to "A mobile app for greener living with practical tips and eco-friendly insights.",
+    UxMode.ujm.inputs.keys.elementAt(1) to "Olivia: 28, remote designer, Seattle; embracing sustainability in daily life.",
+    UxMode.ujm.inputs.keys.elementAt(2) to "Olivia finds EcoFolio on social media, downloads it to explore greener living tips.",
   ),
 )
 
 val personaInputExamples = listOf(
-  listOf(
-    "A social network for fitness enthusiasts, connecting global workout communities.",
+  mapOf(
+    UxMode.userpersona.inputs.keys.elementAt(0) to "A social network for fitness enthusiasts, connecting global workout communities.",
   ),
-  listOf(
-    "An online academy for coding, data science, and web development skills.",
+  mapOf(
+    UxMode.userpersona.inputs.keys.elementAt(0) to "An online academy for coding, data science, and web development skills.",
   ),
-  listOf(
-    "A mobile app for greener living with practical tips and eco-friendly insights.",
+  mapOf(
+    UxMode.userpersona.inputs.keys.elementAt(0) to "A mobile app for greener living with practical tips and eco-friendly insights.",
   ),
 )
 

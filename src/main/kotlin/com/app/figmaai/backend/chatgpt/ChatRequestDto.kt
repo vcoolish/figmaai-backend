@@ -18,7 +18,7 @@ class UxExampleRequestDto(
 )
 
 class UxExampleResponseDto(
-  val inputs: List<String>,
+  val inputs: Map<String, String>,
   val response: String,
 )
 

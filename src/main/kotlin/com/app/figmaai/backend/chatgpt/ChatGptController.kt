@@ -76,7 +76,7 @@ class ChatGptController(
   fun getChatExample(
     @ParameterObject uxDto: UxExampleRequestDto,
   ): UxExampleResponseDto {
-    val id = (uxDto.index % 3) - 1
+    val id = (uxDto.index % 3)
     return when (uxDto.mode) {
       UxMode.ujm -> UxExampleResponseDto(ujmInputExamples[id], ujmExamples[id])
       UxMode.userpersona -> UxExampleResponseDto(personaInputExamples[id], personaExamples[id])

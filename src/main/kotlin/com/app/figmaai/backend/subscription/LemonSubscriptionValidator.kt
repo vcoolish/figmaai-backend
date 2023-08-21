@@ -9,11 +9,13 @@ import com.app.figmaai.backend.subscription.model.SubscriptionType
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.time.ZonedDateTime
+
 
 @Service
 class LemonSubscriptionValidator(
@@ -137,6 +139,10 @@ class LemonSubscriptionValidator(
 
     val requestEntity = HttpEntity<MultiValueMap<String, Any>>(body, headers)
 
+    val requestFactory = HttpComponentsClientHttpRequestFactory()
+    requestFactory.setReadTimeout(600000)
+    requestFactory.setConnectTimeout(600000)
+    val restTemplate = RestTemplate(requestFactory)
     restTemplate.exchange(
       "${appProperties.lemonUrl}/v1/subscriptions/$id/",
       HttpMethod.PATCH,

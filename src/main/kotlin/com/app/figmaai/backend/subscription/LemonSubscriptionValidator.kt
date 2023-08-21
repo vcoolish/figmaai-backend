@@ -2,19 +2,16 @@ package com.app.figmaai.backend.subscription
 
 import com.app.figmaai.backend.common.util.logger
 import com.app.figmaai.backend.config.properties.AppProperties
+import com.app.figmaai.backend.subscription.dto.PauseRequest
 import com.app.figmaai.backend.subscription.model.LemonListResponse
 import com.app.figmaai.backend.subscription.model.LemonResponse
 import com.app.figmaai.backend.subscription.model.SubscriptionDto
 import com.app.figmaai.backend.subscription.model.SubscriptionType
-import com.google.gson.JsonNull
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.stereotype.Service
-import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.time.ZonedDateTime
@@ -122,25 +119,24 @@ class LemonSubscriptionValidator(
     headers.add("Content-Type", "application/vnd.api+json")
     headers.add("Authorization", "Bearer ${appProperties.lemonKey}")
 
-    val body = LinkedMultiValueMap<String, Any>()
-    body.add(
-      "data", JsonObject().apply {
-        add("type", JsonPrimitive("subscriptions"))
-        add("id", JsonPrimitive(id))
-        add("attributes", JsonObject().apply {
-          add("pause", if (isUnpause) {
-            JsonNull.INSTANCE
+    val body = PauseRequest(
+      data = PauseRequest.Data(
+        type = "subscriptions",
+        id = id,
+        attributes = PauseRequest.Data.Attributes(
+          pause = if (isUnpause) {
+            null
           } else {
-            JsonObject().apply {
-              add("mode", JsonPrimitive("free"))
-              add("resumes_at", JsonPrimitive(ZonedDateTime.now().plusDays(14).toString()))
-            }
-          })
-        })
-      }
+            PauseRequest.Data.Attributes.Pause(
+              mode = "free",
+              resumes_at = ZonedDateTime.now().plusDays(14).toString(),
+            )
+          }
+        )
+      )
     )
 
-    val requestEntity = HttpEntity<MultiValueMap<String, Any>>(body, headers)
+    val requestEntity = HttpEntity<PauseRequest>(body, headers)
 
     val requestFactory = HttpComponentsClientHttpRequestFactory()
     requestFactory.setReadTimeout(600000)

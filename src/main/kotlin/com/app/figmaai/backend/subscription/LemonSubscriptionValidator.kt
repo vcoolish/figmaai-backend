@@ -6,6 +6,9 @@ import com.app.figmaai.backend.subscription.model.LemonListResponse
 import com.app.figmaai.backend.subscription.model.LemonResponse
 import com.app.figmaai.backend.subscription.model.SubscriptionDto
 import com.app.figmaai.backend.subscription.model.SubscriptionType
+import com.google.gson.JsonNull
+import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -121,20 +124,20 @@ class LemonSubscriptionValidator(
 
     val body = LinkedMultiValueMap<String, Any>()
     body.add(
-      "data", mapOf(
-        "type" to "subscriptions",
-        "id" to id,
-        "attributes" to mapOf(
-          "pause" to if (isUnpause) {
-            null
+      "data", JsonObject().apply {
+        add("type", JsonPrimitive("subscriptions"))
+        add("id", JsonPrimitive(id))
+        add("attributes", JsonObject().apply {
+          add("pause", if (isUnpause) {
+            JsonNull.INSTANCE
           } else {
-            mapOf(
-              "mode" to "free",
-              "resumes_at" to ZonedDateTime.now().plusDays(14)
-            )
-          },
-        ),
-      ),
+            JsonObject().apply {
+              add("mode", JsonPrimitive("free"))
+              add("resumes_at", JsonPrimitive(ZonedDateTime.now().plusDays(14).toString()))
+            }
+          })
+        })
+      }
     )
 
     val requestEntity = HttpEntity<MultiValueMap<String, Any>>(body, headers)
@@ -144,7 +147,7 @@ class LemonSubscriptionValidator(
     requestFactory.setConnectTimeout(600000)
     val restTemplate = RestTemplate(requestFactory)
     restTemplate.exchange(
-      "${appProperties.lemonUrl}/v1/subscriptions/$id/",
+      "${appProperties.lemonUrl}/v1/subscriptions/$id",
       HttpMethod.PATCH,
       requestEntity,
       Any::class.java,

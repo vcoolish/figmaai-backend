@@ -45,7 +45,7 @@ class SubscriptionController(
     @RequestBody body: PauseSubscriptionDto,
   ): ResponseEntity<UserExtendedDto?> = try {
     ResponseEntity.ok(
-      UserMapper.toExtendedDto(subscriptionService.pauseSubscription(request, body)!!)
+      UserMapper.toExtendedDto(subscriptionService.pauseSubscription(request, body))
     )
   } catch (ex: BadRequestException) {
     ResponseEntity.status(403).body(null)

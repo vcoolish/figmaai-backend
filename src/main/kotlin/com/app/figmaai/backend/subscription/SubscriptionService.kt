@@ -145,24 +145,23 @@ class SubscriptionService(
     return user
   }
 
-  fun pauseSubscription(request: HttpServletRequest, dto: PauseSubscriptionDto): User? {
-//    val jwt = httpServletRequestTokenHelper.resolveToken(request)
-//    if (jwt.isNullOrEmpty()) {
-//      throw BadRequestException(message = "Access token not valid")
-//    }
-//    val claims = tokenProvider.getClaimsFromToken(jwt)
-//    val userUuid: String = claims.subject
-//    val user = userRepository.findByUserUuid(userUuid)
-    val subscriptionId = dto.id
-    lemonValidator.pause(subscriptionId, dto.isUnpause)
-//    when (user.subscriptionProvider) {
-//      SubscriptionProvider.paypal -> paypalValidator.pause(subscriptionId, dto.isUnpause)
-//      SubscriptionProvider.lemon -> lemonValidator.pause(subscriptionId, dto.isUnpause)
-//      else -> {
-//        throw IllegalArgumentException("Not supported")
-//      }
-//    }
-    return null
+  fun pauseSubscription(request: HttpServletRequest, dto: PauseSubscriptionDto): User {
+    val jwt = httpServletRequestTokenHelper.resolveToken(request)
+    if (jwt.isNullOrEmpty()) {
+      throw BadRequestException(message = "Access token not valid")
+    }
+    val claims = tokenProvider.getClaimsFromToken(jwt)
+    val userUuid: String = claims.subject
+    val user = userRepository.findByUserUuid(userUuid)
+    val subscriptionId = user.subscriptionId ?: error("Subscription not found")
+    when (user.subscriptionProvider) {
+      SubscriptionProvider.paypal -> paypalValidator.pause(subscriptionId, dto.isUnpause)
+      SubscriptionProvider.lemon -> lemonValidator.pause(subscriptionId, dto.isUnpause)
+      else -> {
+        throw IllegalArgumentException("Not supported")
+      }
+    }
+    return user
   }
 
   fun getSubscription(email: String): SubscriptionDto {

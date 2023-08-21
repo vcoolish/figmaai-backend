@@ -138,7 +138,7 @@ class LemonSubscriptionValidator(
     val requestEntity = HttpEntity<MultiValueMap<String, Any>>(body, headers)
 
     restTemplate.exchange(
-      "${appProperties.lemonUrl}/v1/subscriptions/$id".trim(),
+      "${appProperties.lemonUrl}/v1/subscriptions/$id/",
       HttpMethod.PATCH,
       requestEntity,
       Any::class.java,

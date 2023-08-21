@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -125,7 +126,9 @@ class LemonSubscriptionValidator(
 
     val formatter =
       DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX'Z'", Locale.ENGLISH)
-    val date = LocalDateTime.now().plusDays(14L).format(formatter)
+    val date = LocalDateTime.now().plusDays(14L)
+      .atOffset(ZoneOffset.UTC)
+      .format(formatter)
     val body = PauseRequest(
       data = PauseRequest.Data(
         type = "subscriptions",

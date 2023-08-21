@@ -7,6 +7,7 @@ import com.app.figmaai.backend.subscription.model.LemonListResponse
 import com.app.figmaai.backend.subscription.model.LemonResponse
 import com.app.figmaai.backend.subscription.model.SubscriptionDto
 import com.app.figmaai.backend.subscription.model.SubscriptionType
+import liquibase.pro.packaged.d
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -14,7 +15,10 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.stereotype.Service
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
+import java.time.LocalDateTime
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 @Service
@@ -119,17 +123,20 @@ class LemonSubscriptionValidator(
     headers.add("Content-Type", "application/vnd.api+json")
     headers.add("Authorization", "Bearer ${appProperties.lemonKey}")
 
+    val formatter =
+      DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX'Z'", Locale.ENGLISH)
+    val date = LocalDateTime.now().plusDays(14L).format(formatter)
     val body = PauseRequest(
       data = PauseRequest.Data(
         type = "subscriptions",
         id = id,
         attributes = PauseRequest.Data.Attributes(
-          pause = if (isUnpause) {
+          pause = if (!isUnpause) {
             null
           } else {
             PauseRequest.Data.Attributes.Pause(
               mode = "free",
-              resumes_at = ZonedDateTime.now().plusDays(14).toString(),
+              resumes_at = date,
             )
           }
         )

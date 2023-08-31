@@ -13,10 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 
@@ -59,4 +56,11 @@ class UserController(
 
   @GetMapping("/preview-plugin")
   fun getPreviewPlugin(): List<PreviewImage> = previewImages
+
+  @GetMapping("/user-info/{email}")
+  fun getUserInfo(@PathVariable email: String): ResponseEntity<UserExtendedDto> {
+    return ResponseEntity.ok(
+      UserMapper.toExtendedDto(userService.getByEmail(email))
+    )
+  }
 }

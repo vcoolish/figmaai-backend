@@ -4,7 +4,6 @@ import com.app.figmaai.backend.exception.BadRequestException
 import com.app.figmaai.backend.subscription.dto.PauseSubscriptionDto
 import com.app.figmaai.backend.subscription.model.LemonResponse
 import com.app.figmaai.backend.subscription.model.LemonUrls
-import com.app.figmaai.backend.subscription.model.SubscriptionDto
 import com.app.figmaai.backend.subscription.model.SubscriptionLink
 import com.app.figmaai.backend.user.dto.UserExtendedDto
 import com.app.figmaai.backend.user.dto.UserSubscriptionDto
@@ -61,7 +60,11 @@ class SubscriptionController(
   @GetMapping("/subscription/{email}")
   fun getSubscription(
     @PathVariable email: String,
-  ): SubscriptionDto = subscriptionService.getSubscription(email)
+  ): Any = try {
+    subscriptionService.getSubscription(email)
+  } catch (t: Throwable) {
+    ResponseEntity.status(404).body(null)
+  }
 
   @GetMapping("/subscription/{email}/manage")
   fun getSubscriptionUrls(

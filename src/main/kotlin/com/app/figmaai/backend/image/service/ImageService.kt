@@ -155,13 +155,6 @@ class ImageService(
     val user = userService.get(id)
     checkImageCount(user)
 
-    val spec: Specification<ImageAI> = imageIsEmpty()
-      .and(userEqual(user.userUuid))
-      .and(createdAtGreaterOrEqual(ZonedDateTime.now(Clock.systemUTC()).minusMinutes(5)))
-    val inProgress = imageRepository.exists(spec)
-    if (inProgress) {
-      throw InProgressException("You already have an image in progress")
-    }
     val energy = BigDecimal.valueOf(30)
     if (user.subscriptionId.isNullOrEmpty() && user.energy < energy) {
       throw InsufficientBalanceException("Not enough energy. Start your subscription for unlimited generations")

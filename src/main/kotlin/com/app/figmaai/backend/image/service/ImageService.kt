@@ -199,6 +199,7 @@ class ImageService(
     val entity = initEntities.first()
     val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
 
+    logger.info("image ${entity.image}")
     val images = initEntities.flatMap {
       createStabilityImage("${it.image} $cleanPrompt", height, width, 65, 10)
     }

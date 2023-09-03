@@ -179,9 +179,9 @@ class ImageService(
       val firstEntity = uploadBase64Pic(user, firstImage.first(), true)
       add(firstEntity)
 
-      val secondImage = createStabilityImage("${firstEntity.image} $prompt", height, width, 40)
-      val secondEntity = uploadBase64Pic(user, secondImage.first(), false)
-      add(secondEntity)
+//      val secondImage = createStabilityImage("${firstEntity.image} $prompt", height, width, 40)
+//      val secondEntity = uploadBase64Pic(user, secondImage.first(), false)
+//      add(secondEntity)
     }
     generateGif(initImages, user, prompt, height, width)
 
@@ -200,7 +200,7 @@ class ImageService(
     val cleanPrompt = if (prompt.startsWith("https://")) prompt.substringAfter(" ") else prompt
 
     val images = initEntities.flatMap {
-      createStabilityImage("${it.image} $prompt", height, width, 65, 8)
+      createStabilityImage("${it.image} $prompt", height, width, 65, 16)
     }
     logger.info("images ${images.size}")
     val file = File.createTempFile(UUID.randomUUID().toString(), ".gif")

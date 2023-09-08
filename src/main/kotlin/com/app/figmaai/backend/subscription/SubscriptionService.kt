@@ -65,10 +65,13 @@ class SubscriptionService(
       val isCancelledTrial = cached?.status == "on_trial" && subscription.status == "cancelled"
       if (isNew || isRenewed) {
         val maxGenerations = type?.generations?.toLong() ?: 800L
+        val maxAnimations = type?.animations?.toLong() ?: 30L
         val maxCredits = type?.tokens?.toLong() ?: 116000L
         user.isSubscribed = true
         user.generations = maxGenerations
         user.maxGenerations = maxGenerations
+        user.animations = maxAnimations
+        user.maxAnimations = maxAnimations
         user.credits = maxCredits
         user.uxCredits = maxCredits
         user.maxCredits = maxCredits
@@ -228,9 +231,12 @@ class SubscriptionService(
       if (isSubscribed && shouldRenew) {
         val subscriptionType = SubscriptionType.values().find { it.lemonId == subscription.variant_id }
         val maxGenerations = subscriptionType?.generations?.toLong() ?: 800
+        val maxAnimations = subscriptionType?.animations?.toLong() ?: 60
         val maxCredits = subscriptionType?.tokens?.toLong() ?: 116000L
         user.generations = maxGenerations
         user.maxGenerations = maxGenerations
+        user.animations = maxAnimations
+        user.maxAnimations = maxAnimations
         user.credits = maxCredits
         user.uxCredits = maxCredits
         user.maxCredits = maxCredits

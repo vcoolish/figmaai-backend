@@ -89,6 +89,8 @@ class User : com.app.figmaai.backend.common.model.AbstractJpaPersistable<Long>()
 
   var generations: Long = 0L
   var maxGenerations: Long = 0L
+  var animations: Long = 0L
+  var maxAnimations: Long = 0L
   var credits: Long = 0L
   var uxCredits: Long = 0L
   var maxCredits: Long = 0L

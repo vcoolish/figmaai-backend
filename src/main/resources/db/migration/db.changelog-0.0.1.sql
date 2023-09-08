@@ -260,3 +260,9 @@ CREATE TABLE subscriptions
   update_payment_method_url VARCHAR(2048)            NOT NULL
 );
 --rollback CREATE TABLE subscriptions;
+
+--changeset vcoolish:20230804143804
+ALTER TABLE users
+  ADD COLUMN animations BIGINT NOT NULL DEFAULT 0,
+  ADD COLUMN max_animations BIGINT NOT NULL DEFAULT 0;
+--rollback ALTER TABLE users;

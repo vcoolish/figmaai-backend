@@ -24,6 +24,8 @@ object UserMapper {
     dto.nextEnergyRenew = user.nextEnergyRenew
     dto.generations = user.generations
     dto.maxGenerations = user.maxGenerations
+    dto.animations = user.animations
+    dto.maxAnimations = user.maxAnimations
     dto.copyCredits = user.credits
     dto.uxCredits = user.uxCredits
     dto.maxCredits = user.maxCredits

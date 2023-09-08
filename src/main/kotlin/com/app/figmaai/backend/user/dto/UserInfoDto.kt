@@ -9,6 +9,8 @@ open class UserInfoDto {
   var nextEnergyRenew: ZonedDateTime? = null
   var generations: Long = 0L
   var maxGenerations: Long = 0L
+  var animations: Long = 0L
+  var maxAnimations: Long = 0L
   var copyCredits: Long = 0L
   var uxCredits: Long = 0L
   var maxCredits: Long = 0L

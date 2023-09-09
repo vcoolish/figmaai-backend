@@ -159,7 +159,7 @@ class ImageService(
     if (user.subscriptionId.isNullOrEmpty() && user.energy < energy) {
       throw InsufficientBalanceException("Not enough energy. Start your subscription for unlimited generations")
     }
-    if (!user.subscriptionId.isNullOrEmpty() && user.generations <= 0) {
+    if (!user.subscriptionId.isNullOrEmpty() && user.animations <= 0) {
       throw InsufficientBalanceException("You ran out of generations. Start new subscription to get more.")
     }
 
@@ -232,7 +232,7 @@ class ImageService(
     if (user.subscriptionId.isNullOrEmpty()) {
       userEnergyService.spendEnergy(user, BigDecimal.valueOf(30))
     } else {
-      user.generations -= 1
+      user.animations -= 1
     }
 
     userService.save(user)

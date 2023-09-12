@@ -201,7 +201,7 @@ class ImageService(
 
     logger.info("image ${entity.image}")
     val images = initEntities.flatMap {
-      createStabilityImage("${it.image} $cleanPrompt", height, width, 65, 10)
+      createStabilityImage("${it.image} $cleanPrompt", height, width, 80, 10)
     }
     logger.info("images ${images.size}")
     val file = File.createTempFile(UUID.randomUUID().toString(), ".gif")

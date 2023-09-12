@@ -3,9 +3,9 @@ package com.app.figmaai.backend.subscription.model
 enum class SubscriptionType(val lemonId: String, val animations: Int, val generations: Int, val tokens: Int, val slug: String) {
   Basic_Month(
     "81235",
-    30,
-    300,
-    50000,
+    50,
+    500,
+    150000,
     "d035b962-b455-44bc-804c-dcb0cc52aae8"
   ),
   Standard_Month(
@@ -24,9 +24,9 @@ enum class SubscriptionType(val lemonId: String, val animations: Int, val genera
   ),
   Basic_Year(
     "85009",
-    30,
-    300,
-    70000,
+    50,
+    500,
+    150000,
     "d1daf6d3-5c71-4c3c-a34f-c1528153b80d"
   ),
   Standard_Year(

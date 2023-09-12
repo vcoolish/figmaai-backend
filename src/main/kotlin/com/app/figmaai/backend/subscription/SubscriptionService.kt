@@ -255,5 +255,5 @@ class SubscriptionService(
     userRepository.findByNextSubscriptionValidationLessThanEqualOrderByNextEnergyRenewAsc(nextValidation)
 
   fun getSubscriptionLinks() =
-    SubscriptionType.values().map { it.getLink() }
+    SubscriptionType.values().map { it.getLink() }.filter { it.name.startsWith("Basic") }
 }

@@ -6,4 +6,11 @@ class GetAllNftRequest(
   @NullableFigma
   val figma: String?,
   val query: String = "",
+  val searchType: SearchType = SearchType.all,
 )
+
+enum class SearchType {
+  all,
+  animated,
+  static,
+}

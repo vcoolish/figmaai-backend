@@ -2,6 +2,10 @@ package com.app.figmaai.backend.user.service
 
 import com.app.figmaai.backend.common.specification.SpecificationBuilder
 import com.app.figmaai.backend.common.util.logger
+import com.app.figmaai.backend.email.EmailService
+import com.app.figmaai.backend.email.extra.EmailData
+import com.app.figmaai.backend.email.extra.EmailType
+import com.app.figmaai.backend.email.extra.UserEmailPersonalData
 import com.app.figmaai.backend.exception.BadRequestException
 import com.app.figmaai.backend.exception.NotFoundException
 import com.app.figmaai.backend.user.dto.LoginData
@@ -9,6 +13,7 @@ import com.app.figmaai.backend.user.dto.OauthTokensDto
 import com.app.figmaai.backend.user.dto.TokensDto
 import com.app.figmaai.backend.user.model.*
 import com.app.figmaai.backend.user.repository.OauthRepository
+import com.app.figmaai.backend.user.repository.RecoveryRepository
 import com.app.figmaai.backend.user.repository.UserRepository
 import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.security.authentication.BadCredentialsException
@@ -16,6 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -29,7 +35,11 @@ class AuthService(
   private val httpServletRequestTokenHelper: HttpServletRequestTokenHelper,
   private val userService: UserService,
   private val customUserDetailsService: UserDetailsService,
-  private val oauthRepository: OauthRepository, private val userRepository: UserRepository,
+  private val oauthRepository: OauthRepository,
+  private val recoveryRepository: RecoveryRepository,
+  private val userRepository: UserRepository,
+  private val emailService: EmailService,
+  private val passwordEncoder: PasswordEncoder,
 ) {
   private val logger = logger()
 
@@ -107,6 +117,36 @@ class AuthService(
     return userService.get(figma).also {
       oauthRepository.delete(oauth)
     }
+  }
+
+  fun onForgotPassword(email: String) {
+    val user = userService.getByEmail(email)
+    val current = recoveryRepository.findByEmail(email)
+    if (current != null) {
+      recoveryRepository.delete(current)
+    }
+    val write = DigestUtils.md5Hex(UUID.randomUUID().toString())
+    val oauth = RecoveryToken().apply {
+      this.writeToken = write
+      this.email = user.email
+    }
+    recoveryRepository.save(oauth)
+    emailService.sendEmail(
+      EmailData(
+        UserEmailPersonalData(email),
+        EmailType.CHANGE_PASSWORD,
+        mapOf("link" to "https://figmaai.com/recovery?writeToken=$write")
+      )
+    )
+  }
+
+  fun onResetPassword(writeToken: String, password: String) {
+    val token = recoveryRepository.findByWriteToken(writeToken)
+      ?: throw BadRequestException(message = "Token not found")
+    val user = userService.getByEmail(token.email!!)
+    recoveryRepository.delete(token)
+    user.password = passwordEncoder.encode(password)
+    userService.save(user)
   }
 
   @Transactional

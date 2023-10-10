@@ -65,6 +65,22 @@ class AuthController(
       .let { ResponseEntity.ok(it) }
   }
 
+  @GetMapping("/forgot-password/{email}")
+  fun forgotPassword(
+    @PathVariable email: String
+  ): ResponseEntity<String> {
+    authService.onForgotPassword(email)
+    return ResponseEntity.ok("Email sent")
+  }
+
+  @PostMapping("/update-password")
+  fun resetPassword(
+    @RequestBody @Valid dto: UpdatePasswordDto,
+  ): ResponseEntity<String> {
+    authService.onResetPassword(dto.writeToken, dto.password)
+    return ResponseEntity.ok("Password updated")
+  }
+
   @ApiResponses(
     ApiResponse(responseCode = "400", description = "TOKEN_DATA_INVALID"),
     ApiResponse(responseCode = "404", description = "NOT_FOUND"),

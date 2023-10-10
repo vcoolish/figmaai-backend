@@ -266,3 +266,20 @@ ALTER TABLE users
   ADD COLUMN animations BIGINT NOT NULL DEFAULT 0,
   ADD COLUMN max_animations BIGINT NOT NULL DEFAULT 0;
 --rollback ALTER TABLE users;
+
+--changeset vcoolish:20230904143804
+CREATE SEQUENCE IF NOT EXISTS recovery_tokens_id_seq
+  START WITH 1
+  INCREMENT BY 1
+  NO MINVALUE
+  NO MAXVALUE
+  CACHE 1;
+
+CREATE TABLE recovery_tokens
+(
+  id          BIGINT PRIMARY KEY DEFAULT nextval('recovery_tokens_id_seq'),
+  write_token VARCHAR(500),
+  email       VARCHAR(500),
+  redeemed    BOOLEAN            DEFAULT FALSE
+);
+--rollback CREATE TABLE recovery_tokens;

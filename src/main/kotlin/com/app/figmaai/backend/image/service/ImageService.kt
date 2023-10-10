@@ -14,6 +14,7 @@ import com.app.figmaai.backend.image.model.ImageAI
 import com.app.figmaai.backend.image.repository.ImageRepository
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.createdAtGreaterOrEqual
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.findByPrompt
+import com.app.figmaai.backend.image.repository.extra.ImageSpecification.findByType
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.imageIsEmpty
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.userEqual
 import com.app.figmaai.backend.image.utils.GifSequenceWriter
@@ -69,7 +70,8 @@ class ImageService(
     } else {
       userEqual(userService.get(request.figma).userUuid).and(findByPrompt(request.query))
     }
-    return imageRepository.findAll(spec, pageable)
+    val searchSpec = spec.and(findByType(request.searchType))
+    return imageRepository.findAll(searchSpec, pageable)
   }
 
   @Transactional

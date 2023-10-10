@@ -105,6 +105,7 @@ application:
   subscription-validation-rate: PT24H
   lemon-key: ${LEMON_KEY}
   lemon-url: "https://api.lemonsqueezy.com"
+  smtp-key: ${SMTP_KEY}
 
   arweave-url: "https://arweave.net/"
 

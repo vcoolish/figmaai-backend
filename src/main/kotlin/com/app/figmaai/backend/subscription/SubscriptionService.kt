@@ -77,9 +77,9 @@ class SubscriptionService(
         user.maxCredits = maxCredits
       } else if (isStatusInactive(subscription.status) || isCancelledTrial) {
         user.isSubscribed = false
-        user.generations = 0L
-        user.credits = 0L
-        user.uxCredits = 0L
+//        user.generations = 0L
+//        user.credits = 0L
+//        user.uxCredits = 0L
       }
     }
     val subscriptionEntity = (cached ?: Subscription()).apply {
@@ -112,12 +112,13 @@ class SubscriptionService(
     logger().info(body.toString())
     val attrs = body.data.attributes
     val type = SubscriptionType.values().find { it.lemonId == attrs.variant_id.toString() }
+    val status = if (attrs.pause != null) "paused" else attrs.status!!
     val subscription = SubscriptionDto(
       id = body.data.id,
       name = attrs.variant_name,
       generations = type?.generations ?: 800,
       tokens = type?.tokens ?: 116000,
-      status = attrs.status!!,
+      status = status,
       renews_at = attrs.renews_at,
       ends_at = attrs.ends_at,
       created_at = attrs.created_at,

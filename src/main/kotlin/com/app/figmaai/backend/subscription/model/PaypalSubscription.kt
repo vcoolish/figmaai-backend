@@ -36,7 +36,7 @@ data class SubscriptionAttributes(
   val user_email: String?,
   val status: String?,
   val status_formatted: String?,
-  val pause: String?,
+  val pause: SubscriptionPause?,
   val cancelled: Boolean?,
   val trial_ends_at: String?,
   val urls: LemonUrls?,
@@ -46,6 +46,11 @@ data class SubscriptionAttributes(
   val variant_name: String?,
   val variant_id: Int?,
   val order_id: Int?,
+)
+
+data class SubscriptionPause(
+  val mode: String,
+  val resumes_at: String,
 )
 
 data class PaypalSubscription(

@@ -35,9 +35,9 @@ object ImageSpecification {
     return@Specification when (searchType) {
       SearchType.all -> null
       SearchType.animated -> builder
-        .isNotNull(root.get<String?>("gif"))
+        .notEqual(root.get<String?>("gif"), "")
       SearchType.static -> builder
-        .isNull(root.get<String?>("gif"))
+        .equal(root.get<String?>("gif"), "")
     }
   }
 

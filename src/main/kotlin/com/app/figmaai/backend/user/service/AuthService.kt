@@ -140,6 +140,7 @@ class AuthService(
     )
   }
 
+  @Transactional
   fun onResetPassword(writeToken: String, password: String): User {
     val token = recoveryRepository.findByWriteToken(writeToken)
       ?: throw BadRequestException(message = "Token not found")

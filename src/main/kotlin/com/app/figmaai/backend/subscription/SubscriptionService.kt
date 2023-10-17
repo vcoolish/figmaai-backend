@@ -77,9 +77,6 @@ class SubscriptionService(
         user.maxCredits = maxCredits
       } else if (isStatusInactive(subscription.status) || isCancelledTrial) {
         user.isSubscribed = false
-//        user.generations = 0L
-//        user.credits = 0L
-//        user.uxCredits = 0L
       }
     }
     val subscriptionEntity = (cached ?: Subscription()).apply {
@@ -87,7 +84,11 @@ class SubscriptionService(
       this.provider = provider
       this.createdAt = runCatching { ZonedDateTime.parse(subscription.created_at) }.getOrNull()
       this.endsAt = runCatching { ZonedDateTime.parse(subscription.ends_at) }.getOrNull()
-      this.trialEndsAt = runCatching { ZonedDateTime.parse(subscription.trial_ends_at) }.getOrNull()
+      this.trialEndsAt = if (subscription.status == "on_trial") {
+        runCatching { ZonedDateTime.parse(subscription.trial_ends_at) }.getOrNull()
+      } else {
+        null
+      }
       this.renewsAt = runCatching { ZonedDateTime.parse(subscription.renews_at) }.getOrNull()
       this.status = subscription.status
       this.user = user

@@ -135,7 +135,7 @@ class AuthService(
       EmailData(
         UserEmailPersonalData(email),
         EmailType.CHANGE_PASSWORD,
-        mapOf("link" to "https://figmaai.com/recovery?writeToken=$write")
+        mapOf("link" to "https://aidsnpro.com/recovery?writeToken=$write")
       )
     )
   }

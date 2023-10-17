@@ -1,7 +1,6 @@
 package com.app.figmaai.backend.user.service
 
 import com.app.figmaai.backend.common.util.logger
-import com.app.figmaai.backend.exception.BadRequestException
 import com.app.figmaai.backend.user.model.User
 import com.app.figmaai.backend.user.model.UserCreateData
 import org.springframework.stereotype.Service
@@ -42,7 +41,7 @@ class UserRegistrationService(
 
   fun checkEmail(email: String) {
     if (userService.isEmailExist(email)) {
-      throw BadRequestException("Email already reserved.")
+      throw RuntimeException("Email already reserved.")
     }
   }
 }

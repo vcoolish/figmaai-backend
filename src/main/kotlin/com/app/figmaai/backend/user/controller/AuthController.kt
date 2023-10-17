@@ -2,6 +2,7 @@ package com.app.figmaai.backend.user.controller
 
 import com.app.figmaai.backend.exception.BadRequestException
 import com.app.figmaai.backend.user.dto.*
+import com.app.figmaai.backend.user.model.User
 import com.app.figmaai.backend.user.service.AuthService
 import com.app.figmaai.backend.user.service.SecurityContextService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -76,9 +77,8 @@ class AuthController(
   @PostMapping("/update-password")
   fun resetPassword(
     @RequestBody @Valid dto: UpdatePasswordDto,
-  ): ResponseEntity<String> {
-    authService.onResetPassword(dto.writeToken, dto.password)
-    return ResponseEntity.ok("Password updated")
+  ): ResponseEntity<User> {
+    return ResponseEntity.ok(authService.onResetPassword(dto.writeToken, dto.password))
   }
 
   @ApiResponses(

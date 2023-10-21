@@ -20,6 +20,8 @@ class GoogleUserInfoCollector(
       email = userInfo.email.orEmpty(),
       password = passwordGenerator.generate(),
       googleId = userInfo.id,
+      verified = true,
+      enabled = true,
     )
   }
 

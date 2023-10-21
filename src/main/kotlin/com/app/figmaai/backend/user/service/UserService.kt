@@ -70,14 +70,12 @@ class UserService(
 
   fun exists(userUuid: String?): Boolean = userUuid?.let(repository::existsByUserUuid) ?: false
 
-  fun saveNewUser(user: User): User =
+  fun saveNewUser(user: User): User = try {
     repository.save(user)
-//    try {
-//    repository.save(user)
-//  } catch (e: ConstraintViolationException) {
-//    user.userUuid = generateUUID()
-//    saveNewUser(user)
-//  }
+  } catch (e: ConstraintViolationException) {
+    repository.findByEmail(user.email)
+      ?: throw RuntimeException("User with email ${user.email} cannot be created")
+  }
 
   fun isEmailExist(email: String?): Boolean =
     repository.findByEmail(email?.lowercase()) != null

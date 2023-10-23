@@ -147,8 +147,7 @@ class AuthService(
     val user = userService.getByEmail(token.email!!)
     recoveryRepository.delete(token)
     user.password = passwordEncoder.encode(password)
-    userService.save(user)
-    return user
+    return userService.save(user)
   }
 
   @Transactional

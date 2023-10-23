@@ -41,9 +41,8 @@ class UserService(
 
   fun getByUuid(userUuid: String): User = repository.findByUserUuid(userUuid)
 
-  fun save(user: User) {
+  fun save(user: User) =
     repository.save(user)
-  }
 
   fun updateToken(id: String, request: UserRegistrationEntryDto): User {
     val user = get(id)

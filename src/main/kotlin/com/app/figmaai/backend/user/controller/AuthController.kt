@@ -78,7 +78,8 @@ class AuthController(
   fun resetPassword(
     @RequestBody @Valid dto: UpdatePasswordDto,
   ): ResponseEntity<User> {
-    return ResponseEntity.ok(authService.onResetPassword(dto.writeToken, dto.password))
+    val user = authService.onResetPassword(dto.writeToken, dto.password)
+    return ResponseEntity.ok(user)
   }
 
   @ApiResponses(

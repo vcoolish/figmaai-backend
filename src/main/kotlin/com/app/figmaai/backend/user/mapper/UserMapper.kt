@@ -29,6 +29,7 @@ object UserMapper {
     dto.copyCredits = user.credits
     dto.uxCredits = user.uxCredits
     dto.maxCredits = user.maxCredits
+    dto.email = user.email
 
     return dto
   }

@@ -1,9 +1,6 @@
 package com.app.figmaai.backend.chatgpt.wallet
 
-import com.app.figmaai.backend.chatgpt.ChatGptRequest
-import com.app.figmaai.backend.chatgpt.ChatModel
-import com.app.figmaai.backend.chatgpt.ChatRole
-import com.app.figmaai.backend.chatgpt.EditResponse
+import com.app.figmaai.backend.chatgpt.*
 import com.app.figmaai.backend.config.properties.AppProperties
 import com.app.figmaai.backend.exception.BadRequestException
 import org.springframework.http.ContentDisposition
@@ -31,11 +28,12 @@ class ChatGptWalletService(
   fun play(
     audio: ByteArray,
     mode: PlayMode,
-  ): String {
-    val response = requestChat(transcribe(audio), mode.value)
+  ): PlayResponse {
+    val transcription = transcribe(audio)
+    val response = requestChat(transcription, mode.value)
     val choices = response?.choices?.map { it.message?.content ?: "" }
       ?: throw BadRequestException("Failed to create edit")
-    return choices.first()
+    return PlayResponse(choices.first(), transcription)
   }
 
   private fun transcribe(audio: ByteArray): String {

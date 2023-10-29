@@ -20,6 +20,8 @@ enum class PlayMode(val value: String, val title: String, val inputs: Map<String
       set receive type if I ask you to receive some asset or show address or QR code
       set stake type if I ask you to stake, delegate, unstake, claim rewards, redelegate or earn some asset
       set open type if I ask you to open some asset
+      set balance type if I ask you to show me balance of some asset
+      set support type if I ask you to for customer support
       
       {
         "type": "send", // can be send, buy, swap, receive, stake, market or open if not specified

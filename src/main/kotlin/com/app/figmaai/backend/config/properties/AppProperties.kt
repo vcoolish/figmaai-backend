@@ -61,4 +61,7 @@ data class AppProperties(
 
   @NotBlank
   val smtpKey: String,
+
+  @NotBlank
+  val pexelsKey: String,
 )

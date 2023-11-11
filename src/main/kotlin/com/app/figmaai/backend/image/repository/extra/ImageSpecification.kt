@@ -2,7 +2,6 @@ package com.app.figmaai.backend.image.repository.extra
 
 import com.app.figmaai.backend.common.util.SpecificationUtil.get
 import com.app.figmaai.backend.common.util.SpecificationUtil.join
-import com.app.figmaai.backend.image.dto.SearchType
 import com.app.figmaai.backend.image.model.ImageAI
 import com.app.figmaai.backend.user.model.User
 import org.springframework.data.jpa.domain.Specification
@@ -27,18 +26,6 @@ object ImageSpecification {
     }
 
     return@Specification builder.like(builder.lower(root.get("prompt")), "%${prompt.lowercase()}%")
-  }
-
-  fun findByType(
-    searchType: SearchType
-  ): Specification<ImageAI> = Specification { root, k, builder ->
-    return@Specification when (searchType) {
-      SearchType.all -> null
-      SearchType.animated -> builder
-        .notEqual(root.get<String?>("gif"), "")
-      SearchType.static -> builder
-        .equal(root.get<String?>("gif"), "")
-    }
   }
 
   fun imageIsEmpty(): Specification<ImageAI> = Specification { root, _, builder ->

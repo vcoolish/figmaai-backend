@@ -13,4 +13,5 @@ enum class SearchType {
   all,
   animated,
   static,
+  video,
 }

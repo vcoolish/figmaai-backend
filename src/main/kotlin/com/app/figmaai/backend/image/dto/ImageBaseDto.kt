@@ -6,5 +6,6 @@ open class ImageBaseDto {
   lateinit var description: String
   lateinit var image: String
   var gif: String? = ""
+  var video: String? = ""
   lateinit var prompt: String
 }

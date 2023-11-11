@@ -36,6 +36,7 @@ open class Image : AbstractJpaPersistable<Long>() {
 
   lateinit var image: String
   var gif: String? = ""
+  var video: String? = ""
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

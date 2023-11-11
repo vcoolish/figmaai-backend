@@ -106,6 +106,7 @@ application:
   lemon-key: ${LEMON_KEY}
   lemon-url: "https://api.lemonsqueezy.com"
   smtp-key: ${SMTP_KEY}
+  pexels-key: ${PEXELS_KEY}
 
   arweave-url: "https://arweave.net/"
 

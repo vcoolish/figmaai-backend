@@ -6,10 +6,7 @@ import com.app.figmaai.backend.ai.AiVersion
 import com.app.figmaai.backend.constraint.Figma
 import com.app.figmaai.backend.exception.InProgressException
 import com.app.figmaai.backend.exception.InsufficientBalanceException
-import com.app.figmaai.backend.image.dto.GetAllNftRequest
-import com.app.figmaai.backend.image.dto.ImageInternalDto
-import com.app.figmaai.backend.image.dto.PurchaseAnimatedImageRequest
-import com.app.figmaai.backend.image.dto.PurchaseImageRequest
+import com.app.figmaai.backend.image.dto.*
 import com.app.figmaai.backend.image.mapper.ImageMapper
 import com.app.figmaai.backend.image.model.UploadResult
 import com.app.figmaai.backend.image.service.AwsS3Service
@@ -89,6 +86,26 @@ class ImageController(
       width = request.width,
       strength = request.strengthPercent,
     ).let { ResponseEntity.ok(ImageMapper.toInternalDto(it)) }
+  } catch (ex: ExpiredAuthorizationException) {
+    ResponseEntity.status(405).body(null)
+  } catch (ex: InProgressException) {
+    ResponseEntity.status(406).body(null)
+  } catch (ex: InsufficientBalanceException) {
+    ResponseEntity.status(415).body(null)
+  }
+
+  @PatchMapping("/generate/video")
+  fun purchaseVideo(
+    @Figma @RequestHeader figma: String,
+    @Valid @RequestBody request: PurchaseVideoRequest,
+  ): ResponseEntity<List<ImageInternalDto>?> = try {
+    imageService.createVideo(
+      id = figma,
+      prompt = request.prompt.trim(),
+      orientation = request.orientation,
+      size = request.size,
+      locale = request.locale,
+    ).let { ResponseEntity.ok(it.map { ImageMapper.toInternalDto(it) }) }
   } catch (ex: ExpiredAuthorizationException) {
     ResponseEntity.status(405).body(null)
   } catch (ex: InProgressException) {

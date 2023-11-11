@@ -30,6 +30,7 @@ object ImageMapper {
     dto.description = image.description
     dto.image = image.image
     dto.gif = image.gif
+    dto.video = image.video
 
     return dto
   }

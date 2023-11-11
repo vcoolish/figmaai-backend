@@ -10,11 +10,11 @@ import com.app.figmaai.backend.exception.BadRequestException
 import com.app.figmaai.backend.exception.InProgressException
 import com.app.figmaai.backend.exception.InsufficientBalanceException
 import com.app.figmaai.backend.image.dto.GetAllNftRequest
+import com.app.figmaai.backend.image.dto.SearchType
 import com.app.figmaai.backend.image.model.ImageAI
 import com.app.figmaai.backend.image.repository.ImageRepository
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.createdAtGreaterOrEqual
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.findByPrompt
-import com.app.figmaai.backend.image.repository.extra.ImageSpecification.findByType
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.imageIsEmpty
 import com.app.figmaai.backend.image.repository.extra.ImageSpecification.userEqual
 import com.app.figmaai.backend.image.utils.GifSequenceWriter
@@ -70,7 +70,25 @@ class ImageService(
     } else {
       userEqual(userService.get(request.figma).userUuid).and(findByPrompt(request.query))
     }
-    val searchSpec = spec.and(findByType(request.searchType))
+
+    val searchSpec = when (request.searchType) {
+      SearchType.all -> spec.and { root, k, builder -> null }
+      SearchType.animated -> spec.and { root, k, builder ->
+        builder
+          .notEqual(root.get<String?>("gif"), "")
+      }
+      SearchType.video -> spec.and { root, k, builder ->
+        builder
+          .notEqual(root.get<String?>("video"), "")
+      }
+      SearchType.static -> spec.and { root, k, builder ->
+        builder
+          .equal(root.get<String?>("video"), "")
+      }.and { root, k, builder ->
+        builder
+          .equal(root.get<String?>("gif"), "")
+      }
+    }
     return imageRepository.findAll(searchSpec, pageable)
   }
 
@@ -188,6 +206,55 @@ class ImageService(
     generateGif(initImages, user, prompt, height, width)
 
     return initImages.first()
+  }
+
+  fun createVideo(
+    id: String,
+    prompt: String,
+    orientation: String,
+    size: String,
+    locale: String,
+  ): List<ImageAI> {
+    validatePrompt(prompt)
+    val user = userService.get(id)
+    checkImageCount(user)
+
+    val energy = BigDecimal.valueOf(30)
+    if (user.subscriptionId.isNullOrEmpty() && user.energy < energy) {
+      throw InsufficientBalanceException("Not enough energy. Start your subscription for unlimited generations")
+    }
+    if (!user.subscriptionId.isNullOrEmpty()) { //&& user.animations <= 0
+      throw InsufficientBalanceException("You ran out of generations. Start new subscription to get more.")
+    }
+
+    if (!user.isSubscribed) {
+      throw ExpiredAuthorizationException("Subscription expired")
+    }
+    logger.info("{${prompt}}")
+
+    val images = requestVideo(
+      prompt = prompt,
+      size = size,
+      locale = locale,
+      orientation = orientation,
+      user = user
+    )
+    images.forEach {
+      it.name = "Video #${it.imageId}"
+      it.prompt = prompt
+      imageRepository.save(it)
+    }
+
+    if (user.subscriptionId.isNullOrEmpty()) {
+      userEnergyService.spendEnergy(user, 30.toBigDecimal())
+    }
+//    else {
+//      user.animations -= 1
+//    }
+
+    userService.save(user)
+
+    return images
   }
 
   @Async
@@ -386,7 +453,7 @@ class ImageService(
       "https://api.openai.com/v1/images/$path",
       HttpMethod.POST,
       httpEntity,
-      com.app.figmaai.backend.ai.DalleResponse::class.java
+      DalleResponse::class.java
     )
     val createdPicUrl = response.body?.data?.firstOrNull()?.url
       ?: throw BadRequestException("Failed to create image")
@@ -397,6 +464,40 @@ class ImageService(
           image = url
         } ?: throw BadRequestException("Image generation failed")
       }
+  }
+
+  private fun requestVideo(
+    prompt: String,
+    size: String?,
+    locale: String?,
+    orientation: String?,
+    user: User,
+  ): List<ImageAI> {
+    val headers = LinkedMultiValueMap<String, String>()
+    headers.add("Authorization", appProperties.pexelsKey)
+    val httpEntity: HttpEntity<*> = HttpEntity<Any>(null, headers)
+
+    val request = buildString {
+      append("https://api.pexels.com/videos/search?query=$prompt&per_page=4")
+      size?.let { append("&size=$size") }
+      locale?.let { append("&locale=$locale") }
+      orientation?.let { append("&orientation=$orientation") }
+    }
+
+    val response = restTemplate.exchange(
+      request,
+      HttpMethod.GET,
+      httpEntity,
+      PexelsResponse::class.java
+    )
+
+    return response.body?.videos?.mapNotNull { video ->
+      imageCreationService.create(user)
+        .let(imageRepository::saveAndFlush).apply {
+          this.image = video.image
+          this.video = video.video_files.firstOrNull()?.link ?: return@mapNotNull null
+        }
+    }.orEmpty()
   }
 
   private fun validatePrompt(prompt: String) {

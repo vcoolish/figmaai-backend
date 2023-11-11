@@ -284,13 +284,7 @@ CREATE TABLE recovery_tokens
 );
 --rollback CREATE TABLE recovery_tokens;
 
---changeset vcoolish:20230804143804
-ALTER TABLE users
-  ADD COLUMN animations BIGINT NOT NULL DEFAULT 0,
-  ADD COLUMN max_animations BIGINT NOT NULL DEFAULT 0;
---rollback ALTER TABLE users;
-
---changeset vcoolish:20230904143804
+--changeset vcoolish:20230905143804
 ALTER TABLE images
   ADD COLUMN video VARCHAR(2048);
 --rollback ALTER TABLE images;

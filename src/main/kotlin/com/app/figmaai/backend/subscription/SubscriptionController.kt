@@ -63,7 +63,7 @@ class SubscriptionController(
   ): Any = try {
     subscriptionService.getSubscription(email)
   } catch (t: Throwable) {
-    ResponseEntity.status(404).body(null)
+    ResponseEntity.status(404).body(t.stackTrace.toString())
   }
 
   @GetMapping("/subscription/{email}/manage")

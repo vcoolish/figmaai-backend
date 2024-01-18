@@ -35,6 +35,7 @@ class SubscriptionController(
       UserMapper.toExtendedDto(subscriptionService.deleteSubscription(request))
     )
   } catch (ex: BadRequestException) {
+    ex.printStackTrace()
     ResponseEntity.status(403).body(null)
   }
 
@@ -47,6 +48,7 @@ class SubscriptionController(
       UserMapper.toExtendedDto(subscriptionService.pauseSubscription(request, body))
     )
   } catch (ex: BadRequestException) {
+    ex.printStackTrace()
     ResponseEntity.status(403).body(null)
   }
 
@@ -63,7 +65,8 @@ class SubscriptionController(
   ): Any = try {
     subscriptionService.getSubscription(email)
   } catch (t: Throwable) {
-    ResponseEntity.status(404).body(t.stackTrace.toString())
+    t.printStackTrace()
+    ResponseEntity.status(404).body(null)
   }
 
   @GetMapping("/subscription/{email}/manage")
